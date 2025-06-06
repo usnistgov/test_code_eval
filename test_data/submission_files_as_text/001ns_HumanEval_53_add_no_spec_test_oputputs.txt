@@ -1,0 +1,18 @@
+Sure, here is a simple pytest test method that tests the correctness of the `add` function:
+
+```python
+import pytest
+from your_module import add  # replace 'your_module' with the name of the module where the 'add' function is defined
+
+def test_add():
+    assert add(1, 2) == 3
+    assert add(0, 0) == 0
+    assert add(-1, 1) == 0
+    assert add(-1, -1) == -2
+```
+
+In this test method, we are testing the `add` function with various inputs to ensure it is working correctly. The `assert` statement is used to check if the result of the `add` function matches the expected result. If the result does not match the expected result, the `assert` statement will raise an `AssertionError`, indicating that the test has failed.
+
+To run this test, you would save it in a file with a `.pytest` extension (e.g., `test_add.py`) and then run `pytest` in the same directory as your test file.
+
+Please replace `'your_module'` with the actual name of the module where the `add` function is defined.

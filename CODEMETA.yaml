@@ -29,16 +29,16 @@
 
 ---
 categories:
-  # - ai-ml
+  - ai-ml
   # - performance-and-workflow
-  - scientific-software
+  # - scientific-software
   # - simulation
   # - tools
   # - visualization
 
 themes:
-  - Information Technology
-    - Data and informatics
+  # - Information Technology
+  #   - Data and informatics
   # - Advanced communications
   #     - Optical communications
   #     - Quantum communications
@@ -128,8 +128,8 @@ themes:
   #     - Precision medicine
   #     - Regenerative medicine
   #
-  # - Information Technology
-  #     - Artificial intelligence
+  - Information Technology
+    - Artificial intelligence
   #     - Biometrics
   #     - Cloud computing and virtualization
   #     - Complex systems
@@ -163,10 +163,10 @@ themes:
   #         - Protocol Design and Standardization
   #         - Software-defined and virtual networks
   #     - Privacy
-  #     - Software research
+      - Software research
   #         - Software assurance
   #         - Software performance
-  #         - Software testing
+          - Software testing
   #     - Usability and human factors
   #         - Accessibility
   #     - Video analytics

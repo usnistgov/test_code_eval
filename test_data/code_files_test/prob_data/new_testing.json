@@ -1,0 +1,14 @@
+{
+  "name": "Problem Inputs for Code Bank Pilot1 Smoke Test Problems",
+  "version": "0.9",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "testing_import_statement": "from genai_code_file import add",
+      "spec": "\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n",
+      "code_given": "\n\ndef add(x: int, y: int):\n    return x + 2*y\n",
+      "prompt_fixed": "Here is the specification for 00001_add  \n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n Here is the code for that trial, as well as other supporting code: \n\ndef add(x: int, y: int):\n    return x + 2*y\n Please write pytest test method that tests the correctness of the code, including a pytest test method testing the code for 00001_add"
+    }
+  ]
+}

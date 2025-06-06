@@ -1,0 +1,16 @@
+{
+  "name": "NIST Baseline Reference Submission, Smoke Test Problems, Fixed Track",
+  "version": "0.9",
+  "system": "nist_baseline_ref",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "prompt": "",
+      "primary_method_name": "add",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "prompt_number": "0"
+    }
+  ]
+}
+

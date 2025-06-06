@@ -1,0 +1,15 @@
+{
+  "name": "Problem Inputs for Code Bank Pilot1 Smoke Test Problems",
+  "version": "0.98",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "testing_import_statement": "from genai_code_file import add",
+      "primary_method_name": "add",
+      "specification": "def add(x: int, y: int) -> int:\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "prompt_fixed": "hello"
+    }
+  ]
+}
+

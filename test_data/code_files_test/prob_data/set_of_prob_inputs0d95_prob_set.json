@@ -1,0 +1,13 @@
+{
+  "name": "Problem Inputs for Code Bank Pilot1 Smoke Test Problems",
+  "version": "0.95",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x: int, y: int) -> int:\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "prompt_fixed": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef add(x: int, y: int) -> int:\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    }
+  ]
+}

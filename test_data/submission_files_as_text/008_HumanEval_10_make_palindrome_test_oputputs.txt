@@ -1,0 +1,25 @@
+Here's a pytest test method that tests the correctness of the `is_palindrome` function:
+
+```
+def test_is_palindrome():
+    assert is_palindrome('') == True
+    assert is_palindrome('racecar') == True
+    assert is_palindrome('hello') == False
+    assert is_palindrome('12321') == True
+```
+
+And here's a pytest test method that tests the correctness of the `make_palindrome` function:
+
+```
+def test_make_palindrome():
+    assert make_palindrome('') == ''
+    assert make_palindrome('cat') == 'catac'
+    assert make_palindrome('cata') == 'catac'
+    assert make_palindrome('a') == 'a'
+    assert make_palindrome('12321') == '12321'
+    assert make_palindrome('ab') == 'aba'
+    assert make_palindrome('aba') == 'aba'
+    assert make_palindrome('abac') == 'abacaba'
+```
+
+These test cases cover various scenarios to ensure that the functions are working correctly.

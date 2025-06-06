@@ -1,0 +1,22 @@
+{
+  "name": "Code Bank Pilot 1 Warmup Problems",
+  "version": "0.9",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "testing_import_statement": "from genai_code_file import add",
+      "source": "HumanEval",
+      "source_text": "HumanEval/53",
+      "lines_per_method": "",
+      "num_methods": "",
+      "imports_used": "",
+      "problemsuite_set": "",
+      "spec": "\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n",
+      "code_correct": "\n\ndef add(x: int, y: int):\n    return x + y\n",
+      "code_incorrect_1": "\n\ndef add(x: int, y: int):\n    return x + 2*y\n",
+      "baseline_ref_test_code": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "baseline_spec_test_code": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n"
+    }
+ ]
+}

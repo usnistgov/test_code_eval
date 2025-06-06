@@ -1,0 +1,16 @@
+{
+  "name": "Select Test Submissions 1",
+  "version": "1.0",
+  "system": "Test_Mix_1",
+  "code_files": [
+    {
+      "trial_id": "",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n"
+
+
+     }
+
+  ]
+}

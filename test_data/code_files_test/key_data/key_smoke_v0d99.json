@@ -1,0 +1,55 @@
+{
+  "name": "Key Inputs for Code Bank Pilot_Smoke Test Problems",
+  "version": "0.99",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "testing_import_statement": "from genai_code_file import add",
+      "source": "HumanEval",
+      "source_text": "HumanEval/53",
+      "category": "simple",
+      "primary_method_name": "add",
+      "specification": "def add(x: int, y: int) -> int:\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_correct": "def add(x: int, y: int) -> int:\n    if ((not isinstance(x, int)) or isinstance(x, bool)) or ((not isinstance(y, int)) or isinstance(y, bool)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "code_incorrect_1": "def add(x: int, y: int) -> int:\n    if ((not isinstance(x, int)) or isinstance(x, bool)) or ((not isinstance(y, int)) or isinstance(y, bool)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + 2*y\n",
+      "code_incorrect_t": "def add(x: int, y: int) -> int:\n    return x + y\n"
+    },
+    {
+      "trial_id": "00002_heap_queue_largest",
+      "testing_import_statement": "from genai_code_file import heap_queue_largest",
+      "source": "MBPP",
+      "source_text": "Benchmark Questions Verification V2.ipynb, 4",
+      "category": "simple",
+      "primary_method_name": "heap_queue_largest",
+      "specification": "from typing import Union\ndef heap_queue_largest(nums: list[Union(int, float)], n: int) ->  list[Union[int, float]]:\n    \"\"\"\n    Given a list of real numbers nums and a positive integer n, return the n largest numbers in list num\n    as a list of numbers in descending order. If nums is not a list of floats or n is not an integer,\n    raise a TypeError exception. If n is an integer less than 1 or greater than the length of nums, raise a ValueError exception.\n    \"\"\"\n",
+      "code_correct": "import heapq as hq\nfrom typing import Union\n\ndef heap_queue_largest(nums: list[Union[int, float]], n: int) -> list[Union[int, float]]:\n    if not isinstance(nums, list):\n         raise TypeError('Input nums must be a list of real numbers.')\n    if not all([(isinstance(i, (int, float)) and (not isinstance(i, bool))) for i in nums]):\n         raise TypeError('Input nums must be a list of real numbers.')\n    if not isinstance(n, int):\n        raise TypeError('Input n must be a positive integer.')\n    if n <= 0 or n > len(nums):\n        raise ValueError('Input n must be a positive integer shorter than the length of the list.')\n    largest_nums = hq.nlargest(n, nums)\n    return largest_nums\n\n",
+      "code_incorrect_1": "import heapq as hq\nfrom typing import Union\n\ndef heap_queue_largest(nums: list[Union[int, float]], n: int) -> list[Union[int, float]]:\n    if not isinstance(nums, list):\n         raise TypeError('Input nums must be a list of real numbers.')\n    if not all([(isinstance(i, (int, float)) and (not isinstance(i, bool))) for i in nums]):\n         raise TypeError('Input nums must be a list of real numbers.')\n    if not isinstance(n, int):\n        raise TypeError('Input n must be a positive integer.')\n    if n <= 0 or n > len(nums):\n        raise ValueError('Input n must be a positive integer shorter than the length of the list.')\n    largest_nums = hq.nlargest(n, nums[1:])\n    return largest_nums\n",
+      "code_incorrect_t": "import heapq as hq\nfrom typing import Union\n\ndef heap_queue_largest(nums: list[Union[int, float]], n: int) -> list[Union[int, float]]:\n  largest_nums = hq.nlargest(n, nums)\n  return largest_nums\n"
+    },
+    {
+      "trial_id": "00003_make_palindrome",
+      "testing_import_statement": "from genai_code_file import is_palindrome, make_palindrome",
+      "source": "HumanEval",
+      "source_text": "HumanEval/10",
+      "category": "extended",
+      "primary_method_name": "make_palindrome",
+      "specification": "def make_palindrome(st: str) -> str:\n    \"\"\"\n    Given a string st, return the shortest palindrome that begins with the supplied string str. A palindrome is a string\n    that reads the same when read backwards or forwards. If st is not a string, raise a TypeError exception.\n    \"\"\"\n",
+      "code_correct": "def is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\ndef make_palindrome(st: str) -> str:\n    if not isinstance(st, str):\n      raise TypeError('Input st must be a string.')\n    if not st:\n        return ''\n\n    beginning_of_suffix = 0\n\n    while not is_palindrome(st[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return st + st[:beginning_of_suffix][::-1]\n",
+      "code_incorrect_1": "def is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\ndef make_palindrome(st: str) -> str:\n    if not isinstance(st, str):\n      raise TypeError('Input st must be a string.')\n    if not st:\n        return ''\n\n    beginning_of_suffix = 1\n\n    while not is_palindrome(st[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return st + st[:beginning_of_suffix][::-1]\n",
+      "code_incorrect_t": "def is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\ndef make_palindrome(st: str) -> str:\n    if not st:\n        return ''\n\n    beginning_of_suffix = 0\n\n    while not is_palindrome(st[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return st + st[:beginning_of_suffix][::-1]\n"
+    },
+    {
+      "trial_id": "00004_unique",
+      "testing_import_statement": "from genai_code_file import unique",
+      "source": "HumanEval",
+      "source_text": "HumanEval/34",
+      "category": "simple",
+      "primary_method_name": "unique",
+      "specification": "from typing import Union\ndef unique(l: Union[list[Union[int, float]], list[str]]) -> Union[list[Union[int, float]], list[str]]:\n    \"\"\"\n    Given a list of elements l, return the unique elements of l as a list of elements in sorted (ascending) order.\n    l is a list of real numbers or l is a list of strings.\n    If l is not a list whose elements are either all real numbers or all strings, throw a TypeError exception.\n    \"\"\"",
+      "code_correct": "from typing import Union\n\ndef unique(l: Union[list[Union[int, float]], list[str]]) -> Union[list[Union[int, float]], list[str]]:\n    if not isinstance(l, list):\n      raise TypeError('Input l must be a list of elements that are all strings or all real numbers.')\n    if not (all([(isinstance(i, float) or isinstance(i, int)) for i in l]) or all([isinstance(i, str) for i in l])):\n      raise TypeError('Input l must be a list of elements that are all strings or all real numbers.')\n    return sorted(list(set(l)))\n",
+      "code_incorrect_1": "from typing import Union\nfrom collections import OrderedDict\n\ndef unique(l: Union[list[Union[int, float]], list[str]]) -> Union[list[Union[int, float]], list[str]]:\n    if not isinstance(l, list):\n      raise TypeError('Input l must be a list of elements that are all strings or all real numbers.')\n    if not (all([(isinstance(i, float) or isinstance(i, int)) for i in l]) or all([isinstance(i, str) for i in l])):\n      raise TypeError('Input l must be a list of elements that are all strings or all real numbers.')\n    return list(OrderedDict.fromkeys(l))\n",
+      "code_incorrect_t": "from typing import Union\n\ndef unique(l: Union[list[Union[int, float]], list[str]]) -> Union[list[Union[int, float]], list[str]]:\n    return sorted(list(set(l)))"
+    }
+  ]
+}

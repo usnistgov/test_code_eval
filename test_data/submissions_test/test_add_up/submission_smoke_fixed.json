@@ -1,0 +1,119 @@
+{
+  "name": "Test Add Submissions Fixed Track",
+  "version": "0.9",
+  "system": "add_up",
+  "code_list": [
+    {
+      "trial_id": "00001_add_regtestcorrect_noexc",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestcorrect_noexc",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00002_add_regtestincorrect_noexc",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestincorrect_noexc",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n    \ndef test_add_incorrect():\n    assert add(2, 3) == 4",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00003_add_regtestcorrect_correxc",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestcorrect_correxc",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n    \ndef test_type_error():\n    with pytest.raises(TypeError):\n        add(\"ab\", 5)\n        ",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00004_add_regtestincorrect_correxc",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestincorrect_correxc",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n    \ndef test_add_incorrect():\n    assert add(2, 3) == 4\n\ndef test_type_error():\n    with pytest.raises(TypeError):\n        add(\"ab\", 5)",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00005_add_regtestcorrect_incexc",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestcorrect_incexc",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n\ndef test_div_zero_error():\n    with pytest.raises(ZeroDivisionError):\n        add(5, 0)\n",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00006_add_regtestincorrect_incexc",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestincorrect_incexc",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n    \ndef test_add_incorrect():\n    assert add(2, 3) == 4\n\ndef test_div_zero_error():\n    with pytest.raises(ZeroDivisionError):\n        add(5, 0)",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00007_add_regtestcorrect_missexc",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestcorrect_missexc",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n    \ndef test_miss_type_error():\n    assert add(\"ab\", 5) == 3\n",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00008_add_regtestincorrect_missexc",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestincorrect_missexc",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n    \ndef test_add_incorrect():\n    assert add(2, 3) == 4\n    \ndef test_miss_type_error():\n    assert add(\"ab\", 5) == 3\n",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00009_add_regtestcorrect_correxc_sec",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestcorrect_correxc_sec",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n\n@pytest.mark.xfail(raises=TypeError)\ndef test_type_error():\n    add(\"ab\", 5)\n\n@pytest.mark.xfail(reason=\"add must take in integers\")\ndef test_type_error_reason():\n    add(12, 3.2)\n",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00010_add_regtestincorrect_correxc_sec",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestincorrect_correxc_sec",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\n@pytest.mark.xfail(raises=TypeError)\ndef test_type_error():\n    add(\"ab\", 5)\n\n@pytest.mark.xfail(reason=\"add must take in integers\")\ndef test_type_error_reason():\n    add(12, 3.2)\n\ndef test_add_incorrect():\n    assert add(2, 3) == 4\n",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00011_add_regtestcorrect_incexc_sec",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestcorrect_incexc_sec",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n\n@pytest.mark.xfail(raises=ZeroDivisionError)\ndef test_div_zero_error():\n    add(5, 0)\n",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00012_add_regtestincorrect_incexc_sec",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestincorrect_incexc_sec",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add_incorrect():\n    assert add(2, 3) == 4\n\n@pytest.mark.xfail(raises=ZeroDivisionError)\ndef test_div_zero_error():\n    add(5, 0)\n",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00013_add_regtestcorrect_incexc_th",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "primary_method_name": "add_regtestcorrect_incexc_th",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n\n@pytest.mark.xfail(raises=ZeroDivisionError)\ndef test_div_zero_error_type():\n    add('abc', 'def')\n",
+      "prompt_number": "0"
+    },
+    {
+      "trial_id": "00014_add_regtestcorrect_incexc_se",
+      "prompt": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\ndef test_add():\n    assert add(2, 3) == 5\n\n@pytest.mark.xfail(raise=ZeroDivisionError)\ndef test_div_zero_error_type():\n    add('abc', 'def')\n",
+      "prompt_number": "0",
+      "primary_method_name": "add_regtestcorrect_incexc_se"
+    }
+  ]
+}

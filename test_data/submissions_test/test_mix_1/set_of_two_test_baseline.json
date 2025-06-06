@@ -1,0 +1,31 @@
+{
+  "name": "NIST Baseline Two Test Code Submission Smoke Test Problems Fixed Track",
+  "version": "0.95",
+  "system": "nist_baseline_two_test_code",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "prompt_number": "0",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef add(x: int, y: int) -> int:\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "primary_method_name": "add",
+      "test_output": "from genai_code_file import add\nimport pytest\n\nclass TestCode(object):\n    def test_add(self):\n        assert add(2, 3) == 5\n        with pytest.raises(TypeError):\n            add(\"abc\", 5)\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\nclass TestCode(object):\n    def test_add(self):\n        assert add(2, 3) == 5\n        with pytest.raises(TypeError):\n            add(\"abc\", 5)\n"
+    },
+    {
+      "trial_id": "00001_add",
+      "prompt_number": "1",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef add(x: int, y: int) -> int:\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "primary_method_name": "add",
+      "test_output": "from genai_code_file import add\nimport pytest\n\nclass TestCode(object):\n    def test_add(self):\n        assert add(2, 3) == 5\n        with pytest.raises(TypeError):\n            add(\"abc\", 5)\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\nclass TestCode(object):\n    def test_add(self):\n        assert add(2, 3) == 5\n        with pytest.raises(TypeError):\n            add(\"abc\", 5)\n"
+    },
+    {
+      "trial_id": "00001_add",
+      "prompt_number": "9",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef add(x: int, y: int) -> int:\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "primary_method_name": "add",
+      "test_output": "from genai_code_file import add\nimport pytest\n\nclass TestCode(object):\n    def test_add(self):\n        assert add(2, 3) == 5\n        with pytest.raises(TypeError):\n            add(\"abc\", 5)\n",
+      "test_code": "from genai_code_file import add\nimport pytest\n\nclass TestCode(object):\n    def test_add(self):\n        assert add(2, 3) == 5\n        with pytest.raises(TypeError):\n            add(\"abc\", 5)\n"
+    }
+  ]
+}

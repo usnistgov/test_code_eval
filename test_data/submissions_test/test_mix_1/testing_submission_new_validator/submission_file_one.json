@@ -1,0 +1,96 @@
+{
+  "name": "NIST Baseline Spec Submission, Smoke Test Problems, Fixed Track",
+  "version": "0.95",
+  "system": "nist_baseline_spec",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "prompt_number": "0",
+      "primary_method_name": "add",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef add(x: int, y: int):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n"
+    },
+    {
+      "trial_id": "00001_add",
+      "prompt_number": "1",
+      "primary_method_name": "add",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef add(x: int, y: int):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n"
+    },
+    {
+      "trial_id": "00001_add",
+      "prompt_number": "4",
+       "primary_method_name": "add",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef add(x: int, y: int):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(0, 1) == 1\n        assert add(1, 0) == 1\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n\n        for i in range(100):\n            x, y = random.randint(0, 1000), random.randint(0, 1000)\n            assert add(x, y) == x + y\n\n",
+      "test_code": "from genai_code_file import add\nimport pytest\nimport random\n\nclass TestCode(object):\n\n    def test_add(self):\n        assert add(2, 3) == 5\n        assert add(5, 7) == 12\n        assert add(7, 5) == 12\n"
+    },
+    {
+      "trial_id": "00002_heap_queue_largest",
+      "prompt_number": "0",
+      "primary_method_name": "heap_queue_largest",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef heap_queue_largest(nums: list[float], n: int):\n    \"\"\"\n    Given a list of real numbers nums and a positive integer n, return the n largest numbers in list num\n    as a list of numbers in descending order. If nums is not a list of floats and n is not an integer,\n    raise a TypeError exception. If n is less than 1, raise a ValueError exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import heap_queue_largest\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert heap_queue_largest( [25, 35, 22, 85, 14, 65, 75, 22, 58],3)==[85, 75, 65]\n        assert heap_queue_largest( [25, 35, 22, 85, 14, 65, 75, 22, 58],2)==[85, 75]\n        assert heap_queue_largest( [25, 35, 22, 85, 14, 65, 75, 22, 58],5)==[85, 75, 65, 58, 35]",
+      "test_code": "from genai_code_file import heap_queue_largest\n\n\nclass TestCode(object):\n    def test_gc(self):\n        pass\n"
+    },
+     {
+      "trial_id": "00002_heap_queue_largest",
+      "prompt_number": "1",
+       "primary_method_name": "heap_queue_largest",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef heap_queue_largest(nums: list[float], n: int):\n    \"\"\"\n    Given a list of real numbers nums and a positive integer n, return the n largest numbers in list num\n    as a list of numbers in descending order. If nums is not a list of floats and n is not an integer,\n    raise a TypeError exception. If n is less than 1, raise a ValueError exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import heap_queue_largest\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert heap_queue_largest( [25, 35, 22, 85, 14, 65, 75, 22, 58],3)==[85, 75, 65]\n        assert heap_queue_largest( [25, 35, 22, 85, 14, 65, 75, 22, 58],2)==[85, 75]\n        assert heap_queue_largest( [25, 35, 22, 85, 14, 65, 75, 22, 58],5)==[85, 75, 65, 58, 35]",
+      "test_code": "from genai_code_file import heap_queue_largest\n\n\nclass TestCode(object):\n    def test_gc(self):\n        pass\n"
+    },
+    {
+      "trial_id": "00003_make_palindrome",
+      "prompt_number": "0",
+      "primary_method_name": "make_palindrome",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef make_palindrome(st: str):\n    \"\"\"\n    Given a string st, return the shortest palindrome that begins with the supplied string str. A palindrome is a string\n    that reads the same when read backwards or forwards. If st is not a string, raise\n    a TypeError exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import make_palindrome\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert make_palindrome('') == ''\n        assert make_palindrome('x') == 'x'\n        assert make_palindrome('xyz') == 'xyzyx'\n        assert make_palindrome('xyx') == 'xyx'\n        assert make_palindrome('jerry') == 'jerryrrej'\n",
+      "test_code": "from genai_code_file import make_palindrome\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert make_palindrome('') == ''\n        assert make_palindrome('cat') == 'catac'\n        assert make_palindrome('cata') == 'catac'\n"
+    },
+    {
+      "trial_id": "00003_make_palindrome",
+      "prompt_number": "7",
+      "primary_method_name": "make_palindrome",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef make_palindrome(st: str):\n    \"\"\"\n    Given a string st, return the shortest palindrome that begins with the supplied string str. A palindrome is a string\n    that reads the same when read backwards or forwards. If st is not a string, raise\n    a TypeError exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import make_palindrome\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert make_palindrome('') == ''\n        assert make_palindrome('x') == 'x'\n        assert make_palindrome('xyz') == 'xyzyx'\n        assert make_palindrome('xyx') == 'xyx'\n        assert make_palindrome('jerry') == 'jerryrrej'\n",
+      "test_code": "from genai_code_file import make_palindrome\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert make_palindrome('') == ''\n        assert make_palindrome('cat') == 'catac'\n        assert make_palindrome('cata') == 'catac'\n"
+    },
+    {
+      "trial_id": "00003_make_palindrome",
+      "prompt_number": "1",
+      "primary_method_name": "make_palindrome",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\ndef make_palindrome(st: str):\n    \"\"\"\n    Given a string st, return the shortest palindrome that begins with the supplied string str. A palindrome is a string\n    that reads the same when read backwards or forwards. If st is not a string, raise\n    a TypeError exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import make_palindrome\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert make_palindrome('') == ''\n        assert make_palindrome('x') == 'x'\n        assert make_palindrome('xyz') == 'xyzyx'\n        assert make_palindrome('xyx') == 'xyx'\n        assert make_palindrome('jerry') == 'jerryrrej'\n",
+      "test_code": "from genai_code_file import make_palindrome\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert make_palindrome('') == ''\n        assert make_palindrome('cat') == 'catac'\n        assert make_palindrome('cata') == 'catac'\n"
+    },
+    {
+      "trial_id": "00004_unique",
+      "prompt_number": "0",
+      "primary_method_name": "unique",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\nfrom typing import Union\ndef unique(l: list[Union[int, str, float]]):\n    \"\"\"\n    Given a list of elements l, return the unique elements of l as a list of elements in sorted (ascending) order. \n    If l is not a list whose elements are a combination of integers, strings and floats, throw a TypeError exception. \n    \"\"\"\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import unique\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert unique([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123]\n\n",
+      "test_code": "from genai_code_file import unique\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert unique([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123]\n"
+    },
+    {
+      "trial_id": "00004_unique",
+      "prompt_number": "9",
+      "primary_method_name": "unique",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\nfrom typing import Union\ndef unique(l: list[Union[int, str, float]]):\n    \"\"\"\n    Given a list of elements l, return the unique elements of l as a list of elements in sorted (ascending) order. \n    If l is not a list whose elements are a combination of integers, strings and floats, throw a TypeError exception. \n    \"\"\"\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import unique\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert unique([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123]\n\n",
+      "test_code": "from genai_code_file import unique\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert unique([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123]\n"
+    },
+    {
+      "trial_id": "00004_unique",
+      "prompt_number": "1",
+      "primary_method_name": "unique",
+      "prompt": "We are giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement:\n\nfrom typing import Union\ndef unique(l: list[Union[int, str, float]]):\n    \"\"\"\n    Given a list of elements l, return the unique elements of l as a list of elements in sorted (ascending) order. \n    If l is not a list whose elements are a combination of integers, strings and floats, throw a TypeError exception. \n    \"\"\"\n\nPlease write python test code that comprehensively tests the student's code for `` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after.",
+      "test_output": "from genai_code_file import unique\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert unique([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123]\n\n",
+      "test_code": "from genai_code_file import unique\n\n\nclass TestCode(object):\n    def test_gc(self):\n        assert unique([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123]\n"
+    }
+  ]
+}
+

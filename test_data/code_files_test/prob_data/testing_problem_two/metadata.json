@@ -1,0 +1,17 @@
+{
+  "name": "Code Bank Pilot1 Smoke Test Problems",
+  "version": "0.9",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00002_heap_queue_largest",
+      "testing_import_statement": "from genai_code_file import heap_queue_largest",
+      "source": "MBPP",
+      "source_text": "Benchmark Questions Verification V2.ipynb, 4",
+      "lines_per_method": "2",
+      "num_methods": "1",
+      "imports_used": "",
+      "category": "simple"
+    }
+  ]
+}

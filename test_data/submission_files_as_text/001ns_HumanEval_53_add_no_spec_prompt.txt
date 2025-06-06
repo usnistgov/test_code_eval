@@ -1,0 +1,13 @@
+Here is a method: add
+
+
+
+Here is the code for that method, add as well as other supporting code:
+
+
+
+def add(x: int, y: int):
+    return x + y
+
+
+Please write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add

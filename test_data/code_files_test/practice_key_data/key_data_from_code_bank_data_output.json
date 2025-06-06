@@ -1,0 +1,55 @@
+{
+  "name": "Key Inputs for Code Bank Pilot1 Smoke Test Problems",
+  "version": "0.9",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "testing_import_statement": "from genai_code_file import add",
+      "source": "HumanEval",
+      "source_text": "HumanEval/53",
+      "category": "simple",
+      "specification": "\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n",
+      "code_correct": "\n\ndef add(x: int, y: int):\n    return x + y\n",
+      "code_incorrect_1": "\n\ndef add(x: int, y: int):\n    return x + 2*y\n",
+      "code_incorrect_t": "This is empty",
+      "primary_method_name": "*"
+    },
+    {
+      "trial_id": "00002_heap_queue_largest",
+      "testing_import_statement": "from genai_code_file import heap_queue_largest",
+      "source": "MBPP",
+      "source_text": "Benchmark Questions Verification V2.ipynb, 4",
+      "category": "simple",
+      "specification": "Write a function to find the n largest integers from a given list of numbers, returned in descending order.",
+      "code_correct": "import heapq as hq\ndef heap_queue_largest(nums,n):\n  largest_nums = hq.nlargest(n, nums)\n  return largest_nums",
+      "code_incorrect_1": "import heapq as hq\ndef heap_queue_largest(nums,n):\n  largest_nums = hq.nlargest(n, nums[1:])\n  return largest_nums",
+      "code_incorrect_t": "This is empty",
+      "primary_method_name": "*"
+    },
+    {
+      "trial_id": "00003_make_palindrome",
+      "testing_import_statement": "from genai_code_file import is_palindrome, make_palindrome",
+      "source": "HumanEval",
+      "source_text": "HumanEval/10",
+      "category": "extended",
+      "specification": "\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n",
+      "code_correct": "def is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    if not string:\n        return ''\n\n    beginning_of_suffix = 0\n\n    while not is_palindrome(string[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return string + string[:beginning_of_suffix][::-1]\n",
+      "code_incorrect_1": "def is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    if not string:\n        return ''\n\n    beginning_of_suffix = 1\n\n    while not is_palindrome(string[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return string + string[:beginning_of_suffix][::-1]\n",
+      "code_incorrect_t": "This is empty",
+      "primary_method_name": "*"
+    },
+    {
+      "trial_id": "00004_unique",
+      "testing_import_statement": "from genai_code_file import unique",
+      "source": "HumanEval",
+      "source_text": "HumanEval/34",
+      "category": "simple",
+      "specification": "def unique(l: list):\n    \"\"\"Return sorted unique elements in a list\n    >>> unique([5, 3, 5, 2, 3, 3, 9, 0, 123])\n    [0, 2, 3, 5, 9, 123]\n    \"\"\"",
+      "code_correct": "def unique(l: list):\n    return sorted(list(set(l)))\n\n\n",
+      "code_incorrect_1": "def unique(l: list):\n    return list(set(l))\n\n\n",
+      "code_incorrect_t": "This is empty",
+      "primary_method_name": "*"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Code Bank Pilot1 Smoke Test Problems",
+  "version": "0.9",
+  "Evaluation_Version": "Pilot1",
+  "code_files": [
+    {
+      "trial_id": "00001_add",
+      "testing_import_statement": "from gen_ai_code_file import add",
+      "source": "HumanEval",
+      "source_text": "HumanEval/53",
+      "lines_per_method": "1",
+      "num_methods": "1",
+      "imports_used": "no",
+      "category": "simple"
+    }
+  ]
+}

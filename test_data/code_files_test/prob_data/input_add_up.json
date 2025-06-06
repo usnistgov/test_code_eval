@@ -1,0 +1,105 @@
+{
+  "name": "Adding Up Tests",
+  "version": "0.91",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00001_add_regtestcorrect_noexc",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00002_add_regtestincorrect_noexc",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00003_add_regtestcorrect_correxc",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00004_add_regtestincorrect_correxc",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00005_add_regtestcorrect_incexc",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00006_add_regtestincorrect_incexc",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00007_add_regtestcorrect_missexc",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00008_add_regtestincorrect_missexc",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00009_add_regtestcorrect_correxc_sec",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00010_add_regtestincorrect_correxc_sec",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00011_add_regtestcorrect_incexc_sec",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00012_add_regtestincorrect_incexc_sec",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00013_add_regtestcorrect_incexc_th",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    },
+    {
+      "trial_id": "00014_add_regtestcorrect_incexc_se",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "code_given": "def add(x, y):\n    if (not isinstance(x,int)) or (not isinstance(y, int)):\n        raise TypeError('Inputs x and y must both be integers.')\n    return x + y\n",
+      "prompt_fixed": "I am giving an assignment for my students in the class. The requirement is for them to write Python code that does the following.\n\nRequirement\n\ndef add(x, y):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n\n\nPlease write python test code that comprehensively tests the student's code for `add` to determine if the submitted code correctly meet the requirement or not. When writing tests, please write tests that can be tested with the python package pytest. Furthermore, when writing the python test code, please write '###|=-=-=beginning of tests=-=-=|' immediately before the test code that you provide. When the tests are finished, please write '###|=-=-=end of tests=-=-=|' immediately after."
+    }
+  ]
+}

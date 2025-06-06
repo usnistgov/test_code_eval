@@ -1,0 +1,17 @@
+{
+  "name": "Code Bank Pilot1 Smoke Test Problems",
+  "version": "0.9",
+  "Evaluation_Version": "Pilot1",
+  "code_files": [
+    {
+      "trial_id": "00003_make_palindrome",
+      "testing_import_statement": "from gen_ai_code_file import make_palindrome, is_palindrome",
+      "source": "HumanEval",
+      "source_text": "HumanEval/10",
+      "lines_per_method": "5",
+      "num_methods": "2",
+      "imports_used": "",
+      "category": "extended"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Problem Inputs for Code Bank Pilot1 Smoke Test Problems",
+  "version": "0.95",
+  "Evaluation_Version": "Pilot1",
+  "code_list": [
+    {
+      "trial_id": "00001_add",
+      "testing_import_statement": "from genai_code_file import add",
+      "specification": "def add(x: int, y: int):\n    \"\"\"\n    Given two integers x, and y, return the sum of x and y. If either x or y is not\n    an integer, raise a TypeError Exception.\n    \"\"\"\n",
+      "prompt_fixed": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add"
+    }
+  ]
+}

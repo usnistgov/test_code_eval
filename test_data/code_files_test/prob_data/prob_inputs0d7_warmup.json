@@ -1,0 +1,62 @@
+{
+  "name": "Problem Inputs for System Input",
+  "version": "0.7",
+  "code_files": [
+    {
+      "trial_id": "001_HumanEval_53_add",
+      "task_code_file_suffix": "add",
+      "spec": "\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n",
+      "code_correct": "\n\ndef add(x: int, y: int):\n    return x + y\n",
+      "prompt_fixed": "Here the specification for a method: add\n\n\n\ndef add(x: int, y: int):\n    \"\"\"Add two numbers x and y\n    >>> add(2, 3)\n    5\n    >>> add(5, 7)\n    12\n    \"\"\"\n\n\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add"
+    },
+    {
+      "trial_id": "001ns_HumanEval_53_add_no_spec",
+      "task_code_file_suffix": "add",
+      "spec": "",
+      "code_correct": "\n\ndef add(x: int, y: int):\n    return x + y\n",
+      "prompt_fixed": "Here is a method: add\n\n\n\nHere is the code for that method, add as well as other supporting code:\n\n\n\ndef add(x: int, y: int):\n    return x + y\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code add"
+    },
+    {
+      "trial_id": "005_Benchmark Questions Verification V2_4_heap_queue_largest",
+      "task_code_file_suffix": "heap_queue_largest",
+      "spec": "Write a function to find the n largest integers from a given list of numbers, returned in descending order.",
+      "code_correct": "import heapq as hq\ndef heap_queue_largest(nums,n):\n  largest_nums = hq.nlargest(n, nums)\n  return largest_nums",
+      "prompt_fixed": "Here the specification for a method: heap_queue_largest\n\nWrite a function to find the n largest integers from a given list of numbers, returned in descending order.\n\nHere is the code for that method, heap_queue_largest as well as other supporting code:\n\nimport heapq as hq\ndef heap_queue_largest(nums,n):\n  largest_nums = hq.nlargest(n, nums)\n  return largest_nums\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code heap_queue_largest"
+    },
+    {
+      "trial_id": "005ns_Benchmark Questions Verification V2_4_heap_queue_largest_no_spec",
+      "task_code_file_suffix": "heap_queue_largest",
+      "spec": "",
+      "code_correct": "import heapq as hq\ndef heap_queue_largest(nums,n):\n  largest_nums = hq.nlargest(n, nums)\n  return largest_nums",
+      "prompt_fixed": "Here is a method: heap_queue_largest\n\n\n\nHere is the code for that method, heap_queue_largest as well as other supporting code:\n\nimport heapq as hq\ndef heap_queue_largest(nums,n):\n  largest_nums = hq.nlargest(n, nums)\n  return largest_nums\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code heap_queue_largest"
+    },
+    {
+      "trial_id": "008_HumanEval_10_make_palindrome",
+      "task_code_file_suffix": "make_palindrome",
+      "spec": "\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n",
+      "code_correct": "def is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    if not string:\n        return ''\n\n    beginning_of_suffix = 0\n\n    while not is_palindrome(string[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return string + string[:beginning_of_suffix][::-1]\n",
+      "prompt_fixed": "Here the specification for a method: make_palindrome\n\n\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n\n\nHere is the code for that method, make_palindrome as well as other supporting code:\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    if not string:\n        return ''\n\n    beginning_of_suffix = 0\n\n    while not is_palindrome(string[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return string + string[:beginning_of_suffix][::-1]\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code make_palindrome"
+    },
+    {
+      "trial_id": "008ns_HumanEval_10_make_palindrome_no_spec",
+      "task_code_file_suffix": "make_palindrome",
+      "spec": "",
+      "code_correct": "def is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    if not string:\n        return ''\n\n    beginning_of_suffix = 0\n\n    while not is_palindrome(string[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return string + string[:beginning_of_suffix][::-1]\n",
+      "prompt_fixed": "Here is a method: make_palindrome\n\n\n\nHere is the code for that method, make_palindrome as well as other supporting code:\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    if not string:\n        return ''\n\n    beginning_of_suffix = 0\n\n    while not is_palindrome(string[beginning_of_suffix:]):\n        beginning_of_suffix += 1\n\n    return string + string[:beginning_of_suffix][::-1]\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code make_palindrome"
+    },
+    {
+      "trial_id": "021_HumanEval_34_unique",
+      "task_code_file_suffix": "unique",
+      "spec": "def unique(l: list):\n    \"\"\"Return sorted unique elements in a list\n    >>> unique([5, 3, 5, 2, 3, 3, 9, 0, 123])\n    [0, 2, 3, 5, 9, 123]\n    \"\"\"",
+      "code_correct": "def unique(l: list):\n    return sorted(list(set(l)))\n\n\n",
+      "prompt_fixed": "Here the specification for a method: unique\n\ndef unique(l: list):\n    \"\"\"Return sorted unique elements in a list\n    >>> unique([5, 3, 5, 2, 3, 3, 9, 0, 123])\n    [0, 2, 3, 5, 9, 123]\n    \"\"\"\n\nHere is the code for that method, unique as well as other supporting code:\n\ndef unique(l: list):\n    return sorted(list(set(l)))\n\n\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code unique"
+    },
+    {
+      "trial_id": "021ns_HumanEval_34_unique_no_spec",
+      "task_code_file_suffix": "unique",
+      "spec": "",
+      "code_correct": "def unique(l: list):\n    return sorted(list(set(l)))\n\n\n",
+      "prompt_fixed": "Here is a method: unique\n\n\n\nHere is the code for that method, unique as well as other supporting code:\n\ndef unique(l: list):\n    return sorted(list(set(l)))\n\n\n\n\nPlease write pytest test method that tests the correctness of the code,  including a pytest test method testing the code unique"
+    }
+  ]
+}

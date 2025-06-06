@@ -1,152 +1,203 @@
-# NIST Open-Source Software Repository Template
+# README.md
 
-Use of GitHub by NIST employees for government work is subject to
-the [Rules of Behavior for GitHub][gh-rob]. This is the
-recommended template for NIST employees, since it contains
-required files with approved text. For details, please consult
-the Office of Data & Informatics' [Quickstart Guide to GitHub at
-NIST][gh-odi].
+This describes the repository "test_code_eval", which is a pilot experiment to
+test if AI-Generated Code can be used to help test software. This experiment
+also doubles as an infrastructure.
 
-Please click on the green **Use this template** button above to
-create a new repository under the [usnistgov][gh-nst]
-organization for your own open-source work. Please do not "fork"
-the repository directly, and do not create the templated
-repository under your individual account.
+This code contains the genai_code_test package. Full documentation of the `genai_code_test` package is on
+the [genai_code_test gitlab pages](https://genai_code.ipages.nist.gov/test_code_eval/).
 
-The key files contained in this repository -- which will also
-appear in templated copies -- are listed below, with some things
-to know about each.
+The test cases include some sample data that can be used to explore this package. However, this repository only 
+stores the software code and does not store the data.
 
----
+## Contact
 
-## README
+For specific software questions, please contace Peter Fontana <peter.fontana@nist.gov>. For questions
+related to the NIST Generative AI (GenAI) Program, please contact <genai_poc@nist.gov>
 
-Each repository will contain a plain-text [README file][wk-rdm],
-preferably formatted using [GitHub-flavored Markdown][gh-mdn] and
-named `README.md` (this file) or `README`.
+## Contributors
 
-Per the [GitHub ROB][gh-rob] and [NIST Suborder 1801.02][nist-s-1801-02],
-your README should contain:
+The contributors to this code repository are:
 
-1. Software or Data description
-   - Statements of purpose and maturity
-   - Description of the repository contents
-   - Technical installation instructions, including operating
-     system or software dependencies
-1. Contact information
-   - PI name, NIST OU, Division, and Group names
-   - Contact email address at NIST
-   - Details of mailing lists, chatrooms, and discussion forums,
-     where applicable
-1. Related Material
-   - URL for associated project on the NIST website or other Department
-     of Commerce page, if available
-   - References to user guides if stored outside of GitHub
-1. Directions on appropriate citation with example text
-1. References to any included non-public domain software modules,
-   and additional license language if needed, *e.g.* [BSD][li-bsd],
-   [GPL][li-gpl], or [MIT][li-mit]
+* Peter Fontana <peter.fontana@nist.gov>
+* Sonika Sharma <sonika.sharma@nist.gov>
 
-The more detailed your README, the more likely our colleagues
-around the world are to find it through a Web search. For general
-advice on writing a helpful README, please review
-[*Making Readmes Readable*][18f-guide] from 18F and Cornell's
-[*Guide to Writing README-style Metadata*][cornell-meta].
+## Environment Variables and Configuration
 
-## LICENSE
+The majority of configurations will be provided in a `.ini` file. The typical default file,
+`config.ini` is provided as an example. `config_ci.ini` is a special configuration file used for Continuous 
+Integration (CI) purposes.
 
-Each repository will contain a plain-text file named `LICENSE.md`
-or `LICENSE` that is phrased in compliance with the Public Access
-to NIST Research [*Copyright, Fair Use, and Licensing Statement
-for SRD, Data, and Software*][nist-open], which provides
-up-to-date official language for each category in a blue box.
+Additionally, this program uses one environment variables for convenience:
 
-- The version of [LICENSE.md](LICENSE.md) included in this
-  repository is approved for use.
-- Updated language on the [Licensing Statement][nist-open] page
-  supersedes the copy in this repository. You may transcribe the
-  language from the appropriate "blue box" on that page into your
-  README.
+```bash
+GENAI_CODE_CONFIG_PATH
+```
 
-If your repository includes any software or data that is licensed
-by a third party, create a separate file for third-party licenses
-(`THIRD_PARTY_LICENSES.md` is recommended) and include copyright
-and licensing statements in compliance with the conditions of
-those licenses.
+`GENAI_CODE_CONFIG_PATH` is the absolute path to the default config file, which may be 
+the `config.ini` file. Within the configuration file, is the variable `repo_dir`, which provides the absolute path 
+to this repository directory.
 
-## CODEOWNERS
+Additionally, for convenience, we store the root path to this repository in the environment variable
 
-This template repository includes a file named
-[CODEOWNERS](CODEOWNERS), which visitors can view to discover
-which GitHub users are "in charge" of the repository. More
-crucially, GitHub uses it to assign reviewers on pull requests.
-GitHub documents the file (and how to write one) [here][gh-cdo].
+```bash
+GENAI_CODE_REPO_DIR
+```
 
-***Please update that file*** to point to your own account or
-team, so that the [Open-Source Team][gh-ost] doesn't get spammed
-with spurious review requests. *Thanks!*
+## Code Installation
 
-## CODEMETA
+The code is tested on python 3.12.6 and is pip installable with:
 
-Project metadata is captured in `CODEMETA.yaml`, used by the NIST
-Software Portal to sort your work under the appropriate thematic
-homepage. ***Please update this file*** with the appropriate
-"theme" and "category" for your code/data/software. The Tier 1
-themes are:
+```bash
+pip install .
+```
 
-- [Advanced communications](https://www.nist.gov/advanced-communications)
-- [Bioscience](https://www.nist.gov/bioscience)
-- [Buildings and Construction](https://www.nist.gov/buildings-construction)
-- [Chemistry](https://www.nist.gov/chemistry)
-- [Electronics](https://www.nist.gov/electronics)
-- [Energy](https://www.nist.gov/energy)
-- [Environment](https://www.nist.gov/environment)
-- [Fire](https://www.nist.gov/fire)
-- [Forensic Science](https://www.nist.gov/forensic-science)
-- [Health](https://www.nist.gov/health)
-- [Information Technology](https://www.nist.gov/information-technology)
-- [Infrastructure](https://www.nist.gov/infrastructure)
-- [Manufacturing](https://www.nist.gov/manufacturing)
-- [Materials](https://www.nist.gov/materials)
-- [Mathematics and Statistics](https://www.nist.gov/mathematics-statistics)
-- [Metrology](https://www.nist.gov/metrology)
-- [Nanotechnology](https://www.nist.gov/nanotechnology)
-- [Neutron research](https://www.nist.gov/neutron-research)
-- [Performance excellence](https://www.nist.gov/performance-excellence)
-- [Physics](https://www.nist.gov/physics)
-- [Public safety](https://www.nist.gov/public-safety)
-- [Resilience](https://www.nist.gov/resilience)
-- [Standards](https://www.nist.gov/standards)
-- [Transportation](https://www.nist.gov/transportation)
+or can be installed in editable mode with:
 
----
+```bash
+pip install -e .
+```
 
-[usnistgov/opensource-repo][gh-osr] is developed and maintained
-by the [opensource-team][gh-ost], principally:
+The package installed is named `genai_code_test`. The package can be uninstalled with:
 
-- Gretchen Greene, @GRG2
-- Yannick Congo, @faical-yannick-congo
-- Trevor Keller, @tkphd
+```bash
+pip uninstall genai_code_test
+```
 
-Please reach out with questions and comments.
+or uninstalled if installed in editable mode with:
 
-<!-- References -->
+```bash
+rm -r genai_code_test.egg-info
+pip uninstall genai_code_test
+````
 
-[18f-guide]: https://github.com/18F/open-source-guide/blob/18f-pages/pages/making-readmes-readable.md
-[cornell-meta]: https://data.research.cornell.edu/content/readme
-[gh-cdo]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
-[gh-mdn]: https://github.github.com/gfm/
-[gh-nst]: https://github.com/usnistgov
-[gh-odi]: https://odiwiki.nist.gov/ODI/GitHub.html
-[gh-osr]: https://github.com/usnistgov/opensource-repo/
-[gh-ost]: https://github.com/orgs/usnistgov/teams/opensource-team
-[gh-rob]: https://odiwiki.nist.gov/pub/ODI/GitHub/GHROB.pdf
-[gh-tpl]: https://github.com/usnistgov/carpentries-development/discussions/3
-[li-bsd]: https://opensource.org/licenses/bsd-license
-[li-gpl]: https://opensource.org/licenses/gpl-license
-[li-mit]: https://opensource.org/licenses/mit-license
-[nist-code]: https://code.nist.gov
-[nist-disclaimer]: https://www.nist.gov/open/license
-[nist-s-1801-02]: https://inet.nist.gov/adlp/directives/review-data-intended-publication
-[nist-open]: https://www.nist.gov/open/license#software
-[wk-rdm]: https://en.wikipedia.org/wiki/README
+
+## Organizational Structure
+
+The organization structure of folders is here. There is also this README.md, and a CHANGELOG.md.
+
+    test_code_eval (<root directory of repository referred to as $GENAI_CODE_REPO_DIR in this README.md>)
+        - docs (pre-built documentation)
+        - genai_code_test (root code director for python code for genai code experiment and evaluation)
+            - baseline_system_creation (scripts to create human-generated baseline submissions from
+              code bank files)
+            - evaluation_environment (directory with scorer and validator)
+                - evaluate_submission.py (the scorer)
+                - validate_submission.py (the validator)
+            - utils (utility scripts helpful for ease of working with json submissions and creating data files.
+              Relevant scripts include)
+                - create_code_files_from_json_input.py (Takes a validly-formatted json submission and converts
+                  it to a folder of folders and files to allow for human-readable viewing of the code strings
+                  as files)
+                - create_json_files_from_code_files.py (Takes a folder of folders and files and converts to a 
+                  json submission. Useful to use when one converted a json using the 
+                  create_code_files_from_json_input.py script to folders and then modified the files in that folder.
+                  This allows one to convert it back to a json.)
+                - extract_test_code_from_test_output.json (The tool we used to extract validly formatted test_code
+                  from LLM outpus. This converts LLM output when LLMs followed our prompt instructions but this script
+                  will not handle arbitrary LLM output.)
+        - test_data (directory with test data for test cases)
+        - test_working_space (working directory where test cases create temporary working files and produce
+          output files)
+        - tests (location of test suite code)
+
+For an example submission, look at the file 
+[test_data/submissions_test/test_smoke_various/test1_v0d99_smoke.json](test_data/submissions_test/test_smoke_various/test1_v0d99_smoke.json)
+
+
+ ## Running the Scorer and Validator
+The scripts `evaluate_submission.py` and `validate_submission.py` are command-line scripts and their help menu
+can be accessed with
+
+```bash
+python evaluate_submission.py -h
+```
+
+and 
+
+```bash
+python validate_submission.py -h
+```
+
+If you are in teh directory `$GENAI_CODE_REPO_DIR/genai_code_test/evaluation_environment`, the script to validate the
+example test submission is
+
+```bash
+python validate_submission.py -i $GENAI_CODE_REPO_DIR/test_data/code_files_test/prob_data/input_smoke_v1d00.json -o $GENAI_CODE_REPO_DIR/scratch_output/evaluation -w $GENAI_CODE_REPO_DIR/scratch_working_space -s $GENAI_CODE_REPO_DIR/test_data/submissions_test/test_smoke_various/test1_v0d99_smoke.json -v```
+```
+
+and the script to score the test submission is:
+
+```bash
+python evaluate_submission.py -k $GENAI_CODE_REPO_DIR/test_data/code_files_test/key_data/key_smoke_v1d00.json -o $GENAI_CODE_REPO_DIR/scratch_output/evaluation -w $GENAI_CODE_REPO_DIR/scratch_working_space -s $GENAI_CODE_REPO_DIR/test_data/submissions_test/test_smoke_various/test1_v0d99_smoke.json
+```
+
+In both of these scripts, we provide a working directory with `-w <working_dir_path>` where the code can both
+write temporary files and delete any files in those directories. We also specified the output with `-o output_dir_path`
+
+**Both `validate_submission.py` and `evaluate_submission.py` may remove all files in the working directory specified by 
+`-w <working_dir_path>`.  Please provide `-w` with an *empty* directory where the code can create and delete files.**
+
+
+## Running Continuous Integration Components Locally
+
+The Continuous Integration (CI) runs the test suite, generates rendered API documentation, and also checks the code for
+formatting using a lint code tool. These components can all be run locally, and instructions
+are below.
+
+### Testing
+
+We have a test suite with the `pytest` package and code coverage with `coverage`. This requires the package `coverage` 
+and `pytest`, both of which can be installed with `pip`.
+
+The following command runs all the unit tests and outputs code coverage into `htmlcov/index.html`
+
+```bash
+coverage run --branch --source=./genai_code_test -m pytest -s tests/ -v
+coverage report -m
+coverage html
+```
+
+**When running the tests, there is a fixture defined in `/tests/conftest.py` that removes all of the files in `test_working_space/temp_working_space`
+and `test_working_space/temp_output`**
+
+### Code Formatting
+
+The CI uses `flake8` to check for the code formatting with the command
+
+```bash
+flake8 --extend-ignore=E712,E402 genai_code_test tests --max-line-length=120 --exclude=docs,./.* 
+```
+
+For automatic styling, we will use the `autopep8` package. To style the code, use
+
+```bash
+autopep8  --max-line-length 120 --aggressive --aggressive  --ignore E226,E24,W50,W690,E712,E402 -r genai_code_test tests --in-place
+```
+
+If you wish to see what the changes are without making them use the `--diff` option with
+
+```bash
+autopep8  --max-line-length 120 --aggressive --aggressive  --ignore E226,E24,W50,W690,E712,E402 -r genai_code_test tests --diff
+```
+
+### Documentation
+
+To build the documentation with `sphinx` and `autodoc`, run
+
+```bash
+# A Pip installation may be necessary to generate the docs. Install the package with:
+# pip install -U -e .
+sphinx-apidoc -fMeT -o docs/api genai_code_test
+sphinx-build -av --color -b html docs docs/_build
+```
+
+to generate the docs. The pip install command is needed for sphinx to recognize the `genai_code_test` module.
+
+(If you wish to document what is installed by pip, use the commented line to upgrade PIP)
+
+See the [Sphinx Installation Documentation](https://www.sphinx-doc.org/en/master/usage/installation.html) 
+for more information on how to install Sphinx. You will also need the `m2r` package which is a requirement of this  
+package.
+
+We are using Sphinx 7.
