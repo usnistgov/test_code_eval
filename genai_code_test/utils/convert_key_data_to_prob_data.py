@@ -17,16 +17,15 @@ def making_fixed_prompt(specification, primary_method_name):
     Returns: (str) A string of the fixed prompt constructed.
 
     """
-    intro_string = ("We are giving an assignment for our students in the class. "
-                    "The requirement is for each student to write Python code that meets the following "
+    intro_string = ("We have python code that implements the following "
                     "specification.\n\nSpecification:")
 
     spec_string = f"\n\n{specification}\n\n"
     code_string = ""
     instruction_string = (
         f"Please write python pytest test code that comprehensively "
-        f"tests each student's code for {primary_method_name} "
-        f"to determine if the submitted code satisfies the specification or not. When writing tests:\n"
+        f"tests the code for method {primary_method_name} "
+        f"to determine if the code satisfies the specification or not. When writing tests:\n"
         f"* write a comprehensive test suite,\n"
         f"* test edge cases,\n"
         f"* only generate correct tests, and\n"

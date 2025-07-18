@@ -1,26 +1,29 @@
 # README.md
 
-This describes the repository "test_code_eval", which is a pilot experiment to
-test if AI-Generated Code can be used to help test software. This experiment
-also doubles as an infrastructure.
+This repository "test_code_eval", contains software to
+test if AI-Generated Code can be used to help test software. This software is also the
+scoring and validation code for the NIST GenAI Code Pilot Evaluation. 
+Although the test cases include some sample data that can be used to explore this package, the 
+NIST GenAI Code Pilot Evaluation Data is not in this repository.
 
-This code contains the genai_code_test package. Full documentation of the `genai_code_test` package is on
+This code contains the genai_code_test package. 
+
+Full documentation of the `genai_code_test` package is on
 the [genai_code_test gitlab pages](https://genai_code.ipages.nist.gov/test_code_eval/).
 
-The test cases include some sample data that can be used to explore this package. However, this repository only 
-stores the software code and does not store the data.
 
 ## Contact
 
-For specific software questions, please contace Peter Fontana <peter.fontana@nist.gov>. For questions
+For specific software questions, please contact Sonika Sharma <sonika.sharma@nist.gov> or Peter Fontana <peter.fontana@nist.gov>. For questions
 related to the NIST Generative AI (GenAI) Program, please contact <genai_poc@nist.gov>
 
 ## Contributors
 
 The contributors to this code repository are:
 
-* Peter Fontana <peter.fontana@nist.gov>
 * Sonika Sharma <sonika.sharma@nist.gov>
+* Peter Fontana <peter.fontana@nist.gov>
+
 
 ## Environment Variables and Configuration
 
@@ -46,7 +49,7 @@ GENAI_CODE_REPO_DIR
 
 ## Code Installation
 
-The code is tested on python 3.12.6 and is pip installable with:
+The code is tested on python 3.12.6 and 3.12.8 and is pip installable with:
 
 ```bash
 pip install .
@@ -119,17 +122,25 @@ and
 python validate_submission.py -h
 ```
 
-If you are in teh directory `$GENAI_CODE_REPO_DIR/genai_code_test/evaluation_environment`, the script to validate the
+If you are in the directory `$GENAI_CODE_REPO_DIR/genai_code_test/evaluation_environment`, the script to validate the
 example test submission is
 
 ```bash
-python validate_submission.py -i $GENAI_CODE_REPO_DIR/test_data/code_files_test/prob_data/input_smoke_v1d00.json -o $GENAI_CODE_REPO_DIR/scratch_output/evaluation -w $GENAI_CODE_REPO_DIR/scratch_working_space -s $GENAI_CODE_REPO_DIR/test_data/submissions_test/test_smoke_various/test1_v0d99_smoke.json -v```
+
+# Create output directory
+mkdir -p $GENAI_CODE_REPO_DIR/test_code_eval/scratch_working_space 
+
+# Switch to test eval environment directory
+cd $GENAI_CODE_REPO_DIR/genai_code_test/evaluation_environment
+
+# Run validation
+python validate_submission.py -i $GENAI_CODE_REPO_DIR/test_data/code_files_test/prob_data/input_smoke_v1d00.json -o $GENAI_CODE_REPO_DIR/scratch_output/evaluation -w $GENAI_CODE_REPO_DIR/scratch_working_space -s $GENAI_CODE_REPO_DIR/test_data/submissions_test/test_smoke_various/test1_smoke.json -v```
 ```
 
 and the script to score the test submission is:
 
 ```bash
-python evaluate_submission.py -k $GENAI_CODE_REPO_DIR/test_data/code_files_test/key_data/key_smoke_v1d00.json -o $GENAI_CODE_REPO_DIR/scratch_output/evaluation -w $GENAI_CODE_REPO_DIR/scratch_working_space -s $GENAI_CODE_REPO_DIR/test_data/submissions_test/test_smoke_various/test1_v0d99_smoke.json
+python evaluate_submission.py -k $GENAI_CODE_REPO_DIR/test_data/code_files_test/key_data/key_smoke_v1d00.json -o $GENAI_CODE_REPO_DIR/scratch_output/evaluation -w $GENAI_CODE_REPO_DIR/scratch_working_space -s $GENAI_CODE_REPO_DIR/test_data/submissions_test/test_smoke_various/test1_smoke.json
 ```
 
 In both of these scripts, we provide a working directory with `-w <working_dir_path>` where the code can both
@@ -139,10 +150,10 @@ write temporary files and delete any files in those directories. We also specifi
 `-w <working_dir_path>`.  Please provide `-w` with an *empty* directory where the code can create and delete files.**
 
 
-## Running Continuous Integration Components Locally
+## Running Testing and Styling Components Locally
 
-The Continuous Integration (CI) runs the test suite, generates rendered API documentation, and also checks the code for
-formatting using a lint code tool. These components can all be run locally, and instructions
+The test suite, generation of rendered API documentation, and code checking for
+formatting using a lint code tool can all be run locally. Instructions
 are below.
 
 ### Testing

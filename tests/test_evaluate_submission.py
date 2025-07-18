@@ -64,6 +64,7 @@ class TestSubmissionMix1(object):
             submission_json_filepath=submission_json_filepath,
             temp_test_dir=temp_working_dir,
             output_dir=output_dir,
+            system_name="",
             verbose=verbose,
         )
         sys_scores2 = pd.read_csv(sys_scores_fp)
@@ -108,7 +109,8 @@ class TestSubmissionMix1(object):
             submission_json_filepath=submission_json_filepath,
             temp_test_dir=temp_working_dir,
             output_dir=output_dir,
-            verbose=verbose,
+            system_name="",
+            verbose=verbose
         )
         sys_scores3 = pd.read_csv(sys_scores_fp)
         return sys_scores3
@@ -152,7 +154,8 @@ class TestSubmissionMix1(object):
             submission_json_filepath=submission_json_filepath,
             temp_test_dir=temp_working_dir,
             output_dir=output_dir,
-            verbose=verbose,
+            system_name="",
+            verbose=verbose
         )
         sys_scores4 = pd.read_csv(sys_scores_fp)
         return sys_scores4
@@ -246,7 +249,8 @@ class TestAddsUp(object):
             submission_json_filepath=submission_json_filepath,
             temp_test_dir=temp_working_dir,
             output_dir=output_dir,
-            verbose=verbose,
+            system_name="",
+            verbose=verbose
         )
         sys_scores = pd.read_csv(sys_scores_fp)
         return sys_scores
@@ -295,7 +299,8 @@ class TestAddsUpErr(object):
             submission_json_filepath=submission_json_filepath,
             temp_test_dir=temp_working_dir,
             output_dir=output_dir,
-            verbose=verbose,
+            system_name="",
+            verbose=verbose
         )
         sys_scores = pd.read_csv(sys_scores_fp)
         return sys_scores
@@ -336,10 +341,47 @@ class TestSmokeExamples():
             submission_json_filepath=submission_json_filepath,
             temp_test_dir=temp_working_dir,
             output_dir=output_dir,
+            system_name="",
             verbose=verbose,
         )
         sys_scores = pd.read_csv(sys_scores_fp)
         return sys_scores
+
+    @pytest.fixture
+    def score_test_smoke_1_v2(self, setup_and_teardown):
+        config = setup_and_teardown
+        config_mode = "Test"
+
+        root_data_dir = config[config_mode]["root_data_dir"]
+        root_submissions_dir = config[config_mode]["root_submissions_dir"]
+        root_working_dir = config[config_mode]["root_working_dir"]
+        root_output_dir = config[config_mode]["root_output_dir"]
+
+        key_data_subdir = config[config_mode]["key_data_subdir"]
+        key_data_dir = os.path.join(root_data_dir, key_data_subdir)
+        key_json_filepath = os.path.join(key_data_dir, "key_smoke_v1d00.json")
+        submissions_dir = root_submissions_dir
+        submission_json_filepath = os.path.join(submissions_dir, "test_smoke_various", "test1_smoke.json")
+        temp_working_dir = os.path.join(root_working_dir)
+        eval_output_subdir = config[config_mode]["eval_output_subdir"]
+        output_dir = os.path.join(root_output_dir, eval_output_subdir)
+
+        verbose = True
+        # Fix the datetime information to an arbitrary date so we always look into the same directory
+        str_current_datetime = "2025-06-11-T05-05-05"
+        sys_scores_fp = os.path.join(output_dir, "2025-06-11-T05-05-05-outputs/57/57_scores.csv")
+        genai_code_test.evaluation_environment.evaluate_submission.evaluate_code_submission(
+            str_current_datetime=str_current_datetime,
+            key_json_filepath=key_json_filepath,
+            submission_json_filepath=submission_json_filepath,
+            temp_test_dir=temp_working_dir,
+            output_dir=output_dir,
+            system_name="57",
+            verbose=verbose,
+        )
+        sys_scores = pd.read_csv(sys_scores_fp)
+        sys_metrics = pd.read_csv(os.path.join(output_dir, "2025-06-11-T05-05-05-outputs/57/57_mean_metrics.csv"))
+        return sys_scores, sys_metrics
 
     def test_smoke_1_scorer(self, setup_and_teardown, score_test_smoke_1):
         # config = setup_and_teardown
@@ -370,3 +412,45 @@ class TestSmokeExamples():
         assert score.loc[(score.trial_id == "00004_unique") &
                          (score.prompt_number == 1), ["correct_tests", "finds_error_in_incorrect_1",
                          "finds_error_in_incorrect_t"]].iloc[0].tolist() == [1, 0, 0]
+
+    def test_smoke_1_scorer_v2(self, setup_and_teardown, score_test_smoke_1_v2):
+        # config = setup_and_teardown
+        score, metric = score_test_smoke_1_v2
+        # Complete this test
+        assert (score.loc[(score.trial_id == "00001_add") & (score.prompt_number == 0), ["correct_tests",
+                "finds_error_in_incorrect_1", "finds_error_in_incorrect_t"]].iloc[0].tolist() == [0, 1, 1])
+        assert (score.loc[(score.trial_id == "00001_add") & (score.prompt_number == 1), ["correct_tests",
+                "finds_error_in_incorrect_1", "finds_error_in_incorrect_t"]].iloc[0].tolist() == [1, 1, 1])
+        assert (score.loc[(score.trial_id == "00002_heap_queue_largest") & (score.prompt_number == 0),
+                ["correct_tests", "finds_error_in_incorrect_1", "finds_error_in_incorrect_t"]].iloc[0].tolist()
+                == [-1, -1, -1])
+        # Idea: the lack of "import pytest" raises a NameError. This missing import should flag a -1 error, not
+        # a failure
+        # For the incorrect case, a failure is detected before the import error is detected
+        assert score.loc[(score.trial_id == "00002_heap_queue_largest") &
+                         (score.prompt_number == 1), ["correct_tests", "finds_error_in_incorrect_1",
+                         "finds_error_in_incorrect_t"]].iloc[0].tolist() == [-1, 1, -1]
+        assert score.loc[(score.trial_id == "00003_make_palindrome") &
+                         (score.prompt_number == 0), ["correct_tests", "finds_error_in_incorrect_1",
+                         "finds_error_in_incorrect_t"]].iloc[0].tolist() == [0, 1, 1]
+        assert score.loc[(score.trial_id == "00003_make_palindrome") &
+                         (score.prompt_number == 1), ["correct_tests", "finds_error_in_incorrect_1",
+                         "finds_error_in_incorrect_t"]].iloc[0].tolist() == [-1, -1, -1]
+        assert score.loc[(score.trial_id == "00004_unique") &
+                         (score.prompt_number == 0), ["correct_tests", "finds_error_in_incorrect_1",
+                         "finds_error_in_incorrect_t"]].iloc[0].tolist() == [0, 1, -1]
+        assert score.loc[(score.trial_id == "00004_unique") &
+                         (score.prompt_number == 1), ["correct_tests", "finds_error_in_incorrect_1",
+                         "finds_error_in_incorrect_t"]].iloc[0].tolist() == [1, 0, 0]
+        # Test the system field for the score data frame
+        assert pd.unique(score['system']).tolist() == [57]
+        # Test the mean metrics data frane
+        assert pd.unique(metric['system']).tolist() == [57]
+        assert (metric.loc[metric.prompt_number == 0, ["correct_tests", "finds_cit_error",
+                                                       "finds_ci1_and_cit_errors", "finds_cit_error",
+                                                       "full_coverage_and_finds_all_errors"]].iloc[0].tolist() == [
+            0, 0, 0, 0, 0])
+        assert (metric.loc[metric.prompt_number == 1, ["correct_tests", "finds_ci1_error",
+                                                       "finds_ci1_and_cit_errors", "finds_cit_error",
+                                                       "full_coverage_and_finds_all_errors"]].iloc[0].tolist() == [
+            50.0, 25.0, 25.0, 25.0, 25.0])

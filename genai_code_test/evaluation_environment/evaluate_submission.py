@@ -20,6 +20,60 @@ from genai_code_test.evaluation_environment.validate_submission import (
 )
 
 
+def mean_metrics_dataframe(dataframe, subm_system_name):
+
+    final = []
+    group_df = dataframe.groupby('prompt_number')
+
+    for prompt_num, group_prompt_num in group_df:
+        total_problems = len(group_prompt_num['trial_id'])
+
+        # getting information
+        for_perc_tc_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1)]
+
+        for_perc_tc_fi1_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1) &
+                                                 (group_prompt_num['finds_error_in_incorrect_1'] == 1)]
+
+        for_perc_tc_fi1_fit_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1) &
+                                                     (group_prompt_num['finds_error_in_incorrect_1'] == 1) &
+                                                     (group_prompt_num['finds_error_in_incorrect_t'] == 1)]
+
+        for_perc_tc_fit_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1) &
+                                                 (group_prompt_num['finds_error_in_incorrect_t'] == 1)]
+
+        code_coverage_100 = group_prompt_num[(group_prompt_num['correct_tests'] == 1) &
+                                             (group_prompt_num['finds_error_in_incorrect_1'] == 1) &
+                                             (group_prompt_num['finds_error_in_incorrect_t'] == 1) &
+                                             (group_prompt_num['code_coverage'] == 100)]
+
+        average_code_coverage = [value for value in group_prompt_num['code_coverage'] if pd.notnull(value)]
+
+        # computing values
+        perc_tc = (len(for_perc_tc_value) / total_problems) * 100
+        perc_tc_fi1 = (len(for_perc_tc_fi1_value) / total_problems) * 100
+        perc_tc_fi1_fit = (len(for_perc_tc_fi1_fit_value) / total_problems) * 100
+        perc_tc_fit = (len(for_perc_tc_fit_value) / total_problems) * 100
+        perc_tc_fi1_fit_hcov = (len(code_coverage_100) / total_problems) * 100
+        mean_coverage = (sum(average_code_coverage) / total_problems)
+
+        result = {
+            "system": subm_system_name,
+            "prompt_number": prompt_num,
+            "correct_tests": perc_tc,
+            "finds_ci1_error": perc_tc_fi1,
+            "finds_ci1_and_cit_errors": perc_tc_fi1_fit,
+            "finds_cit_error": perc_tc_fit,
+            "full_coverage_and_finds_all_errors": perc_tc_fi1_fit_hcov,
+            "mean_coverage": mean_coverage,
+
+
+        }
+        final.append(result)
+
+    final_df = pd.DataFrame(final)
+    return final_df
+
+
 def run_pytest_and_coverage_on_code(curr_test_dir, output_dir, file_suffix, task, verbose):
     """
     Runs pytest and coverage on the code and tests using the code and tests as specified in curr_test_dir.  Coverage
@@ -53,7 +107,8 @@ def run_pytest_and_coverage_on_code(curr_test_dir, output_dir, file_suffix, task
     coverage_test_status = determine_testing_result(coverage_pytest_output)
     total_cov = np.nan
     if coverage_test_status == 1:
-        print("**Generating Coverage Report**")
+        if verbose:
+            print("**Generating Coverage Report**")
         htmlcov_dirpath = os.path.join(output_dir, file_suffix + "_htmlcov")
         if not os.path.isdir(htmlcov_dirpath):
             os.makedirs(htmlcov_dirpath)
@@ -87,19 +142,22 @@ def run_pytest_and_coverage_on_code(curr_test_dir, output_dir, file_suffix, task
 
 
 def evaluate_code_submission(
-    str_current_datetime, key_json_filepath, submission_json_filepath, temp_test_dir, output_dir, verbose
+    str_current_datetime, key_json_filepath, submission_json_filepath, temp_test_dir, output_dir,
+        system_name, verbose
 ):
     """
     Evaluates and scores a code submission.
 
     Args:
         str_current_datetime: The string of the current date and time to use to create a directory. Should be
-            specified in "%Y-%m-%d-T%H-%M-%S". The defaulyt is "", which if empty, this method will use the
+            specified in "%Y-%m-%d-T%H-%M-%S". The default is "", which if empty, this method will use the
             current date and time.
         key_json_filepath: The absolute path to the key json file.
         submission_json_filepath: The absolute path to the submission json file.
         temp_test_dir: The absolute path to the temporary directory that can be used to create and delete test files
         output_dir: The absolute path to the output directory where the scoring output should be written.
+        system_name: The name of the system. Defaults to "", which means that the system name will be
+                     extracted from the submission json.
         verbose: A True/False boolean flag if verbose output should be printed or not.
 
     Returns: None. Any outputs are written to the directory specified by output_dir.
@@ -127,9 +185,13 @@ def evaluate_code_submission(
     subm_data = json.load(subm_f)
     subm_f.close()
     subm_df = pd.DataFrame.from_dict(subm_data["code_list"], orient="columns")
-    sys_name = subm_data["system"]
+    sys_name = str(system_name)
+    if sys_name == "":
+        sys_name = subm_data["system"]
+    else:
+        subm_data["system"] = sys_name
     short_sys_name = sys_name.replace(" ", "_")
-    print("SHORT SYSTEM NAME", short_sys_name)
+
     if len(short_sys_name) >= 5:
         short_sys_name = short_sys_name[0:5]
     else:
@@ -278,7 +340,7 @@ def evaluate_code_submission(
             text_file.write(sys_test_code_m)
 
         # Run Pytest on Code
-        mutated_pytest_output = run_pytest_on_code(curr_test_dir, task_output_dirpath)
+        mutated_pytest_output = run_pytest_on_code(curr_test_dir, verbose)
         mutated_task_pytest_fp = os.path.join(task_output_dirpath, "pytest_output_" + mutated_file_suffix + ".txt")
         with open(mutated_task_pytest_fp, "w") as text_file:
             text_file.write(mutated_pytest_output)
@@ -324,7 +386,7 @@ def evaluate_code_submission(
             text_file.write(sys_test_code_m_t)
 
         # Run Pytest on Code
-        mutated_pytest_output_t = run_pytest_on_code(curr_test_dir, task_output_dirpath)
+        mutated_pytest_output_t = run_pytest_on_code(curr_test_dir, verbose)
         mutated_task_pytest_fp_t = os.path.join(task_output_dirpath, "pytest_output_" + mutated_file_suffix_t + ".txt")
         with open(mutated_task_pytest_fp_t, "w") as text_file:
             text_file.write(mutated_pytest_output_t)
@@ -353,14 +415,22 @@ def evaluate_code_submission(
     # Write final submission data frame to output file
     subm_score_fp = os.path.join(subm_dirpath, "{}_scores.csv".format(sys_name))
     subm_df.to_csv(subm_score_fp, index=False)
-    print(subm_df[['trial_id', 'prompt_number', 'correct_tests', 'finds_error_in_incorrect_1',
-                   'finds_error_in_incorrect_t', 'code_coverage']])
-    print("If you want more information, look at the csv created.\n")
+
+    metrics_df = mean_metrics_dataframe(subm_df, sys_name)
+    subm_score_mean = os.path.join(subm_dirpath, "{}_mean_metrics.csv".format(sys_name))
+    metrics_df.to_csv(subm_score_mean, index=False)
+
+    if verbose:
+        print(subm_df[['trial_id', 'prompt_number', 'correct_tests', 'finds_error_in_incorrect_1',
+                       'finds_error_in_incorrect_t', 'code_coverage']])
+        print(" ")
+        print(f"If you want more information, look at the csvs created here:\n{subm_score_fp}\n{subm_score_mean}\n")
     # if os.path.exists(sys_test_dir) and os.path.isdir(sys_test_dir):
     #    shutil.rmtree(sys_test_dir)
     # Change Working directory back to previous directory
     os.chdir(prev_wd)
     print("VALUE =", value)
+    print("Scoring Complete!")
     return value
 
 
@@ -372,17 +442,21 @@ def code_main(args):
     str_current_datetime = args.datetime_for_dir
     temp_working_dir = args.temp_working_dir
     output_dir = args.output_dir
+    system_name = args.system_name
     verbose = args.verbose
     print("||| Script: evaluate_submission.py json file")
 
-    print("Args:")
-    print("||| Config File Used: {}".format(config_filepath))
-    print("||| Config mode: {}".format(config_mode))
-    print("||| Key json Filepath: {}".format(key_json_filepath))
-    print("||| Submission Filepath: {}".format(submission_filepath))
-    print("||| Temporary Working Directory: {}".format(temp_working_dir))
-    print("||| Output Directory: {}".format(output_dir))
-    print("||| Datetime Str: {}".format(str_current_datetime))
+    if verbose:
+        print("Args:")
+        print("||| Config File Used: {}".format(config_filepath))
+        print("||| Config mode: {}".format(config_mode))
+        print("||| Key json Filepath: {}".format(key_json_filepath))
+        print("||| Submission Filepath: {}".format(submission_filepath))
+        print("||| Temporary Working Directory: {}".format(temp_working_dir))
+        print("||| Output Directory: {}".format(output_dir))
+        print("||| Datetime Str: {}".format(str_current_datetime))
+        print("||| System Name: {}".format(system_name))
+    # Show verbosew option
     print("||| Verbose Option: {}. Set verbose to True to print more information".format(verbose))
 
     evaluate_code_submission(
@@ -391,6 +465,7 @@ def code_main(args):
         submission_json_filepath=submission_filepath,
         temp_test_dir=temp_working_dir,
         output_dir=output_dir,
+        system_name=system_name,
         verbose=verbose,
     )
 
@@ -420,6 +495,7 @@ def define_parser():
     root_working_dir = config[default_config_mode]["root_working_dir"]
     default_temp_working_dir = os.path.join(root_working_dir)
     default_datetime_str = ""
+    default_system_name = ""
 
     parser = argparse.ArgumentParser(description="Evaluate Test-Code Generating Systems")
 
@@ -434,6 +510,14 @@ def define_parser():
     parser.add_argument(
         "-m", "--config_mode", help="Mode of Configuration_file", required=False, type=str,
         default=default_config_mode
+    )
+    parser.add_argument(
+        "-y",
+        "--system_name",
+        help="System Name",
+        required=False,
+        type=str,
+        default=default_system_name,
     )
     parser.add_argument(
         "-s",

@@ -38,7 +38,7 @@ def test_validate_submission_mix_1(setup_and_teardown):
     str_current_datetime = str(current_datetime)
 
     result = validate_code_submission(str_current_datetime, prob_json_filepath, submission_json_filepath,
-                                      temp_working_dir, output_dir, verbose)
+                                      temp_working_dir, output_dir, "", verbose)
     assert result == True
 
     # Check 2 - see what happens if submission set is bigger than problem set - this should return false
@@ -51,7 +51,7 @@ def test_validate_submission_mix_1(setup_and_teardown):
     str_current_datetime2 = str(current_datetime2)
 
     result2 = validate_code_submission(str_current_datetime2, prob_json_filepath2, submission_json_filepath2,
-                                       temp_working_dir2, output_dir2, verbose2)
+                                       temp_working_dir2, output_dir2, "", verbose2)
 
     assert result2 == True
 
@@ -66,7 +66,7 @@ def test_validate_submission_mix_1(setup_and_teardown):
     str_current_datetime3 = str(current_datetime3)
 
     result3 = validate_code_submission(str_current_datetime3, prob_json_filepath3, submission_json_filepath3,
-                                       temp_working_dir3, output_dir3, verbose3)
+                                       temp_working_dir3, output_dir3, "", verbose3)
 
     assert result3 == False
 
@@ -83,7 +83,7 @@ def test_validate_submission_mix_1(setup_and_teardown):
     submission_json_filepath4 = os.path.join(submissions_dir, "test_mix_1", "new_submission.json")
 
     result4 = validate_code_submission(str_current_datetime4, prob_json_filepath4, submission_json_filepath4,
-                                       temp_working_dir4, output_dir4, verbose4)
+                                       temp_working_dir4, output_dir4, "", verbose4)
 
     assert result4 == False
 
@@ -99,7 +99,7 @@ def test_validate_submission_mix_1(setup_and_teardown):
     submission_json_filepath15 = os.path.join(submissions_dir, "test_mix_1", "submission_char.json")
 
     result15 = validate_code_submission(str_current_datetime15, prob_json_filepath15, submission_json_filepath15,
-                                        temp_working_dir15, output_dir15, verbose15)
+                                        temp_working_dir15, output_dir15, "", verbose15)
 
     assert result15 == False
 
@@ -116,7 +116,7 @@ def test_validate_submission_mix_1(setup_and_teardown):
     submission_json_filepath6 = os.path.join(submissions_dir, "test_mix_1", "set_of_two_test_baseline.json")
 
     result6 = validate_code_submission(str_current_datetime6, prob_json_filepath6, submission_json_filepath6,
-                                       temp_working_dir6, output_dir6, verbose6)
+                                       temp_working_dir6, output_dir6, "", verbose6)
     assert result6 == True
 
     # Check 7 - See if it custom prompts required, should be true
@@ -131,7 +131,7 @@ def test_validate_submission_mix_1(setup_and_teardown):
     submission_json_filepath7 = os.path.join(submissions_dir, "test_mix_1", "sub_version_98.json")
 
     result7 = validate_code_submission(str_current_datetime7, prob_json_filepath7, submission_json_filepath7,
-                                       temp_working_dir7, output_dir7, verbose7)
+                                       temp_working_dir7, output_dir7, "", verbose7)
     assert result7 == True
 
     # Check 20 - See if it custom prompts required, should be false
@@ -146,7 +146,7 @@ def test_validate_submission_mix_1(setup_and_teardown):
     submission_json_filepath20 = os.path.join(submissions_dir, "test_mix_1", "incorrect_sub_version_98.json")
 
     result20 = validate_code_submission(str_current_datetime20, prob_json_filepath20, submission_json_filepath20,
-                                        temp_working_dir20, output_dir20, verbose20)
+                                        temp_working_dir20, output_dir20, "", verbose20)
     assert result20 == False
 
 
@@ -181,7 +181,7 @@ def test_validate_submission_mix_2(setup_and_teardown):
     str_current_datetime8 = str(current_datetime8)
 
     result8 = validate_code_submission(str_current_datetime8, prob_json_filepath8, submission_json_filepath8,
-                                       temp_working_dir8, output_dir8, verbose8)
+                                       temp_working_dir8, output_dir8, "", verbose8)
     assert result8 == True
 
     # Check to see if prompts match - should return true
@@ -195,7 +195,7 @@ def test_validate_submission_mix_2(setup_and_teardown):
     str_current_datetime10 = str(current_datetime10)
 
     result10 = validate_code_submission(str_current_datetime10, prob_json_filepath10, submission_json_filepath10,
-                                        temp_working_dir10, output_dir10, verbose10)
+                                        temp_working_dir10, output_dir10, "", verbose10)
     assert result10 == True
 
     # Check to see if prompts match - should return false
@@ -209,7 +209,7 @@ def test_validate_submission_mix_2(setup_and_teardown):
     str_current_datetime11 = str(current_datetime11)
 
     result11 = validate_code_submission(str_current_datetime11, prob_json_filepath11, submission_json_filepath11,
-                                        temp_working_dir11, output_dir11, verbose11)
+                                        temp_working_dir11, output_dir11, "", verbose11)
     assert result11 == False
 
     # Check to see if prompts match - should return True
@@ -222,7 +222,7 @@ def test_validate_submission_mix_2(setup_and_teardown):
     str_current_datetime12 = str(current_datetime12)
 
     result12 = validate_code_submission(str_current_datetime12, prob_json_filepath12, submission_json_filepath12,
-                                        temp_working_dir12, output_dir12, verbose12)
+                                        temp_working_dir12, output_dir12, "", verbose12)
     assert result12 == True
 
     # Check to see if prompts match - should return False
@@ -235,7 +235,7 @@ def test_validate_submission_mix_2(setup_and_teardown):
     str_current_datetime13 = str(current_datetime13)
 
     result13 = validate_code_submission(str_current_datetime13, prob_json_filepath13, submission_json_filepath13,
-                                        temp_working_dir13, output_dir13, verbose13)
+                                        temp_working_dir13, output_dir13, "", verbose13)
     assert result13 == False
 
     # Check to see if you can validate custom and fixed together - should return false
@@ -248,7 +248,7 @@ def test_validate_submission_mix_2(setup_and_teardown):
     str_current_datetime14 = str(current_datetime14)
 
     result14 = validate_code_submission(str_current_datetime14, prob_json_filepath14, submission_json_filepath14,
-                                        temp_working_dir14, output_dir14, verbose14)
+                                        temp_working_dir14, output_dir14, "", verbose14)
     assert result14 == False
 
 
@@ -282,7 +282,7 @@ def test_environment_check(setup_and_teardown):
     str_current_datetime9 = str(current_datetime9)
 
     result9 = validate_code_submission(str_current_datetime9, prob_json_filepath9, submission_json_filepath9,
-                                       temp_working_dir9, output_dir9, verbose9)
+                                       temp_working_dir9, output_dir9, "", verbose9)
 
     scores_filepath = os.path.join(output_dir9, str_current_datetime9 + "-outputs",
                                    "Test_Mix_2", "Test_Mix_2_validation.csv")
@@ -324,7 +324,7 @@ def test_adds_up(setup_and_teardown):
     str_current_datetime = str(current_datetime)
 
     validate_code_submission(str_current_datetime, prob_json_filepath9, submission_json_filepath9,
-                             temp_working_dir9, output_dir9, verbose9)
+                             temp_working_dir9, output_dir9, "", verbose9)
 
     scores_filepath = os.path.join(output_dir9, str_current_datetime + "-outputs",
                                    "add_up", "add_up_validation.csv")
@@ -363,14 +363,14 @@ def test_adds_up_err(setup_and_teardown):
     str_current_datetime = str(current_datetime)
 
     validate_code_submission(str_current_datetime, prob_json_filepath9, submission_json_filepath9,
-                             temp_working_dir9, output_dir9, verbose9)
+                             temp_working_dir9, output_dir9, "", verbose9)
 
     log_filepath = os.path.join(output_dir9, str_current_datetime + "-outputs",
                                 "validation_log.txt")
     with open(log_filepath, 'r') as file:
         log_data = file.read()
-    assert ('ERROR: Please recheck the prompt and or prompt_number field, one of these are incorrect, please fix and '
-            'try again!') in log_data
+    assert ('ERROR: Please recheck the prompt and or prompt_number field in the submission file, one of these are '
+            'incorrect, please fix and try again!') in log_data
 
     # test for combined fixed and partial custom submission
     temp_working_dir10 = temp_working_dir
@@ -382,14 +382,14 @@ def test_adds_up_err(setup_and_teardown):
     str_current_datetime = str(current_datetime)
 
     validate_code_submission(str_current_datetime, prob_json_filepath10, submission_json_filepath10,
-                             temp_working_dir10, output_dir10, verbose10)
+                             temp_working_dir10, output_dir10, "", verbose10)
 
     log_filepath = os.path.join(output_dir10, str_current_datetime + "-outputs",
                                 "validation_log.txt")
     with open(log_filepath, 'r') as file:
         log_data = file.read()
-    assert ('ERROR: Please recheck the prompt and or prompt_number field, one of these are incorrect, please fix and '
-            'try again!') in log_data
+    assert ('ERROR: Please recheck the prompt and or prompt_number field in the submission file, one of these are '
+            'incorrect, please fix and try again!') in log_data
 
 
 def test_validate_smoke_submission(setup_and_teardown):
@@ -418,7 +418,7 @@ def test_validate_smoke_submission(setup_and_teardown):
     current_datetime = "2025-06-04-T01-01-01"
     str_current_datetime = str(current_datetime)
     result = validate_code_submission(str_current_datetime, prob_json_filepath, submission_json_filepath,
-                                      temp_working_dir, output_dir, verbose)
+                                      temp_working_dir, output_dir, "", verbose)
     # In this case, check that this submission is valid
     assert result
 
@@ -449,7 +449,7 @@ def test_validate_bad_smoke_submission(setup_and_teardown):
     current_datetime = "2025-06-04-T02-02-02"
     str_current_datetime = str(current_datetime)
     result = validate_code_submission(str_current_datetime, prob_json_filepath, submission_json_filepath,
-                                      temp_working_dir, output_dir, verbose)
+                                      temp_working_dir, output_dir, "", verbose)
     # In this case, check that this submission is invalid as the prompt number is an integer, not a string
     assert not result
 
@@ -480,6 +480,6 @@ def test_validate_smoke3_submission(setup_and_teardown):
     current_datetime = "2025-06-04-T05-05-05"
     str_current_datetime = str(current_datetime)
     result = validate_code_submission(str_current_datetime, prob_json_filepath, submission_json_filepath,
-                                      temp_working_dir, output_dir, verbose)
+                                      temp_working_dir, output_dir, "", verbose)
     # In this case, check that this submission is invalid as "primary_method_name" is missing
     assert not result

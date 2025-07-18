@@ -1,6 +1,15 @@
 # CHANGELOG.md
 
-## v2024.06.05
+## v2025.07.18
+
+Refined release to work with the NIST GenAI Code Pilot Evaluation.
+
+Significant changes:
+* Updated scorer
+* Updated validator
+* Various bugfixes
+
+## v2025.06.05
 
 Updated code to work with pilot evaluation version 1.0 and to automate workflows.
 
@@ -10,7 +19,7 @@ Significant changes:
 * Updated Test case
 * Additional Utility scripts useful for making code banks and for producing baseline system results.
 * Updated documentation
-* a variety of bugfixes
+* A variety of bugfixes
 
 ## v2024.10.14_dev
 
