@@ -211,7 +211,8 @@ package.
 
 We are using Sphinx 7.
 
-# LICENSE
+
+## LICENSE
 
 The license is documented in the [LICENSE file](LICENSE.md) and on the [NIST website](https://www.nist.gov/topics/data/public-access-nist-research/copyright-fair-use-and-licensing-statements-srd-data-and).
 
