@@ -210,3 +210,16 @@ for more information on how to install Sphinx. You will also need the `m2r` pack
 package.
 
 We are using Sphinx 7.
+
+# LICENSE
+
+The license is documented in the [LICENSE file](LICENSE.md) and on the [NIST website](https://www.nist.gov/topics/data/public-access-nist-research/copyright-fair-use-and-licensing-statements-srd-data-and).
+
+## DISCLAIMER
+
+Certain commercial equipment, instruments, software, or materials are identified in this document
+to specify the experimental procedure adequately. Such identification is not intended to imply
+recommendation or endorsement by NIST, nor necessarily the best available for the purpose. The
+descriptions and views contained herein are those of the authors and should not be interpreted as
+necessarily representing the official policies or endorsements, either expressed or implied, of NIST
+or the U.S. Government.
