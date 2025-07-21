@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genai_code_test.evaluation_environment.evaluate_submission &mdash; GenAI Code Test v2025.07.18 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GenAI Code Test
+          </a>
+              <div class="version">
+                v2025.07.18
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">README.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">CHANGELOG.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GenAI Code Test</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genai_code_test.evaluation_environment.evaluate_submission</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genai_code_test.evaluation_environment.evaluate_submission</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># Code to run submission test on correct version of front_times_input</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="c1"># Use pytest modules from validation file to avoid duplications</span>
+<span class="kn">from</span> <span class="nn">genai_code_test.evaluation_environment.validate_submission</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">determine_testing_result</span><span class="p">,</span>
+    <span class="n">execute_pytest_without_printing</span><span class="p">,</span>
+    <span class="n">run_pytest_on_code</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="mean_metrics_dataframe">
+<a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.evaluate_submission.html#genai_code_test.evaluation_environment.evaluate_submission.mean_metrics_dataframe">[docs]</a>
+<span class="k">def</span> <span class="nf">mean_metrics_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">subm_system_name</span><span class="p">):</span>
+
+    <span class="n">final</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">group_df</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">prompt_num</span><span class="p">,</span> <span class="n">group_prompt_num</span> <span class="ow">in</span> <span class="n">group_df</span><span class="p">:</span>
+        <span class="n">total_problems</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">])</span>
+
+        <span class="c1"># getting information</span>
+        <span class="n">for_perc_tc_value</span> <span class="o">=</span> <span class="n">group_prompt_num</span><span class="p">[(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;correct_tests&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">for_perc_tc_fi1_value</span> <span class="o">=</span> <span class="n">group_prompt_num</span><span class="p">[(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;correct_tests&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                                                 <span class="p">(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;finds_error_in_incorrect_1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">for_perc_tc_fi1_fit_value</span> <span class="o">=</span> <span class="n">group_prompt_num</span><span class="p">[(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;correct_tests&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                                                     <span class="p">(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;finds_error_in_incorrect_1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                                                     <span class="p">(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;finds_error_in_incorrect_t&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">for_perc_tc_fit_value</span> <span class="o">=</span> <span class="n">group_prompt_num</span><span class="p">[(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;correct_tests&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                                                 <span class="p">(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;finds_error_in_incorrect_t&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">code_coverage_100</span> <span class="o">=</span> <span class="n">group_prompt_num</span><span class="p">[(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;correct_tests&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                                             <span class="p">(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;finds_error_in_incorrect_1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                                             <span class="p">(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;finds_error_in_incorrect_t&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                                             <span class="p">(</span><span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;code_coverage&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">100</span><span class="p">)]</span>
+
+        <span class="n">average_code_coverage</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">group_prompt_num</span><span class="p">[</span><span class="s1">&#39;code_coverage&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">value</span><span class="p">)]</span>
+
+        <span class="c1"># computing values</span>
+        <span class="n">perc_tc</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">for_perc_tc_value</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_problems</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">perc_tc_fi1</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">for_perc_tc_fi1_value</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_problems</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">perc_tc_fi1_fit</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">for_perc_tc_fi1_fit_value</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_problems</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">perc_tc_fit</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">for_perc_tc_fit_value</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_problems</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">perc_tc_fi1_fit_hcov</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">code_coverage_100</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_problems</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">mean_coverage</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">average_code_coverage</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_problems</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">subm_system_name</span><span class="p">,</span>
+            <span class="s2">&quot;prompt_number&quot;</span><span class="p">:</span> <span class="n">prompt_num</span><span class="p">,</span>
+            <span class="s2">&quot;correct_tests&quot;</span><span class="p">:</span> <span class="n">perc_tc</span><span class="p">,</span>
+            <span class="s2">&quot;finds_ci1_error&quot;</span><span class="p">:</span> <span class="n">perc_tc_fi1</span><span class="p">,</span>
+            <span class="s2">&quot;finds_ci1_and_cit_errors&quot;</span><span class="p">:</span> <span class="n">perc_tc_fi1_fit</span><span class="p">,</span>
+            <span class="s2">&quot;finds_cit_error&quot;</span><span class="p">:</span> <span class="n">perc_tc_fit</span><span class="p">,</span>
+            <span class="s2">&quot;full_coverage_and_finds_all_errors&quot;</span><span class="p">:</span> <span class="n">perc_tc_fi1_fit_hcov</span><span class="p">,</span>
+            <span class="s2">&quot;mean_coverage&quot;</span><span class="p">:</span> <span class="n">mean_coverage</span><span class="p">,</span>
+
+
+        <span class="p">}</span>
+        <span class="n">final</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="n">final_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">final</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">final_df</span></div>
+
+
+
+<div class="viewcode-block" id="run_pytest_and_coverage_on_code">
+<a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.evaluate_submission.html#genai_code_test.evaluation_environment.evaluate_submission.run_pytest_and_coverage_on_code">[docs]</a>
+<span class="k">def</span> <span class="nf">run_pytest_and_coverage_on_code</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runs pytest and coverage on the code and tests using the code and tests as specified in curr_test_dir.  Coverage</span>
+<span class="sd">    is only run if the pytest on the code is correct</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        curr_test_dir: path to the directory where the code and tests are located</span>
+<span class="sd">        output_dir: path to the directory to write test and coverage outputs to.</span>
+<span class="sd">        file_suffix: the suffix of the file name to add to output files. This is often constructed from the trial_id.</span>
+<span class="sd">        task: the name of the task or the trial</span>
+<span class="sd">        verbose: A True/False boolean flag if verbose output should be printed or not.</span>
+
+<span class="sd">    Returns: a tuple with the (coverage_pytest_output, total_coverage_percentage). Additionally, relevant outputs are</span>
+<span class="sd">    written to the directory output_dir.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># cov_fname = &quot;genai_code_file&quot; + &quot;_&quot; + file_suffix + &quot;.py&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;__pycache__&quot;</span><span class="p">))</span> <span class="ow">and</span> \
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;__pycache__&quot;</span><span class="p">)):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;__pycache__&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;.pytest_cache&quot;</span><span class="p">))</span> <span class="ow">and</span> \
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;.pytest_cache&quot;</span><span class="p">)):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;.pytest_cache&quot;</span><span class="p">))</span>
+
+    <span class="n">coverage_pytest_output</span> <span class="o">=</span> <span class="n">execute_pytest_without_printing</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;**Pytest output**&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">coverage_pytest_output</span><span class="p">)</span>
+
+    <span class="n">coverage_test_status</span> <span class="o">=</span> <span class="n">determine_testing_result</span><span class="p">(</span><span class="n">coverage_pytest_output</span><span class="p">)</span>
+    <span class="n">total_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">if</span> <span class="n">coverage_test_status</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;**Generating Coverage Report**&quot;</span><span class="p">)</span>
+        <span class="n">htmlcov_dirpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">file_suffix</span> <span class="o">+</span> <span class="s2">&quot;_htmlcov&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">htmlcov_dirpath</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">htmlcov_dirpath</span><span class="p">)</span>
+        <span class="n">command_str</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;coverage run -m pytest </span><span class="si">{</span><span class="n">curr_test_dir</span><span class="si">}</span><span class="s2"> -x --capture sys -v --cache-clear; &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;coverage report; &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;coverage html --include -d </span><span class="si">{</span><span class="n">htmlcov_dirpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">coverage_out</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command_str</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                      <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">total_cov</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">coverage_out</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;TOTAL&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">total_cov</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No Code Coverage because tests failed&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Delete temp-created files</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;__pycache__&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;__pycache__&quot;</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;__pycache__&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;.pytest_cache&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;.pytest_cache&quot;</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;.pytest_cache&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;.coverage&quot;</span><span class="p">)):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="s2">&quot;.coverage&quot;</span><span class="p">))</span>
+    <span class="c1"># Return pytest output and coverage percentage</span>
+    <span class="k">return</span> <span class="n">coverage_pytest_output</span><span class="p">,</span> <span class="n">total_cov</span></div>
+
+
+
+<div class="viewcode-block" id="evaluate_code_submission">
+<a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.evaluate_submission.html#genai_code_test.evaluation_environment.evaluate_submission.evaluate_code_submission">[docs]</a>
+<span class="k">def</span> <span class="nf">evaluate_code_submission</span><span class="p">(</span>
+    <span class="n">str_current_datetime</span><span class="p">,</span> <span class="n">key_json_filepath</span><span class="p">,</span> <span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">temp_test_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span>
+        <span class="n">system_name</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluates and scores a code submission.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        str_current_datetime: The string of the current date and time to use to create a directory. Should be</span>
+<span class="sd">            specified in &quot;%Y-%m-%d-T%H-%M-%S&quot;. The default is &quot;&quot;, which if empty, this method will use the</span>
+<span class="sd">            current date and time.</span>
+<span class="sd">        key_json_filepath: The absolute path to the key json file.</span>
+<span class="sd">        submission_json_filepath: The absolute path to the submission json file.</span>
+<span class="sd">        temp_test_dir: The absolute path to the temporary directory that can be used to create and delete test files</span>
+<span class="sd">        output_dir: The absolute path to the output directory where the scoring output should be written.</span>
+<span class="sd">        system_name: The name of the system. Defaults to &quot;&quot;, which means that the system name will be</span>
+<span class="sd">                     extracted from the submission json.</span>
+<span class="sd">        verbose: A True/False boolean flag if verbose output should be printed or not.</span>
+
+<span class="sd">    Returns: None. Any outputs are written to the directory specified by output_dir.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Make output directory with current date for time-stamped outputs</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">str_current_datetime</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">current_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">-T%H-%M-%S&quot;</span><span class="p">)</span>
+        <span class="n">str_current_datetime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_datetime</span><span class="p">)</span>
+    <span class="n">folder_name</span> <span class="o">=</span> <span class="n">str_current_datetime</span> <span class="o">+</span> <span class="s2">&quot;-outputs&quot;</span>
+    <span class="n">out_folder_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">out_folder_fp</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_folder_fp</span><span class="p">)</span>
+
+    <span class="c1"># Load json files with the key metadata for the problemset</span>
+    <span class="n">key_f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_json_filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">key_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">key_f</span><span class="p">)</span>
+    <span class="n">key_f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">key_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">key_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">],</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
+    <span class="c1"># Load json files with the submission</span>
+    <span class="n">subm_f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">subm_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">subm_f</span><span class="p">)</span>
+    <span class="n">subm_f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">subm_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">subm_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">],</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
+    <span class="n">sys_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">system_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sys_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">sys_name</span> <span class="o">=</span> <span class="n">subm_data</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">subm_data</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sys_name</span>
+    <span class="n">short_sys_name</span> <span class="o">=</span> <span class="n">sys_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">short_sys_name</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">short_sys_name</span> <span class="o">=</span> <span class="n">short_sys_name</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">short_sys_name</span> <span class="o">=</span> <span class="n">short_sys_name</span>
+    <span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sys_name</span>
+    <span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;correct_tests&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;finds_error_in_incorrect_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;finds_error_in_incorrect_t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;code_coverage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="n">subm_dirpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">sys_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">subm_dirpath</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">subm_dirpath</span><span class="p">)</span>
+    <span class="c1"># Set working directory to test directory</span>
+    <span class="n">prev_wd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Previous Working Directory: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prev_wd</span><span class="p">))</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_test_dir</span><span class="p">)</span>
+    <span class="n">curr_test_dir</span> <span class="o">=</span> <span class="n">temp_test_dir</span>
+    <span class="c1"># Mek subfolders in test directory</span>
+    <span class="c1"># outer_wd = os.getcwd()</span>
+    <span class="c1"># sys_test_dir = os.path.join(temp_test_dir, sys_name)</span>
+    <span class="c1"># if not os.path.isdir(sys_test_dir):</span>
+    <span class="c1">#     os.makedirs(sys_test_dir)</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">subm_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span>
+        <span class="n">prompt_number</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Check that this is a task in the problem set; skip it if not</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">task</span> <span class="ow">in</span> <span class="n">key_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">{}</span><span class="s2"> not in problem set </span><span class="si">{}</span><span class="s2">. Skipping this task.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">key_json_filepath</span><span class="p">))</span>
+            <span class="k">continue</span>
+        <span class="n">correct_code</span> <span class="o">=</span> <span class="n">key_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">key_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">,</span> <span class="s2">&quot;code_correct&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># This line is a temporary fix so that the code works with this version of the key</span>
+        <span class="n">task_code</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="c1"># Replace correct code with import</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">prompt_number</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">correct_file_suffix</span> <span class="o">=</span> <span class="p">(</span><span class="n">task_code</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">prompt_number</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">short_sys_name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_correct_fixed&quot;</span><span class="p">)</span>
+            <span class="n">correct_code_fname</span> <span class="o">=</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">correct_file_suffix</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+
+            <span class="n">mutated_code</span> <span class="o">=</span> <span class="n">key_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">key_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">,</span> <span class="s2">&quot;code_incorrect_1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">mutated_file_suffix</span> <span class="o">=</span> <span class="p">(</span><span class="n">task_code</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">prompt_number</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">short_sys_name</span><span class="p">)</span> <span class="o">+</span>
+                                   <span class="s2">&quot;_incorrect_fixed&quot;</span><span class="p">)</span>
+            <span class="n">mutated_code_fname</span> <span class="o">=</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+
+            <span class="n">mutated_code_t</span> <span class="o">=</span> <span class="n">key_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">key_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">,</span> <span class="s2">&quot;code_incorrect_t&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">mutated_file_suffix_t</span> <span class="o">=</span> <span class="p">(</span><span class="n">task_code</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">prompt_number</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">short_sys_name</span><span class="p">)</span> <span class="o">+</span>
+                                     <span class="s2">&quot;_incorrect_t_fixed&quot;</span><span class="p">)</span>
+            <span class="n">mutated_code_fname_t</span> <span class="o">=</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix_t</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+
+        <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">prompt_number</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">correct_file_suffix</span> <span class="o">=</span> <span class="p">(</span><span class="n">task_code</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">prompt_number</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">short_sys_name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_correct_custom&quot;</span><span class="p">)</span>
+            <span class="n">correct_code_fname</span> <span class="o">=</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">correct_file_suffix</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+
+            <span class="n">mutated_code</span> <span class="o">=</span> <span class="n">key_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">key_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">,</span> <span class="s2">&quot;code_incorrect_1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">mutated_file_suffix</span> <span class="o">=</span> <span class="p">(</span><span class="n">task_code</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">prompt_number</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">short_sys_name</span><span class="p">)</span> <span class="o">+</span>
+                                   <span class="s2">&quot;_incorrect_custom&quot;</span><span class="p">)</span>
+            <span class="n">mutated_code_fname</span> <span class="o">=</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+
+            <span class="n">mutated_code_t</span> <span class="o">=</span> <span class="n">key_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">key_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">,</span> <span class="s2">&quot;code_incorrect_t&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">mutated_file_suffix_t</span> <span class="o">=</span> <span class="p">(</span><span class="n">task_code</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">prompt_number</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">short_sys_name</span><span class="p">)</span> <span class="o">+</span>
+                                     <span class="s2">&quot;_incorrect_t_custom&quot;</span><span class="p">)</span>
+            <span class="n">mutated_code_fname_t</span> <span class="o">=</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix_t</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+
+        <span class="n">sys_test_code</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;test_code&quot;</span><span class="p">]</span>
+        <span class="c1"># Making a deeper working directory for the task</span>
+        <span class="c1"># task_test_dir = os.path.join(sys_test_dir, task)</span>
+        <span class="c1"># if not os.path.isdir(task_test_dir):</span>
+        <span class="c1">#     os.makedirs(task_test_dir)</span>
+        <span class="c1"># os.chdir(task_test_dir)</span>
+        <span class="c1"># curr_test_dir = os.path.join(task_test_dir, &quot;correct&quot;)</span>
+
+        <span class="c1"># Creating output directory structure to provide output results.</span>
+        <span class="c1"># Crate a directory for the task</span>
+        <span class="n">task_output_dirpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subm_dirpath</span><span class="p">,</span> <span class="n">task</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">)</span>
+
+        <span class="c1"># # **Correct Code Case*** Test submitted code on the (correct) version of the input code</span>
+        <span class="c1"># # **Correct Code Case***</span>
+        <span class="c1"># Make temp files for code and test code</span>
+        <span class="n">correct_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">correct_code_fname</span><span class="p">)</span>
+        <span class="n">testc_code_fname</span> <span class="o">=</span> <span class="s2">&quot;test_genai_code&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">correct_file_suffix</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+        <span class="n">testc_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">testc_code_fname</span><span class="p">)</span>
+        <span class="n">sys_test_code_c</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;genai_code_file&quot;</span><span class="p">,</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">correct_file_suffix</span><span class="p">,</span> <span class="n">sys_test_code</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">correct_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">correct_code</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testc_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys_test_code_c</span><span class="p">)</span>
+        <span class="n">correct_task_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="n">correct_code_fname</span><span class="p">)</span>
+        <span class="n">testc_task_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="n">testc_code_fname</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">correct_task_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">correct_code</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testc_task_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys_test_code_c</span><span class="p">)</span>
+
+        <span class="c1"># Run Pytest on Code</span>
+        <span class="c1"># total_cov = 0</span>
+        <span class="c1"># correct_pytest_output = run_pytest_on_code(curr_test_dir, task_output_dirpath)</span>
+        <span class="p">(</span><span class="n">correct_pytest_output</span><span class="p">,</span> <span class="n">total_cov</span><span class="p">)</span> <span class="o">=</span> <span class="n">run_pytest_and_coverage_on_code</span><span class="p">(</span>
+            <span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">task_output_dirpath</span><span class="p">,</span> <span class="n">correct_file_suffix</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">verbose</span>
+        <span class="p">)</span>
+        <span class="c1"># subm_df.loc[subm_df[&#39;trial_id&#39;] == task, &#39;code_coverage&#39;] = total_cov</span>
+        <span class="n">correct_task_pytest_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="s2">&quot;pytest_output_&quot;</span> <span class="o">+</span> <span class="n">correct_file_suffix</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">correct_task_pytest_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">correct_pytest_output</span><span class="p">)</span>
+        <span class="n">correct_test_result</span> <span class="o">=</span> <span class="n">determine_testing_result</span><span class="p">(</span><span class="n">correct_pytest_output</span><span class="p">)</span>
+        <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">,</span> <span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prompt_number</span>
+        <span class="k">if</span> <span class="n">correct_test_result</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;correct_tests&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;code_coverage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cov</span>
+        <span class="k">elif</span> <span class="n">correct_test_result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;correct_tests&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;correct_tests&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># Remove files in temp_test_dir</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">correct_code_fp</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">testc_code_fp</span><span class="p">)</span>
+
+        <span class="c1"># # **Mutated Code Case*** Test submitted code on the (mutated) version of the input code</span>
+        <span class="c1"># # **Mutated Code Case***</span>
+        <span class="c1"># Make temp files for code and test code</span>
+        <span class="k">if</span> <span class="n">mutated_code</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipping Mutated Code as mutated code does not exist&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">mutated_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">mutated_code_fname</span><span class="p">)</span>
+        <span class="n">testm_code_fname</span> <span class="o">=</span> <span class="s2">&quot;test_genai_code&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+        <span class="n">testm_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">testm_code_fname</span><span class="p">)</span>
+        <span class="n">sys_test_code_m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;genai_code_file&quot;</span><span class="p">,</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix</span><span class="p">,</span> <span class="n">sys_test_code</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mutated_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mutated_code</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testm_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys_test_code_m</span><span class="p">)</span>
+
+        <span class="n">mutated_task_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="n">mutated_code_fname</span><span class="p">)</span>
+        <span class="n">testm_task_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="n">testm_code_fname</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mutated_task_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mutated_code</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testm_task_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys_test_code_m</span><span class="p">)</span>
+
+        <span class="c1"># Run Pytest on Code</span>
+        <span class="n">mutated_pytest_output</span> <span class="o">=</span> <span class="n">run_pytest_on_code</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">mutated_task_pytest_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="s2">&quot;pytest_output_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mutated_task_pytest_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mutated_pytest_output</span><span class="p">)</span>
+        <span class="n">mutated_test_result</span> <span class="o">=</span> <span class="n">determine_testing_result</span><span class="p">(</span><span class="n">mutated_pytest_output</span><span class="p">)</span>
+        <span class="c1"># Give full score if the tests fail on incorrect program,</span>
+        <span class="c1"># i.e. we want mutated_test_result to be 0</span>
+        <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">,</span> <span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prompt_number</span>
+        <span class="k">if</span> <span class="n">mutated_test_result</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;finds_error_in_incorrect_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">mutated_test_result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;finds_error_in_incorrect_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;finds_error_in_incorrect_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># Remove files in temp_test_dir</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mutated_code_fp</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">testm_code_fp</span><span class="p">)</span>
+        <span class="c1"># -- branch end</span>
+
+        <span class="c1"># # **Mutated Code Case for Type error files *** Test submitted code on the (mutated) version of the input code</span>
+        <span class="c1"># # **Mutated Code Case***</span>
+        <span class="c1"># Make temp files for code and test code</span>
+        <span class="k">if</span> <span class="n">mutated_code_t</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipping Mutated Code as mutated code does not exist&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">mutated_code_fp_t</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">mutated_code_fname_t</span><span class="p">)</span>
+        <span class="n">testm_code_fname_t</span> <span class="o">=</span> <span class="s2">&quot;test_genai_code&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix_t</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span>
+        <span class="n">testm_code_fp_t</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">testm_code_fname_t</span><span class="p">)</span>
+        <span class="n">sys_test_code_m_t</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;genai_code_file&quot;</span><span class="p">,</span> <span class="s2">&quot;genai_code_file&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix_t</span><span class="p">,</span> <span class="n">sys_test_code</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mutated_code_fp_t</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mutated_code_t</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testm_code_fp_t</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys_test_code_m_t</span><span class="p">)</span>
+
+        <span class="n">mutated_task_code_fp_t</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="n">mutated_code_fname_t</span><span class="p">)</span>
+        <span class="n">testm_task_code_fp_t</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="n">testm_code_fname_t</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mutated_task_code_fp_t</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mutated_code_t</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testm_task_code_fp_t</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys_test_code_m_t</span><span class="p">)</span>
+
+        <span class="c1"># Run Pytest on Code</span>
+        <span class="n">mutated_pytest_output_t</span> <span class="o">=</span> <span class="n">run_pytest_on_code</span><span class="p">(</span><span class="n">curr_test_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">mutated_task_pytest_fp_t</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_output_dirpath</span><span class="p">,</span> <span class="s2">&quot;pytest_output_&quot;</span> <span class="o">+</span> <span class="n">mutated_file_suffix_t</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mutated_task_pytest_fp_t</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+            <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mutated_pytest_output_t</span><span class="p">)</span>
+        <span class="n">mutated_test_result_t</span> <span class="o">=</span> <span class="n">determine_testing_result</span><span class="p">(</span><span class="n">mutated_pytest_output_t</span><span class="p">)</span>
+        <span class="c1"># Give full score if the tests fail on incorrect program,</span>
+        <span class="c1"># i.e. we want mutated_test_result to be 0</span>
+        <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                    <span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prompt_number</span>
+        <span class="k">if</span> <span class="n">mutated_test_result_t</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;finds_error_in_incorrect_t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">mutated_test_result_t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;finds_error_in_incorrect_t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subm_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">subm_df</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prompt_number</span><span class="p">),</span>
+                        <span class="s2">&quot;finds_error_in_incorrect_t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Remove files in temp_test_dir</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mutated_code_fp_t</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">testm_code_fp_t</span><span class="p">)</span>
+        <span class="c1"># -- branch end</span>
+    <span class="c1"># -- loop end</span>
+
+    <span class="c1"># Write final submission data frame to output file</span>
+    <span class="n">subm_score_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subm_dirpath</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_scores.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys_name</span><span class="p">))</span>
+    <span class="n">subm_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">subm_score_fp</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">metrics_df</span> <span class="o">=</span> <span class="n">mean_metrics_dataframe</span><span class="p">(</span><span class="n">subm_df</span><span class="p">,</span> <span class="n">sys_name</span><span class="p">)</span>
+    <span class="n">subm_score_mean</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subm_dirpath</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_mean_metrics.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys_name</span><span class="p">))</span>
+    <span class="n">metrics_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">subm_score_mean</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">subm_df</span><span class="p">[[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">,</span> <span class="s1">&#39;prompt_number&#39;</span><span class="p">,</span> <span class="s1">&#39;correct_tests&#39;</span><span class="p">,</span> <span class="s1">&#39;finds_error_in_incorrect_1&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;finds_error_in_incorrect_t&#39;</span><span class="p">,</span> <span class="s1">&#39;code_coverage&#39;</span><span class="p">]])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;If you want more information, look at the csvs created here:</span><span class="se">\n</span><span class="si">{</span><span class="n">subm_score_fp</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">subm_score_mean</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># if os.path.exists(sys_test_dir) and os.path.isdir(sys_test_dir):</span>
+    <span class="c1">#    shutil.rmtree(sys_test_dir)</span>
+    <span class="c1"># Change Working directory back to previous directory</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">prev_wd</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;VALUE =&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scoring Complete!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+
+<div class="viewcode-block" id="code_main">
+<a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.evaluate_submission.html#genai_code_test.evaluation_environment.evaluate_submission.code_main">[docs]</a>
+<span class="k">def</span> <span class="nf">code_main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">config_filepath</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config_filepath</span>
+    <span class="n">config_mode</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config_mode</span>
+    <span class="n">key_json_filepath</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">key_filepath</span>
+    <span class="n">submission_filepath</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">submission_filepath</span>
+    <span class="n">str_current_datetime</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">datetime_for_dir</span>
+    <span class="n">temp_working_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">temp_working_dir</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output_dir</span>
+    <span class="n">system_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">system_name</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Script: evaluate_submission.py json file&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Args:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Config File Used: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_filepath</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Config mode: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_mode</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Key json Filepath: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_json_filepath</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Submission Filepath: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submission_filepath</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Temporary Working Directory: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">temp_working_dir</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Output Directory: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_dir</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Datetime Str: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">str_current_datetime</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| System Name: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">system_name</span><span class="p">))</span>
+    <span class="c1"># Show verbosew option</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Verbose Option: </span><span class="si">{}</span><span class="s2">. Set verbose to True to print more information&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">verbose</span><span class="p">))</span>
+
+    <span class="n">evaluate_code_submission</span><span class="p">(</span>
+        <span class="n">str_current_datetime</span><span class="o">=</span><span class="n">str_current_datetime</span><span class="p">,</span>
+        <span class="n">key_json_filepath</span><span class="o">=</span><span class="n">key_json_filepath</span><span class="p">,</span>
+        <span class="n">submission_json_filepath</span><span class="o">=</span><span class="n">submission_filepath</span><span class="p">,</span>
+        <span class="n">temp_test_dir</span><span class="o">=</span><span class="n">temp_working_dir</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
+        <span class="n">system_name</span><span class="o">=</span><span class="n">system_name</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="define_parser">
+<a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.evaluate_submission.html#genai_code_test.evaluation_environment.evaluate_submission.define_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">define_parser</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines accepted CLI syntax and the actions to take for command and args.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        argparse parser</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_config_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;GENAI_CODE_CONFIG_PATH&quot;</span><span class="p">]</span>
+    <span class="n">default_config_mode</span> <span class="o">=</span> <span class="s2">&quot;Test&quot;</span>
+
+    <span class="c1"># Now extract the arguments from the config file</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">default_config_filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">configfile</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Cannot open config file: &quot;</span> <span class="o">+</span> <span class="n">default_config_filepath</span><span class="p">)</span>
+
+    <span class="c1"># Read root directories from config file</span>
+    <span class="c1"># root_repo_dir = config[config_mode][&quot;root_repo_dir&quot;]</span>
+    <span class="n">root_working_dir</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">default_config_mode</span><span class="p">][</span><span class="s2">&quot;root_working_dir&quot;</span><span class="p">]</span>
+    <span class="n">default_temp_working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_working_dir</span><span class="p">)</span>
+    <span class="n">default_datetime_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">default_system_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Evaluate Test-Code Generating Systems&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--config_filepath&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Location of Configuration file&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_config_filepath</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--config_mode&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Mode of Configuration_file&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_config_mode</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-y&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--system_name&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;System Name&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_system_name</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--submission_filepath&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of submission file with Absolute Path to submission json file. &quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-k&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--key_filepath&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Absolute path to the key json file.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+    <span class="p">)</span>
+    <span class="n">datetime_help_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot; Datetime-string to use for datetime for folders. Put &quot;&quot; to have program make its own&#39;</span>
+<span class="s2">                            Format as (Y)-(m)-(d)-T(H)-(M)-(S).</span>
+<span class="s2">                        &quot;&quot;&quot;</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--datetime_for_dir&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">datetime_help_str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_datetime_str</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Absolute path to the output directory.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-w&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--temp_working_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Absolute path to the temporary working directory.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_temp_working_dir</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable Verbose output&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="c1"># This tells the code to automatically execute this function</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">code_main</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.evaluate_submission.html#genai_code_test.evaluation_environment.evaluate_submission.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_rows&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_columns&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_colwidth&quot;</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">define_parser</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span></div>
+
+
+    <span class="c1"># `code_main(args)` is automatically called</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, NIST.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

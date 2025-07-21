@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genai_code_test.evaluation_environment.validate_submission module &mdash; GenAI Code Test v2025.07.18 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="genai_code_test.utils package" href="genai_code_test.utils.html" />
+    <link rel="prev" title="genai_code_test.evaluation_environment.evaluate_submission module" href="genai_code_test.evaluation_environment.evaluate_submission.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GenAI Code Test
+          </a>
+              <div class="version">
+                v2025.07.18
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">README.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">CHANGELOG.md</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../API_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="genai_code_test.html">genai_code_test package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="genai_code_test.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="genai_code_test.evaluation_environment.html">genai_code_test.evaluation_environment package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="genai_code_test.utils.html">genai_code_test.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="genai_code_test.evaluation_environment.html">genai_code_test.evaluation_environment package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="genai_code_test.evaluation_environment.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="genai_code_test.evaluation_environment.evaluate_submission.html">genai_code_test.evaluation_environment.evaluate_submission module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">genai_code_test.evaluation_environment.validate_submission module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.evaluation_environment.evaluate_submission.html">genai_code_test.evaluation_environment.evaluate_submission module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genai_code_test.evaluation_environment.validate_submission module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.code_main"><code class="docutils literal notranslate"><span class="pre">code_main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.control_submission_output"><code class="docutils literal notranslate"><span class="pre">control_submission_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.define_parser"><code class="docutils literal notranslate"><span class="pre">define_parser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.determine_testing_result"><code class="docutils literal notranslate"><span class="pre">determine_testing_result()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.execute_pytest_without_printing"><code class="docutils literal notranslate"><span class="pre">execute_pytest_without_printing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.is_file_valid"><code class="docutils literal notranslate"><span class="pre">is_file_valid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.is_json_correct"><code class="docutils literal notranslate"><span class="pre">is_json_correct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.is_prompt_correct"><code class="docutils literal notranslate"><span class="pre">is_prompt_correct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.is_prompt_num_str"><code class="docutils literal notranslate"><span class="pre">is_prompt_num_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.is_submission_field_empty"><code class="docutils literal notranslate"><span class="pre">is_submission_field_empty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.run_pytest_on_code"><code class="docutils literal notranslate"><span class="pre">run_pytest_on_code()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.evaluation_environment.validate_submission.validate_code_submission"><code class="docutils literal notranslate"><span class="pre">validate_code_submission()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.html">genai_code_test.utils package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.convert_code_bank_to_key_file.html">genai_code_test.utils.convert_code_bank_to_key_file module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.convert_key_data_to_prob_data.html">genai_code_test.utils.convert_key_data_to_prob_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.create_baseline_submission.html">genai_code_test.utils.create_baseline_submission module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.create_code_files_from_json_input.html">genai_code_test.utils.create_code_files_from_json_input module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.create_json_file_from_code_files.html">genai_code_test.utils.create_json_file_from_code_files module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.extract_test_code_from_test_output.html">genai_code_test.utils.extract_test_code_from_test_output module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GenAI Code Test</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../API_reference.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="genai_code_test.html">genai_code_test package</a></li>
+          <li class="breadcrumb-item"><a href="genai_code_test.evaluation_environment.html">genai_code_test.evaluation_environment package</a></li>
+      <li class="breadcrumb-item active">genai_code_test.evaluation_environment.validate_submission module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/genai_code_test.evaluation_environment.validate_submission.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-genai_code_test.evaluation_environment.validate_submission">
+<span id="genai-code-test-evaluation-environment-validate-submission-module"></span><h1>genai_code_test.evaluation_environment.validate_submission module<a class="headerlink" href="#module-genai_code_test.evaluation_environment.validate_submission" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.code_main">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">code_main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#code_main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.code_main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.control_submission_output">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">control_submission_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_folder_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#control_submission_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.control_submission_output" title="Link to this definition"></a></dt>
+<dd><p>Checks to see if a submission file code is not more than 25000 character, if it is returns an error
+:param verbose: printing more information to the screen
+:param out_folder_fp: a filepath of where the output will be
+:param submission_file_path: a filepath where a JSON file is</p>
+<p>Returns: boolean - True or False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.define_parser">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">define_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#define_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.define_parser" title="Link to this definition"></a></dt>
+<dd><p>Defines accepted CLI syntax and the actions to take for command and args.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>argparse parser</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.determine_testing_result">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">determine_testing_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pytest_output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#determine_testing_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.determine_testing_result" title="Link to this definition"></a></dt>
+<dd><p>Automate reading the pytest output to determine if the tests passed, the tests failed, or if there was
+a runtime error.
+:param pytest_output: The output of pytest as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>-1 if the test code has a runtime error,
+0 if the tests ran but failed on the code or if it’s a type of error listed below for a specific function.
+and 1 if the tests ran and passed on the code
+there are some expectations!</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.execute_pytest_without_printing">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">execute_pytest_without_printing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#execute_pytest_without_printing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.execute_pytest_without_printing" title="Link to this definition"></a></dt>
+<dd><p>Runs pytest on all files in the specified test directory and stores the output of pytest. The output is not
+printed to the screen and is returned.
+:param test_dir: the path to the test directory
+:type test_dir: str</p>
+<p>Returns: the output from running pytest as a string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.is_file_valid">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">is_file_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_folder_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#is_file_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.is_file_valid" title="Link to this definition"></a></dt>
+<dd><p>Checks to see if a submission file path or problem filepath is a valid JSON, if yes returns true if not returns
+false
+:param verbose: printing more information to the screen
+:param out_folder_fp: a filepath of where the output is
+:param json_filepath: a filepath where a JSON file is</p>
+<p>Returns: boolean - True or False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.is_json_correct">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">is_json_correct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#is_json_correct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.is_json_correct" title="Link to this definition"></a></dt>
+<dd><p>Checks to see if a filepath is a valid JSON, if yes returns true if not returns false
+:param filepath: a filepath</p>
+<p>Returns: boolean - True or False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.is_prompt_correct">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">is_prompt_correct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_folder_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#is_prompt_correct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.is_prompt_correct" title="Link to this definition"></a></dt>
+<dd><p>Checks to see if a submission file has a valid prompt number. For prompt number 1, it is a fixed prompt. If
+fixed prompt, checks to see if the prompt is the same fixed prompt we have given, if this is true will return
+true. If prompt number is 1 - 9, it is a custom prompt, need to make sure each submission has at least one
+custom prompt per problem. If all this matches returns true. If prompt number or prompt for fixed prompt is
+something else, returns false.
+:param verbose: printing more information to the screen
+:param out_folder_fp: a filepath where the messages from this function will be stored.
+:param submission_file_path: a filepath where a submission JSON file is
+:param problem_file_path: a filepath where a problem JSON file is</p>
+<p>Returns: boolean - True or False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.is_prompt_num_str">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">is_prompt_num_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_folder_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#is_prompt_num_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.is_prompt_num_str" title="Link to this definition"></a></dt>
+<dd><p>Checks to see if a submission file does not have any empty fields - if yes will return false
+:param verbose: printing more information to the screen
+:param out_folder_fp: a filepath of where the output will be
+:param submission_file_path: a filepath where a JSON file is</p>
+<p>Returns: boolean - True or False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.is_submission_field_empty">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">is_submission_field_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_folder_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#is_submission_field_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.is_submission_field_empty" title="Link to this definition"></a></dt>
+<dd><p>Checks to see if a submission file does not have any empty fields - if yes will return false
+:param verbose: printing more information to the screen
+:param out_folder_fp: a filepath where the output will be
+:param submission_file_path: a filepath where a JSON file is</p>
+<p>Returns: boolean - True or False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.main">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.run_pytest_on_code">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">run_pytest_on_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curr_test_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#run_pytest_on_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.run_pytest_on_code" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.evaluation_environment.validate_submission.validate_code_submission">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.evaluation_environment.validate_submission.</span></span><span class="sig-name descname"><span class="pre">validate_code_submission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str_current_datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prob_json_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_json_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_test_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/evaluation_environment/validate_submission.html#validate_code_submission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.evaluation_environment.validate_submission.validate_code_submission" title="Link to this definition"></a></dt>
+<dd><p>Validates the submitted json file of generated tests relative to the problem json file. Prints out errors with
+“ERROR: …” and warnings with “WARNINGS: …” Warnings can be ignored but often indicate a problem with the
+submission. However, a submission must be free of all errors to pass validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str_current_datetime</strong> (<em>datetime</em>) – The date and time provided. If this is “” (default), then automatically</p></li>
+<li><p><strong>previous</strong> (<em>create the current date and time. This parameter is enabled so that if someone wishes to overwrite</em>)</p></li>
+<li><p><strong>folder</strong> (<em>output in a</em>)</p></li>
+<li><p><strong>default</strong> (<em>that previous date can be specified. By</em>)</p></li>
+<li><p><strong>&quot;&quot;.</strong> (<em>leave</em>)</p></li>
+<li><p><strong>prob_json_filepath</strong> (<em>str</em>) – The path to the problem json file.</p></li>
+<li><p><strong>submission_json_filepath</strong> (<em>str</em>) – The path to the submission json file</p></li>
+<li><p><strong>temp_test_dir</strong> (<em>str</em>) – The path to the temporary directory where test files can be created and deleted</p></li>
+<li><p><strong>output_dir</strong> – The directory to write the output to</p></li>
+<li><p><strong>system_name</strong> – The name of the system. Defaults to “”, which means that the system name will be
+extracted from the submission json.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – True if verbose output is enabled. False otherwise.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: The validator outputs as a bool. If the validation is successful, it will return True if not it will
+return False.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="genai_code_test.evaluation_environment.evaluate_submission.html" class="btn btn-neutral float-left" title="genai_code_test.evaluation_environment.evaluate_submission module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="genai_code_test.utils.html" class="btn btn-neutral float-right" title="genai_code_test.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, NIST.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

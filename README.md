@@ -1,15 +1,14 @@
 # README.md
 
-This repository "test_code_eval", contains software to
-test if AI-Generated Code can be used to help test software. This software is also the
+This repository, "test_code_eval," contains software to
+test if AI-generated code can be used to help test software. This software is also the
 scoring and validation code for the NIST GenAI Code Pilot Evaluation. 
 Although the test cases include some sample data that can be used to explore this package, the 
 NIST GenAI Code Pilot Evaluation Data is not in this repository.
 
 This code contains the genai_code_test package. 
 
-Full documentation of the `genai_code_test` package is on
-the [genai_code_test gitlab pages](https://genai_code.ipages.nist.gov/test_code_eval/).
+Full documentation of the `genai_code_test` package is in the [pre-built documentation](docs/_build/index.html).
 
 
 ## Contact
@@ -28,8 +27,7 @@ The contributors to this code repository are:
 ## Environment Variables and Configuration
 
 The majority of configurations will be provided in a `.ini` file. The typical default file,
-`config.ini` is provided as an example. `config_ci.ini` is a special configuration file used for Continuous 
-Integration (CI) purposes.
+`config.ini` is provided as an example. 
 
 Additionally, this program uses one environment variables for convenience:
 
@@ -41,7 +39,7 @@ GENAI_CODE_CONFIG_PATH
 the `config.ini` file. Within the configuration file, is the variable `repo_dir`, which provides the absolute path 
 to this repository directory.
 
-Additionally, for convenience, we store the root path to this repository in the environment variable
+Additionally, for convenience, we store the root path to this repository in the environment variable.
 
 ```bash
 GENAI_CODE_REPO_DIR

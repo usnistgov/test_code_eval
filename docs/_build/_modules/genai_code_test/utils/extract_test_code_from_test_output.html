@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genai_code_test.utils.extract_test_code_from_test_output &mdash; GenAI Code Test v2025.07.18 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GenAI Code Test
+          </a>
+              <div class="version">
+                v2025.07.18
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">README.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">CHANGELOG.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GenAI Code Test</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genai_code_test.utils.extract_test_code_from_test_output</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genai_code_test.utils.extract_test_code_from_test_output</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># from mpmath import isint</span>
+
+
+<div class="viewcode-block" id="extract_test_code_from_prompt_output_pri">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.extract_test_code_from_test_output.html#genai_code_test.utils.extract_test_code_from_test_output.extract_test_code_from_prompt_output_pri">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_test_code_from_prompt_output_pri</span><span class="p">(</span><span class="n">output_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract the test code statements from our AI prompt output given the structure of our fixed prompt. This</span>
+<span class="sd">    Leverages that our prompts start with  &quot;###|=-=-=beginning of tests=-=-=|&quot; before the code and</span>
+<span class="sd">    &quot;###|=-=-=end of tests=-=-=|&quot; at the end of the code. Prompt output not containing this will not be</span>
+<span class="sd">    converted by this method and will rely on the extract_test_code_from_prompt_output_sec() method to extract</span>
+<span class="sd">    the prompt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        output_str: The string containing the entirety of the AI-generated system output, which includes all the</span>
+<span class="sd">            test code.</span>
+<span class="sd">        trial_id: The trial id of the trial.</span>
+
+<span class="sd">    Returns: a string with as the converted test code that can be run in pytest or &quot;&quot; if the test code could not</span>
+<span class="sd">        be extracted.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code_start</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">code_end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_str</span><span class="p">)</span>
+    <span class="n">test_start_str</span> <span class="o">=</span> <span class="s2">&quot;###|=-=-=beginning of tests=-=-=|&quot;</span>
+    <span class="n">test_end_str</span> <span class="o">=</span> <span class="s2">&quot;###|=-=-=end of tests=-=-=|&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">start_loc</span> <span class="o">=</span> <span class="n">output_str</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">test_start_str</span><span class="p">)</span>
+        <span class="n">code_start</span> <span class="o">=</span> <span class="n">start_loc</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_start_str</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">errex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">errex</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Test-Starting String </span><span class="si">{}</span><span class="s2"> missing for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_start_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">errex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">errex</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Test-Starting String </span><span class="si">{}</span><span class="s2"> missing for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_start_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">end_loc</span> <span class="o">=</span> <span class="n">output_str</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">test_end_str</span><span class="p">)</span>
+        <span class="n">code_end</span> <span class="o">=</span> <span class="n">end_loc</span>
+    <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">errex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">errex</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Test Ending String </span><span class="si">{}</span><span class="s2"> missing or &quot;</span>
+              <span class="s2">&quot;before start string for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_end_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">errex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">errex</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Test Ending String </span><span class="si">{}</span><span class="s2"> missing or &quot;</span>
+              <span class="s2">&quot;before start string for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_end_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">end_loc</span> <span class="o">&lt;=</span> <span class="n">start_loc</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;ERROR: Test End String </span><span class="si">{}</span><span class="s2"> Before Test Start String </span><span class="si">{}</span><span class="s2"> for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">test_end_str</span><span class="p">,</span>
+                <span class="n">test_start_str</span><span class="p">,</span>
+                <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">output_str</span><span class="p">[</span><span class="n">code_start</span><span class="p">:</span><span class="n">code_end</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">output_code_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">,</span> <span class="s2">&quot;#```&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_code_str</span></div>
+
+
+
+<div class="viewcode-block" id="extract_test_code_from_prompt_output_sec">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.extract_test_code_from_test_output.html#genai_code_test.utils.extract_test_code_from_test_output.extract_test_code_from_prompt_output_sec">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_test_code_from_prompt_output_sec</span><span class="p">(</span><span class="n">output_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract the test code statements from our AI prompt output given the structure of our fixed prompt when</span>
+<span class="sd">    the primary extractor fails. We also realize that some systems encapsulate their code</span>
+<span class="sd">    in ```python &lt;code&gt; ```, so we use this as a secondary catch if our instructions are not followed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        output_str: The string containing the entirety of the AI-generated system output, which includes all the</span>
+<span class="sd">            test code.</span>
+<span class="sd">        trial_id: The trial id of the trial.</span>
+
+<span class="sd">    Returns: a string with as the converted test code that can be run in pytest or &quot;&quot; if the test code could not</span>
+<span class="sd">        be extracted.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code_start</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">code_end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_str</span><span class="p">)</span>
+    <span class="n">test_start_str</span> <span class="o">=</span> <span class="s2">&quot;```python&quot;</span>
+    <span class="n">test_end_str</span> <span class="o">=</span> <span class="s2">&quot;```&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">start_loc</span> <span class="o">=</span> <span class="n">output_str</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="n">test_start_str</span><span class="p">)</span>
+        <span class="n">code_start</span> <span class="o">=</span> <span class="n">start_loc</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_start_str</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">errex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">errex</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Secondary Test-Starting String </span><span class="si">{}</span><span class="s2"> missing for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_start_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">errex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">errex</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Secondary Test-Starting String </span><span class="si">{}</span><span class="s2"> missing for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_start_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">output_post_start_str</span> <span class="o">=</span> <span class="n">output_str</span><span class="p">[</span><span class="n">code_start</span><span class="p">:]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">end_loc</span> <span class="o">=</span> <span class="n">output_post_start_str</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">test_end_str</span><span class="p">)</span>
+        <span class="n">code_end</span> <span class="o">=</span> <span class="n">end_loc</span>
+    <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">errex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">errex</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Secondary Test Ending String </span><span class="si">{}</span><span class="s2"> missing or &quot;</span>
+              <span class="s2">&quot;before start string for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_end_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">errex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">errex</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Secondary Test Ending String </span><span class="si">{}</span><span class="s2"> missing or &quot;</span>
+              <span class="s2">&quot;before start string for Trial </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_end_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">output_post_start_str</span><span class="p">[:</span><span class="n">code_end</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">output_code_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">,</span> <span class="s2">&quot;#```&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_code_str</span></div>
+
+
+
+<div class="viewcode-block" id="convert_submission">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.extract_test_code_from_test_output.html#genai_code_test.utils.extract_test_code_from_test_output.convert_submission">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_submission</span><span class="p">(</span><span class="n">ai_json_fp</span><span class="p">,</span> <span class="n">output_fp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main method to extract test code from AI-generated prompts. This code takes a json submission output produced by</span>
+<span class="sd">    our LLM-querying code that includes the entirety of the AI-generated output in test_output but is missing the</span>
+<span class="sd">    extracted test_code field. This method extracts the test code from the test_ouptut and provides the test_code. Then</span>
+<span class="sd">    it creates a valid submission json file with the test code.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ai_json_fp: absolute file path to the AI-submission json file without the test_code</span>
+<span class="sd">        output_fp:  absolute file path to write the output json submission file to.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ai_jf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ai_json_fp</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">ai_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ai_jf</span><span class="p">)</span>
+    <span class="n">ai_elements</span> <span class="o">=</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span>
+    <span class="n">code_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;code_list&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ai_elements</span><span class="p">:</span>
+        <span class="n">e_code_file</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">output_str</span> <span class="o">=</span> <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_output&quot;</span><span class="p">]</span>
+        <span class="n">trial_id</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span>
+        <span class="n">test_import_statement</span> <span class="o">=</span> <span class="s2">&quot;from genai_code_file import *&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;testing_import_statement&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">test_import_statement</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;testing_import_statement&#39;</span><span class="p">]</span>
+        <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">extract_test_code_from_prompt_output_pri</span><span class="p">(</span><span class="n">output_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_code_str</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">extract_test_code_from_prompt_output_sec</span><span class="p">(</span><span class="n">output_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">)</span>
+        <span class="c1"># Now we augment it with our import line only if we don&#39;t see it</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">output_str</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;from genai_code_file import&quot;</span><span class="p">)</span>
+            <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">output_code_str</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">test_import_statement</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">output_code_str</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">test_import_statement</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">output_code_str</span>
+        <span class="c1"># For our test code extraction, convert any integer prompt number to a string</span>
+        <span class="c1"># if isinstance(e_code_file[&quot;prompt_number&quot;], int):</span>
+        <span class="c1">#     e_code_file[&quot;prompt_number&quot;] = str(e_code_file[&quot;prompt_number&quot;])</span>
+        <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_str</span>
+        <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_code_str</span>
+        <span class="n">code_dict</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e_code_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_fp</span><span class="p">)):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_fp</span><span class="p">))</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">code_dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="code_main">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.extract_test_code_from_test_output.html#genai_code_test.utils.extract_test_code_from_test_output.code_main">[docs]</a>
+<span class="k">def</span> <span class="nf">code_main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">input_filepath</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_filepath</span>
+    <span class="n">output_filepath</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output_filepath</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Script: create_test_code_from_test_output.py&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Args:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Input Submission Filepath: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_filepath</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Output Converted Filepath: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Verbose Option: </span><span class="si">{}</span><span class="s2">. Set verbose to True to print more information&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">verbose</span><span class="p">))</span>
+
+    <span class="n">convert_submission</span><span class="p">(</span><span class="n">input_filepath</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="define_parser">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.extract_test_code_from_test_output.html#genai_code_test.utils.extract_test_code_from_test_output.define_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">define_parser</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines accepted CLI syntax and the actions to take for command and args.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        argparse parser</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_config_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;GENAI_CODE_CONFIG_PATH&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Now extract the arguments from the config file</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">default_config_filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">configfile</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Cannot open config file: &quot;</span> <span class="o">+</span> <span class="n">default_config_filepath</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Evaluate Test-Code Generating Systems&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--input_filepath&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Filepath of the input submission file. &quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output_filepath&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Absolute path to the output json filepath of the converted submission file.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable Verbose output&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="c1"># This tells the code to automatically execute this function</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">code_main</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.extract_test_code_from_test_output.html#genai_code_test.utils.extract_test_code_from_test_output.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_rows&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_columns&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_colwidth&quot;</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">define_parser</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span></div>
+
+
+    <span class="c1"># `code_main(args)` is automatically called</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, NIST.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

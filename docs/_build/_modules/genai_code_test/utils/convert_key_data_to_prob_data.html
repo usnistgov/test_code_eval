@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genai_code_test.utils.convert_key_data_to_prob_data &mdash; GenAI Code Test v2025.07.18 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GenAI Code Test
+          </a>
+              <div class="version">
+                v2025.07.18
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">README.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">CHANGELOG.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GenAI Code Test</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genai_code_test.utils.convert_key_data_to_prob_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genai_code_test.utils.convert_key_data_to_prob_data</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+
+<div class="viewcode-block" id="making_fixed_prompt">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.convert_key_data_to_prob_data.html#genai_code_test.utils.convert_key_data_to_prob_data.making_fixed_prompt">[docs]</a>
+<span class="k">def</span> <span class="nf">making_fixed_prompt</span><span class="p">(</span><span class="n">specification</span><span class="p">,</span> <span class="n">primary_method_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates our fixed prompt for a particular trial with a given specification.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        specification: the text specification of the problem</span>
+<span class="sd">        primary_method_name: the primary method name of the problem for a trial</span>
+
+<span class="sd">    Returns: (str) A string of the fixed prompt constructed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">intro_string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;We have python code that implements the following &quot;</span>
+                    <span class="s2">&quot;specification.</span><span class="se">\n\n</span><span class="s2">Specification:&quot;</span><span class="p">)</span>
+
+    <span class="n">spec_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="si">{</span><span class="n">specification</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">code_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">instruction_string</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Please write python pytest test code that comprehensively &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;tests the code for method </span><span class="si">{</span><span class="n">primary_method_name</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;to determine if the code satisfies the specification or not. When writing tests:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;* write a comprehensive test suite,</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;* test edge cases,</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;* only generate correct tests, and</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;* include tests for TypeError cases.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Please write &#39;###|=-=-=beginning of tests=-=-=|&#39; before the tests. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Write &#39;###|=-=-=end of tests=-=-=|&#39; immediately after the tests. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Import any needed packages, including pytest. Import the code being tested by adding the line &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;`from genai_code_file import </span><span class="si">{</span><span class="n">primary_method_name</span><span class="si">}</span><span class="s2">` the line after &#39;###|=-=-=beginning of tests=-=-=|&#39;. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Do not provide an implementation of the method </span><span class="si">{</span><span class="n">primary_method_name</span><span class="si">}</span><span class="s2"> with the tests.&quot;</span><span class="p">)</span>
+    <span class="n">the_prompt_fixed</span> <span class="o">=</span> <span class="n">intro_string</span> <span class="o">+</span> <span class="n">spec_string</span> <span class="o">+</span> <span class="n">code_string</span> <span class="o">+</span> <span class="n">instruction_string</span>
+
+    <span class="k">return</span> <span class="n">the_prompt_fixed</span></div>
+
+
+
+<div class="viewcode-block" id="func_convert_key_data_to_prob_data">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.convert_key_data_to_prob_data.html#genai_code_test.utils.convert_key_data_to_prob_data.func_convert_key_data_to_prob_data">[docs]</a>
+<span class="k">def</span> <span class="nf">func_convert_key_data_to_prob_data</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes a directory as an input value, looks at the JSON key file or files within the directory and</span>
+<span class="sd">    outputs a JSON input file. This input file that is created will be the file participants will being using</span>
+<span class="sd">    during the pilot study.</span>
+
+<span class="sd">    These key files have the properties of:</span>
+
+<span class="sd">    &quot;trial_id&quot;</span>
+<span class="sd">    &quot;testing_import_statement&quot;</span>
+<span class="sd">    &quot;source&quot;</span>
+<span class="sd">    &quot;source_text&quot;</span>
+<span class="sd">    &quot;category&quot;</span>
+<span class="sd">    &quot;specification&quot;</span>
+<span class="sd">    &quot;code_correct&quot;:</span>
+<span class="sd">    &quot;code_incorrect_1&quot;</span>
+<span class="sd">    &quot;code_incorrect_t&quot;</span>
+
+<span class="sd">    and possibly primary_method_name</span>
+
+<span class="sd">    While the problem files have the properties of:</span>
+
+<span class="sd">    &quot;trial_id&quot;</span>
+<span class="sd">    &quot;testing_import_statement&quot;</span>
+<span class="sd">    &quot;specification&quot;</span>
+<span class="sd">    &quot;prompt_fixed&quot;</span>
+
+<span class="sd">    and possibly primary_method_name</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_dir: the directory where the JSON key file is.</span>
+<span class="sd">        output_dir: the directory where the JSON input file will be.</span>
+
+<span class="sd">    Returns: The input JSON file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+
+    <span class="n">json_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">input_dir</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+            <span class="n">json_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">json_list</span><span class="p">:</span>
+        <span class="n">all_the_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">header_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">problem_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">jf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">problem_directory</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">jf</span><span class="p">)</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">15</span><span class="p">:]</span>
+        <span class="n">new_name</span> <span class="o">=</span> <span class="s2">&quot;Problem Inputs for &quot;</span> <span class="o">+</span> <span class="n">result</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
+        <span class="n">eval_version</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;Evaluation_Version&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
+            <span class="n">trial_id</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">primary_method_name</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;primary_method_name&quot;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No primary_method_name file&quot;</span><span class="p">)</span>
+                <span class="n">primary_method_name</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+
+            <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;\bdef\s+(\w+)\(&#39;</span>
+            <span class="n">method_names</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;code_correct&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">method_names</span><span class="p">:</span>
+                <span class="n">testing_import_statement</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;from genai_code_file import </span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">method_names</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">testing_import_statement</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">name</span> <span class="o">=</span> <span class="n">trial_id</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span>
+            <span class="n">specification</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;specification&quot;</span><span class="p">]</span>
+
+            <span class="n">prompt_fixed</span> <span class="o">=</span> <span class="n">making_fixed_prompt</span><span class="p">(</span><span class="n">specification</span><span class="p">,</span> <span class="n">primary_method_name</span><span class="p">)</span>
+
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_name</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">version</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;Evaluation_Version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_version</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># Assemble the structure</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;trial_id&quot;</span><span class="p">:</span> <span class="n">trial_id</span><span class="p">,</span>
+                <span class="s2">&quot;testing_import_statement&quot;</span><span class="p">:</span> <span class="n">testing_import_statement</span><span class="p">,</span>
+                <span class="s2">&quot;primary_method_name&quot;</span><span class="p">:</span> <span class="n">primary_method_name</span><span class="p">,</span>
+                <span class="s2">&quot;specification&quot;</span><span class="p">:</span> <span class="n">specification</span><span class="p">,</span>
+                <span class="s2">&quot;prompt_fixed&quot;</span><span class="p">:</span> <span class="n">prompt_fixed</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_name</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">version</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;Evaluation_Version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_version</span>
+            <span class="n">all_the_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="n">num</span> <span class="o">+</span> <span class="mi">25</span>
+
+        <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_the_data</span>
+        <span class="n">output_fname</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">output_fname</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">header_data</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="define_parser">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.convert_key_data_to_prob_data.html#genai_code_test.utils.convert_key_data_to_prob_data.define_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">define_parser</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines accepted CLI syntax and the actions to take for command and args.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        argparse parser</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_config_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;GENAI_CODE_CONFIG_PATH&quot;</span><span class="p">]</span>
+    <span class="n">default_config_mode</span> <span class="o">=</span> <span class="s2">&quot;Pilot1Evaluator&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">default_config_filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">configfile</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Cannot open config file: &quot;</span> <span class="o">+</span> <span class="n">default_config_filepath</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create Code Files from json Input&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--config_filepath&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Location of Configuration file&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_config_filepath</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--config_mode&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Mode of Configuration_file&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_config_mode</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--input_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Absolute Path of input directory of json files to convert.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Absolute path to the output directory where converted folders should be created. &quot;</span>
+             <span class="s2">&quot;May overwrite past output.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable Verbose output&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This tells the code to automatically execute this function</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">code_main</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+
+<div class="viewcode-block" id="code_main">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.convert_key_data_to_prob_data.html#genai_code_test.utils.convert_key_data_to_prob_data.code_main">[docs]</a>
+<span class="k">def</span> <span class="nf">code_main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">config_filepath</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config_filepath</span>
+    <span class="n">config_mode</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config_mode</span>
+    <span class="n">input_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_dir</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output_dir</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Script: create_code_files_from_json_input&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Args:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Config File Used: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_filepath</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Config mode: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_mode</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Input Directory Path: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_dir</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Output Directory Path: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_dir</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Verbose Option: </span><span class="si">{}</span><span class="s2">. Set verbose to True to print more information&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">verbose</span><span class="p">))</span>
+
+    <span class="n">func_convert_key_data_to_prob_data</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.convert_key_data_to_prob_data.html#genai_code_test.utils.convert_key_data_to_prob_data.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">define_parser</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, NIST.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genai_code_test.utils.create_code_files_from_json_input &mdash; GenAI Code Test v2025.07.18 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GenAI Code Test
+          </a>
+              <div class="version">
+                v2025.07.18
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">README.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">CHANGELOG.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GenAI Code Test</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">genai_code_test.utils.create_code_files_from_json_input</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for genai_code_test.utils.create_code_files_from_json_input</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+
+<div class="viewcode-block" id="func_create_code_files_from_json">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.create_code_files_from_json_input.html#genai_code_test.utils.create_code_files_from_json_input.func_create_code_files_from_json">[docs]</a>
+<span class="k">def</span> <span class="nf">func_create_code_files_from_json</span><span class="p">(</span><span class="n">prob_data_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes a directory as an input value, looks at the problem JSON file within a directory and outputs a</span>
+<span class="sd">    folder what contains a folder for each problem in the JSON file and a metadata file. Each problem folder is</span>
+<span class="sd">    labeled by its trial_id and contains a file for the baseline reference code, baseline two test code,</span>
+<span class="sd">    the incorrect code, the incorrect t, the correct code and the specification. The metadata JSON file consists of</span>
+<span class="sd">    all the metadata from the problems.</span>
+
+<span class="sd">    The metadata properties are:</span>
+<span class="sd">    &quot;trial_id&quot;</span>
+<span class="sd">    &quot;testing_import_statement&quot;</span>
+<span class="sd">    &quot;source&quot;</span>
+<span class="sd">    &quot;source_text&quot;</span>
+<span class="sd">    &quot;lines_per_method&quot;</span>
+<span class="sd">    &quot;num_methods&quot;</span>
+<span class="sd">    &quot;imports_used&quot;</span>
+<span class="sd">    &quot;category&quot;</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        prob_data_dir: the directory where the problem JSON file is.</span>
+<span class="sd">        output_dir: the directory where the folder and metadata JSON file will be.</span>
+
+<span class="sd">    Returns: a folder for each problem and a metadata JSON file which contains data for all the problems.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+
+    <span class="n">is_value</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">json_file</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">all_the_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">header_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">prob_data_dir</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+            <span class="n">json_file</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">json_file</span><span class="p">:</span>
+        <span class="n">problem_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prob_data_dir</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">jf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">problem_directory</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">jf</span><span class="p">)</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
+        <span class="n">eval_version</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;Evaluation_Version&quot;</span><span class="p">]</span>
+
+        <span class="n">json_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">problem_directory</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">json_output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">json_basename</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
+            <span class="n">suboutput_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">json_output_dir</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">)</span>
+
+            <span class="n">task_name</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">task_name</span><span class="p">:</span>
+                <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">testing_import_statement</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;testing_import_statement&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">testing_import_statement</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;testing_import_statement&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">testing_import_statement</span><span class="p">:</span>
+                    <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">md_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;source&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">md_source</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">md_source</span><span class="p">:</span>
+                    <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">md_source_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;source_text&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">md_source_text</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;source_text&quot;</span><span class="p">]</span>
+
+            <span class="n">md_lines_per_method</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;lines_per_method&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">md_lines_per_method</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;lines_per_method&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">md_lines_per_method</span><span class="p">:</span>
+                    <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">md_num_methods</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;num_methods&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">md_num_methods</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;num_methods&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">md_num_methods</span><span class="p">:</span>
+                    <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">md_imports_used</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;imports_used&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">md_imports_used</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;imports_used&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">md_imports_used</span><span class="p">:</span>
+                    <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;category&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">category</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">category</span><span class="p">:</span>
+                    <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">primary_method_name</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;primary_method_name&quot;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No primary_method_name file&quot;</span><span class="p">)</span>
+                <span class="n">primary_method_name</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+
+            <span class="k">if</span> <span class="s2">&quot;specification&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">text_specification</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;specification&quot;</span><span class="p">]</span>
+                <span class="n">specification_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">,</span> <span class="n">task_name</span> <span class="o">+</span> <span class="s2">&quot;_specification.txt&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">specification_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+                    <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text_specification</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">text_specification</span><span class="p">:</span>
+                        <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="s2">&quot;code_correct&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">text_code_correct</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;code_correct&quot;</span><span class="p">]</span>
+                <span class="n">correct_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">,</span> <span class="n">task_name</span> <span class="o">+</span> <span class="s2">&quot;_correct.py&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">correct_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+                    <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text_code_correct</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">text_code_correct</span><span class="p">:</span>
+                        <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="s2">&quot;code_incorrect_1&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">text_code_incorrect_1</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;code_incorrect_1&quot;</span><span class="p">]</span>
+                <span class="n">incorrect_1_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">,</span> <span class="n">task_name</span> <span class="o">+</span> <span class="s2">&quot;_incorrect_1.py&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">incorrect_1_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+                    <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text_code_incorrect_1</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">text_code_incorrect_1</span><span class="p">:</span>
+                        <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;code_incorrect_t&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">text_code_incorrect_t</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;code_incorrect_t&quot;</span><span class="p">]</span>
+                    <span class="n">incorrect_t_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">,</span> <span class="n">task_name</span> <span class="o">+</span> <span class="s2">&quot;_incorrect_t.py&quot;</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">incorrect_t_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+                        <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text_code_incorrect_t</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">text_code_incorrect_t</span><span class="p">:</span>
+                            <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="n">text_code_incorrect_t</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No code_incorrect_t file&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="s2">&quot;baseline_reference_test_code&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">baseline_reference_test_code</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;baseline_reference_test_code&quot;</span><span class="p">]</span>
+                <span class="n">baseline_reference_test_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">,</span> <span class="n">task_name</span> <span class="o">+</span>
+                                                               <span class="s2">&quot;_baseline_reference_test_code.py&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">baseline_reference_test_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+                    <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">baseline_reference_test_code</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">baseline_reference_test_code</span><span class="p">:</span>
+                        <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="s2">&quot;baseline_two_test_code&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">baseline_two_test_code</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;baseline_two_test_code&quot;</span><span class="p">]</span>
+                <span class="n">baseline_two_test_code_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">,</span> <span class="n">task_name</span> <span class="o">+</span> <span class="s2">&quot;_baseline_two_test_code.py&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">baseline_two_test_code_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+                    <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">baseline_two_test_code</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">baseline_two_test_code</span><span class="p">:</span>
+                        <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="s2">&quot;prompt&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">prompt_text</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span>
+                <span class="n">prompt_text_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">,</span> <span class="n">task_name</span> <span class="o">+</span> <span class="s2">&quot;_prompt.txt&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">prompt_text_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+                    <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prompt_text</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">prompt_text</span><span class="p">:</span>
+                        <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="s2">&quot;prompt_fixed&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">prompt_fixed_text</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;prompt_fixed&quot;</span><span class="p">]</span>
+                <span class="n">prompt_fixed_text_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboutput_dir</span><span class="p">,</span> <span class="n">task_name</span> <span class="o">+</span> <span class="s2">&quot;_prompt_fixed.txt&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">prompt_fixed_text_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">text_file</span><span class="p">:</span>
+                    <span class="n">text_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prompt_fixed_text</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">prompt_fixed_text</span><span class="p">:</span>
+                        <span class="n">is_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">version</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;Evaluation_Version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_version</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+
+                <span class="s2">&quot;trial_id&quot;</span><span class="p">:</span> <span class="n">task_name</span><span class="p">,</span>
+                <span class="s2">&quot;testing_import_statement&quot;</span><span class="p">:</span> <span class="n">testing_import_statement</span><span class="p">,</span>
+                <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">md_source</span><span class="p">,</span>
+                <span class="s2">&quot;source_text&quot;</span><span class="p">:</span> <span class="n">md_source_text</span><span class="p">,</span>
+                <span class="s2">&quot;lines_per_method&quot;</span><span class="p">:</span> <span class="n">md_lines_per_method</span><span class="p">,</span>
+                <span class="s2">&quot;num_methods&quot;</span><span class="p">:</span> <span class="n">md_num_methods</span><span class="p">,</span>
+                <span class="s2">&quot;imports_used&quot;</span><span class="p">:</span> <span class="n">md_imports_used</span><span class="p">,</span>
+                <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">,</span>
+                <span class="s2">&quot;primary_method_name&quot;</span><span class="p">:</span> <span class="n">primary_method_name</span>
+            <span class="p">}</span>
+
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">version</span>
+            <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;Evaluation_Version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_version</span>
+            <span class="n">all_the_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+
+        <span class="n">header_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_the_data</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">json_output_dir</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">header_data</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">all_the_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">is_value</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="define_parser">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.create_code_files_from_json_input.html#genai_code_test.utils.create_code_files_from_json_input.define_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">define_parser</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines accepted CLI syntax and the actions to take for command and args.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        argparse parser</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_config_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;GENAI_CODE_CONFIG_PATH&quot;</span><span class="p">]</span>
+    <span class="n">default_config_mode</span> <span class="o">=</span> <span class="s2">&quot;Pilot1Evaluator&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">default_config_filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">configfile</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Cannot open config file: &quot;</span> <span class="o">+</span> <span class="n">default_config_filepath</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create Code Files from json Input&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--config_filepath&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Location of Configuration file&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_config_filepath</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--config_mode&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Mode of Configuration_file&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_config_mode</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--input_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Absolute Path of input directory of json files to convert.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Absolute path to the output directory where converted folders should be created. &quot;</span>
+             <span class="s2">&quot;May overwrite past output.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable Verbose output&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This tells the code to automatically execute this function</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">code_main</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+
+<div class="viewcode-block" id="code_main">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.create_code_files_from_json_input.html#genai_code_test.utils.create_code_files_from_json_input.code_main">[docs]</a>
+<span class="k">def</span> <span class="nf">code_main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">config_filepath</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config_filepath</span>
+    <span class="n">config_mode</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config_mode</span>
+    <span class="n">input_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_dir</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output_dir</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Script: create_code_files_from_json_input&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Args:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Config File Used: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_filepath</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Config mode: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_mode</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Input Directory Path: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_dir</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Output Directory Path: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_dir</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;||| Verbose Option: </span><span class="si">{}</span><span class="s2">. Set verbose to True to print more information&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">verbose</span><span class="p">))</span>
+
+    <span class="n">func_create_code_files_from_json</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../api/genai_code_test.utils.create_code_files_from_json_input.html#genai_code_test.utils.create_code_files_from_json_input.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">define_parser</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, NIST.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

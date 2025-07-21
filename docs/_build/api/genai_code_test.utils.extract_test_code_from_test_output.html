@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>genai_code_test.utils.extract_test_code_from_test_output module &mdash; GenAI Code Test v2025.07.18 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="genai_code_test.utils.create_json_file_from_code_files module" href="genai_code_test.utils.create_json_file_from_code_files.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GenAI Code Test
+          </a>
+              <div class="version">
+                v2025.07.18
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">README.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">CHANGELOG.md</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../API_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="genai_code_test.html">genai_code_test package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="genai_code_test.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="genai_code_test.evaluation_environment.html">genai_code_test.evaluation_environment package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="genai_code_test.utils.html">genai_code_test.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.evaluation_environment.html">genai_code_test.evaluation_environment package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.evaluation_environment.evaluate_submission.html">genai_code_test.evaluation_environment.evaluate_submission module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.evaluation_environment.validate_submission.html">genai_code_test.evaluation_environment.validate_submission module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="genai_code_test.utils.html">genai_code_test.utils package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="genai_code_test.utils.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="genai_code_test.utils.convert_code_bank_to_key_file.html">genai_code_test.utils.convert_code_bank_to_key_file module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="genai_code_test.utils.convert_key_data_to_prob_data.html">genai_code_test.utils.convert_key_data_to_prob_data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="genai_code_test.utils.create_baseline_submission.html">genai_code_test.utils.create_baseline_submission module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="genai_code_test.utils.create_code_files_from_json_input.html">genai_code_test.utils.create_code_files_from_json_input module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="genai_code_test.utils.create_json_file_from_code_files.html">genai_code_test.utils.create_json_file_from_code_files module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">genai_code_test.utils.extract_test_code_from_test_output module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.convert_code_bank_to_key_file.html">genai_code_test.utils.convert_code_bank_to_key_file module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.convert_key_data_to_prob_data.html">genai_code_test.utils.convert_key_data_to_prob_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.create_baseline_submission.html">genai_code_test.utils.create_baseline_submission module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.create_code_files_from_json_input.html">genai_code_test.utils.create_code_files_from_json_input module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genai_code_test.utils.create_json_file_from_code_files.html">genai_code_test.utils.create_json_file_from_code_files module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genai_code_test.utils.extract_test_code_from_test_output module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.utils.extract_test_code_from_test_output.code_main"><code class="docutils literal notranslate"><span class="pre">code_main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.utils.extract_test_code_from_test_output.convert_submission"><code class="docutils literal notranslate"><span class="pre">convert_submission()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.utils.extract_test_code_from_test_output.define_parser"><code class="docutils literal notranslate"><span class="pre">define_parser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.utils.extract_test_code_from_test_output.extract_test_code_from_prompt_output_pri"><code class="docutils literal notranslate"><span class="pre">extract_test_code_from_prompt_output_pri()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.utils.extract_test_code_from_test_output.extract_test_code_from_prompt_output_sec"><code class="docutils literal notranslate"><span class="pre">extract_test_code_from_prompt_output_sec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genai_code_test.utils.extract_test_code_from_test_output.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GenAI Code Test</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../API_reference.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="genai_code_test.html">genai_code_test package</a></li>
+          <li class="breadcrumb-item"><a href="genai_code_test.utils.html">genai_code_test.utils package</a></li>
+      <li class="breadcrumb-item active">genai_code_test.utils.extract_test_code_from_test_output module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/genai_code_test.utils.extract_test_code_from_test_output.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-genai_code_test.utils.extract_test_code_from_test_output">
+<span id="genai-code-test-utils-extract-test-code-from-test-output-module"></span><h1>genai_code_test.utils.extract_test_code_from_test_output module<a class="headerlink" href="#module-genai_code_test.utils.extract_test_code_from_test_output" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.utils.extract_test_code_from_test_output.code_main">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.utils.extract_test_code_from_test_output.</span></span><span class="sig-name descname"><span class="pre">code_main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/utils/extract_test_code_from_test_output.html#code_main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.utils.extract_test_code_from_test_output.code_main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.utils.extract_test_code_from_test_output.convert_submission">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.utils.extract_test_code_from_test_output.</span></span><span class="sig-name descname"><span class="pre">convert_submission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_json_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_fp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/utils/extract_test_code_from_test_output.html#convert_submission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.utils.extract_test_code_from_test_output.convert_submission" title="Link to this definition"></a></dt>
+<dd><p>Main method to extract test code from AI-generated prompts. This code takes a json submission output produced by
+our LLM-querying code that includes the entirety of the AI-generated output in test_output but is missing the
+extracted test_code field. This method extracts the test code from the test_ouptut and provides the test_code. Then
+it creates a valid submission json file with the test code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ai_json_fp</strong> – absolute file path to the AI-submission json file without the test_code</p></li>
+<li><p><strong>output_fp</strong> – absolute file path to write the output json submission file to.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.utils.extract_test_code_from_test_output.define_parser">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.utils.extract_test_code_from_test_output.</span></span><span class="sig-name descname"><span class="pre">define_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/utils/extract_test_code_from_test_output.html#define_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.utils.extract_test_code_from_test_output.define_parser" title="Link to this definition"></a></dt>
+<dd><p>Defines accepted CLI syntax and the actions to take for command and args.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>argparse parser</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.utils.extract_test_code_from_test_output.extract_test_code_from_prompt_output_pri">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.utils.extract_test_code_from_test_output.</span></span><span class="sig-name descname"><span class="pre">extract_test_code_from_prompt_output_pri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/utils/extract_test_code_from_test_output.html#extract_test_code_from_prompt_output_pri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.utils.extract_test_code_from_test_output.extract_test_code_from_prompt_output_pri" title="Link to this definition"></a></dt>
+<dd><p>Extract the test code statements from our AI prompt output given the structure of our fixed prompt. This
+Leverages that our prompts start with  “###|=-=-=beginning of tests=-=-=|” before the code and
+“###|=-=-=end of tests=-=-=|” at the end of the code. Prompt output not containing this will not be
+converted by this method and will rely on the extract_test_code_from_prompt_output_sec() method to extract
+the prompt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_str</strong> – The string containing the entirety of the AI-generated system output, which includes all the
+test code.</p></li>
+<li><p><strong>trial_id</strong> – The trial id of the trial.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns: a string with as the converted test code that can be run in pytest or “” if the test code could not</dt><dd><p>be extracted.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.utils.extract_test_code_from_test_output.extract_test_code_from_prompt_output_sec">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.utils.extract_test_code_from_test_output.</span></span><span class="sig-name descname"><span class="pre">extract_test_code_from_prompt_output_sec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/utils/extract_test_code_from_test_output.html#extract_test_code_from_prompt_output_sec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.utils.extract_test_code_from_test_output.extract_test_code_from_prompt_output_sec" title="Link to this definition"></a></dt>
+<dd><p>Extract the test code statements from our AI prompt output given the structure of our fixed prompt when
+the primary extractor fails. We also realize that some systems encapsulate their code
+in <code class="docutils literal notranslate"><span class="pre">`python</span> <span class="pre">&lt;code&gt;</span> <span class="pre">`</span></code>, so we use this as a secondary catch if our instructions are not followed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_str</strong> – The string containing the entirety of the AI-generated system output, which includes all the
+test code.</p></li>
+<li><p><strong>trial_id</strong> – The trial id of the trial.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns: a string with as the converted test code that can be run in pytest or “” if the test code could not</dt><dd><p>be extracted.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genai_code_test.utils.extract_test_code_from_test_output.main">
+<span class="sig-prename descclassname"><span class="pre">genai_code_test.utils.extract_test_code_from_test_output.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/genai_code_test/utils/extract_test_code_from_test_output.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#genai_code_test.utils.extract_test_code_from_test_output.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="genai_code_test.utils.create_json_file_from_code_files.html" class="btn btn-neutral float-left" title="genai_code_test.utils.create_json_file_from_code_files module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, NIST.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

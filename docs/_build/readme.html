@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>README.md &mdash; GenAI Code Test v2025.07.18 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CHANGELOG.md" href="changelog.html" />
+    <link rel="prev" title="GenAI Code Test Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GenAI Code Test
+          </a>
+              <div class="version">
+                v2025.07.18
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">README.md</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contact">Contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-variables-and-configuration">Environment Variables and Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-installation">Code Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#organizational-structure">Organizational Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-scorer-and-validator">Running the Scorer and Validator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-testing-and-styling-components-locally">Running Testing and Styling Components Locally</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-formatting">Code Formatting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG.md</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GenAI Code Test</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">README.md</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/readme.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="readme-md">
+<h1>README.md<a class="headerlink" href="#readme-md" title="Link to this heading"></a></h1>
+<p>This repository, “test_code_eval,” contains software to
+test if AI-generated code can be used to help test software. This software is also the
+scoring and validation code for the NIST GenAI Code Pilot Evaluation.
+Although the test cases include some sample data that can be used to explore this package, the
+NIST GenAI Code Pilot Evaluation Data is not in this repository.</p>
+<p>This code contains the genai_code_test package.</p>
+<p>Full documentation of the <code class="docutils literal notranslate"><span class="pre">genai_code_test</span></code> package is in the <a class="reference external" href="docs/_build/index.html">pre-built documentation</a>.</p>
+<section id="contact">
+<h2>Contact<a class="headerlink" href="#contact" title="Link to this heading"></a></h2>
+<p>For specific software questions, please contact Sonika Sharma <a class="reference external" href="mailto:sonika&#46;sharma&#37;&#52;&#48;nist&#46;gov">sonika<span>&#46;</span>sharma<span>&#64;</span>nist<span>&#46;</span>gov</a> or Peter Fontana <a class="reference external" href="mailto:peter&#46;fontana&#37;&#52;&#48;nist&#46;gov">peter<span>&#46;</span>fontana<span>&#64;</span>nist<span>&#46;</span>gov</a>. For questions
+related to the NIST Generative AI (GenAI) Program, please contact <a class="reference external" href="mailto:genai_poc&#37;&#52;&#48;nist&#46;gov">genai_poc<span>&#64;</span>nist<span>&#46;</span>gov</a></p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>The contributors to this code repository are:</p>
+<ul class="simple">
+<li><p>Sonika Sharma <a class="reference external" href="mailto:sonika&#46;sharma&#37;&#52;&#48;nist&#46;gov">sonika<span>&#46;</span>sharma<span>&#64;</span>nist<span>&#46;</span>gov</a></p></li>
+<li><p>Peter Fontana <a class="reference external" href="mailto:peter&#46;fontana&#37;&#52;&#48;nist&#46;gov">peter<span>&#46;</span>fontana<span>&#64;</span>nist<span>&#46;</span>gov</a></p></li>
+</ul>
+</section>
+<section id="environment-variables-and-configuration">
+<h2>Environment Variables and Configuration<a class="headerlink" href="#environment-variables-and-configuration" title="Link to this heading"></a></h2>
+<p>The majority of configurations will be provided in a <code class="docutils literal notranslate"><span class="pre">.ini</span></code> file. The typical default file,
+<code class="docutils literal notranslate"><span class="pre">config.ini</span></code> is provided as an example.</p>
+<p>Additionally, this program uses one environment variables for convenience:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>GENAI_CODE_CONFIG_PATH
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">GENAI_CODE_CONFIG_PATH</span></code> is the absolute path to the default config file, which may be
+the <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> file. Within the configuration file, is the variable <code class="docutils literal notranslate"><span class="pre">repo_dir</span></code>, which provides the absolute path
+to this repository directory.</p>
+<p>Additionally, for convenience, we store the root path to this repository in the environment variable.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>GENAI_CODE_REPO_DIR
+</pre></div>
+</div>
+</section>
+<section id="code-installation">
+<h2>Code Installation<a class="headerlink" href="#code-installation" title="Link to this heading"></a></h2>
+<p>The code is tested on python 3.12.6 and 3.12.8 and is pip installable with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+<p>or can be installed in editable mode with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<p>The package installed is named <code class="docutils literal notranslate"><span class="pre">genai_code_test</span></code>. The package can be uninstalled with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>uninstall<span class="w"> </span>genai_code_test
+</pre></div>
+</div>
+<p>or uninstalled if installed in editable mode with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rm<span class="w"> </span>-r<span class="w"> </span>genai_code_test.egg-info
+pip<span class="w"> </span>uninstall<span class="w"> </span>genai_code_test
+<span class="sb">`</span>
+</pre></div>
+</div>
+</section>
+<section id="organizational-structure">
+<h2>Organizational Structure<a class="headerlink" href="#organizational-structure" title="Link to this heading"></a></h2>
+<p>The organization structure of folders is here. There is also this README.md, and a CHANGELOG.md.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>test_code_eval (&lt;root directory of repository referred to as $GENAI_CODE_REPO_DIR in this README.md&gt;)
+    - docs (pre-built documentation)
+    - genai_code_test (root code director for python code for genai code experiment and evaluation)
+        - baseline_system_creation (scripts to create human-generated baseline submissions from
+          code bank files)
+        - evaluation_environment (directory with scorer and validator)
+            - evaluate_submission.py (the scorer)
+            - validate_submission.py (the validator)
+        - utils (utility scripts helpful for ease of working with json submissions and creating data files.
+          Relevant scripts include)
+            - create_code_files_from_json_input.py (Takes a validly-formatted json submission and converts
+              it to a folder of folders and files to allow for human-readable viewing of the code strings
+              as files)
+            - create_json_files_from_code_files.py (Takes a folder of folders and files and converts to a
+              json submission. Useful to use when one converted a json using the
+              create_code_files_from_json_input.py script to folders and then modified the files in that folder.
+              This allows one to convert it back to a json.)
+            - extract_test_code_from_test_output.json (The tool we used to extract validly formatted test_code
+              from LLM outpus. This converts LLM output when LLMs followed our prompt instructions but this script
+              will not handle arbitrary LLM output.)
+    - test_data (directory with test data for test cases)
+    - test_working_space (working directory where test cases create temporary working files and produce
+      output files)
+    - tests (location of test suite code)
+</pre></div>
+</div>
+<p>For an example submission, look at the file
+<a class="reference external" href="test_data/submissions_test/test_smoke_various/test1_v0d99_smoke.json">test_data/submissions_test/test_smoke_various/test1_v0d99_smoke.json</a></p>
+</section>
+<section id="running-the-scorer-and-validator">
+<h2>Running the Scorer and Validator<a class="headerlink" href="#running-the-scorer-and-validator" title="Link to this heading"></a></h2>
+<p>The scripts <code class="docutils literal notranslate"><span class="pre">evaluate_submission.py</span></code> and <code class="docutils literal notranslate"><span class="pre">validate_submission.py</span></code> are command-line scripts and their help menu
+can be accessed with</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>evaluate_submission.py<span class="w"> </span>-h
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>validate_submission.py<span class="w"> </span>-h
+</pre></div>
+</div>
+<p>If you are in the directory <code class="docutils literal notranslate"><span class="pre">$GENAI_CODE_REPO_DIR/genai_code_test/evaluation_environment</span></code>, the script to validate the
+example test submission is</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create output directory</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$GENAI_CODE_REPO_DIR</span>/test_code_eval/scratch_working_space
+
+<span class="c1"># Switch to test eval environment directory</span>
+<span class="nb">cd</span><span class="w"> </span><span class="nv">$GENAI_CODE_REPO_DIR</span>/genai_code_test/evaluation_environment
+
+<span class="c1"># Run validation</span>
+python<span class="w"> </span>validate_submission.py<span class="w"> </span>-i<span class="w"> </span><span class="nv">$GENAI_CODE_REPO_DIR</span>/test_data/code_files_test/prob_data/input_smoke_v1d00.json<span class="w"> </span>-o<span class="w"> </span><span class="nv">$GENAI_CODE_REPO_DIR</span>/scratch_output/evaluation<span class="w"> </span>-w<span class="w"> </span><span class="nv">$GENAI_CODE_REPO_DIR</span>/scratch_working_space<span class="w"> </span>-s<span class="w"> </span><span class="nv">$GENAI_CODE_REPO_DIR</span>/test_data/submissions_test/test_smoke_various/test1_smoke.json<span class="w"> </span>-v
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>and the script to score the test submission is:
+
+```bash
+python evaluate_submission.py -k $GENAI_CODE_REPO_DIR/test_data/code_files_test/key_data/key_smoke_v1d00.json -o $GENAI_CODE_REPO_DIR/scratch_output/evaluation -w $GENAI_CODE_REPO_DIR/scratch_working_space -s $GENAI_CODE_REPO_DIR/test_data/submissions_test/test_smoke_various/test1_smoke.json
+</pre></div>
+</div>
+<p>In both of these scripts, we provide a working directory with <code class="docutils literal notranslate"><span class="pre">-w</span> <span class="pre">&lt;working_dir_path&gt;</span></code> where the code can both
+write temporary files and delete any files in those directories. We also specified the output with <code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">output_dir_path</span></code></p>
+<p><strong>Both ``validate_submission.py`` and ``evaluate_submission.py`` may remove all files in the working directory specified by
+``-w &lt;working_dir_path&gt;``.  Please provide ``-w`` with an *empty* directory where the code can create and delete files.</strong></p>
+</section>
+<section id="running-testing-and-styling-components-locally">
+<h2>Running Testing and Styling Components Locally<a class="headerlink" href="#running-testing-and-styling-components-locally" title="Link to this heading"></a></h2>
+<p>The test suite, generation of rendered API documentation, and code checking for
+formatting using a lint code tool can all be run locally. Instructions
+are below.</p>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h3>
+<p>We have a test suite with the <code class="docutils literal notranslate"><span class="pre">pytest</span></code> package and code coverage with <code class="docutils literal notranslate"><span class="pre">coverage</span></code>. This requires the package <code class="docutils literal notranslate"><span class="pre">coverage</span></code>
+and <code class="docutils literal notranslate"><span class="pre">pytest</span></code>, both of which can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
+<p>The following command runs all the unit tests and outputs code coverage into <code class="docutils literal notranslate"><span class="pre">htmlcov/index.html</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>coverage<span class="w"> </span>run<span class="w"> </span>--branch<span class="w"> </span>--source<span class="o">=</span>./genai_code_test<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>-s<span class="w"> </span>tests/<span class="w"> </span>-v
+coverage<span class="w"> </span>report<span class="w"> </span>-m
+coverage<span class="w"> </span>html
+</pre></div>
+</div>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>When running the tests, there is a fixture defined in <code class="docutils literal notranslate"><span class="pre">/tests/conftest.py</span></code> that removes all of the files in <code class="docutils literal notranslate"><span class="pre">test_working_space/temp_working_space</span></code>
+and <code class="docutils literal notranslate"><span class="pre">test_working_space/temp_output</span></code>**</p>
+</section>
+<section id="code-formatting">
+<h3>Code Formatting<a class="headerlink" href="#code-formatting" title="Link to this heading"></a></h3>
+<p>The CI uses <code class="docutils literal notranslate"><span class="pre">flake8</span></code> to check for the code formatting with the command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>flake8<span class="w"> </span>--extend-ignore<span class="o">=</span>E712,E402<span class="w"> </span>genai_code_test<span class="w"> </span>tests<span class="w"> </span>--max-line-length<span class="o">=</span><span class="m">120</span><span class="w"> </span>--exclude<span class="o">=</span>docs,./.*
+</pre></div>
+</div>
+<p>For automatic styling, we will use the <code class="docutils literal notranslate"><span class="pre">autopep8</span></code> package. To style the code, use</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>autopep8<span class="w">  </span>--max-line-length<span class="w"> </span><span class="m">120</span><span class="w"> </span>--aggressive<span class="w"> </span>--aggressive<span class="w">  </span>--ignore<span class="w"> </span>E226,E24,W50,W690,E712,E402<span class="w"> </span>-r<span class="w"> </span>genai_code_test<span class="w"> </span>tests<span class="w"> </span>--in-place
+</pre></div>
+</div>
+<p>If you wish to see what the changes are without making them use the <code class="docutils literal notranslate"><span class="pre">--diff</span></code> option with</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>autopep8<span class="w">  </span>--max-line-length<span class="w"> </span><span class="m">120</span><span class="w"> </span>--aggressive<span class="w"> </span>--aggressive<span class="w">  </span>--ignore<span class="w"> </span>E226,E24,W50,W690,E712,E402<span class="w"> </span>-r<span class="w"> </span>genai_code_test<span class="w"> </span>tests<span class="w"> </span>--diff
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h3>
+<p>To build the documentation with <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> and <code class="docutils literal notranslate"><span class="pre">autodoc</span></code>, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># A Pip installation may be necessary to generate the docs. Install the package with:</span>
+<span class="c1"># pip install -U -e .</span>
+sphinx-apidoc<span class="w"> </span>-fMeT<span class="w"> </span>-o<span class="w"> </span>docs/api<span class="w"> </span>genai_code_test
+sphinx-build<span class="w"> </span>-av<span class="w"> </span>--color<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>docs<span class="w"> </span>docs/_build
+</pre></div>
+</div>
+<p>to generate the docs. The pip install command is needed for sphinx to recognize the <code class="docutils literal notranslate"><span class="pre">genai_code_test</span></code> module.</p>
+<p>(If you wish to document what is installed by pip, use the commented line to upgrade PIP)</p>
+<p>See the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/installation.html">Sphinx Installation Documentation</a>
+for more information on how to install Sphinx. You will also need the <code class="docutils literal notranslate"><span class="pre">m2r</span></code> package which is a requirement of this<span class="raw-html-m2r"><br></span>
+package.</p>
+<p>We are using Sphinx 7.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="GenAI Code Test Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changelog.html" class="btn btn-neutral float-right" title="CHANGELOG.md" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, NIST.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
