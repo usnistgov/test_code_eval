@@ -3,7 +3,6 @@
 
 import os
 import configparser
-# import pdb
 import shutil
 import sys
 import argparse
@@ -129,7 +128,7 @@ def is_json_correct(filepath):
     Args:
         filepath: a filepath
 
-    Returns: boolean - True or False
+    Returns: boolean - Trye or False
 
     """
 
@@ -141,160 +140,151 @@ def is_json_correct(filepath):
         return False
 
 
-def is_file_valid(json_filepath, out_folder_fp, verbose):
+def is_file_valid(json_filepath):
     """
     Checks to see if a submission file path or problem filepath is a valid JSON, if yes returns true if not returns
     false
     Args:
-        verbose: printing more information to the screen
-        out_folder_fp: a filepath of where the output is
         json_filepath: a filepath where a JSON file is
 
     Returns: boolean - True or False
 
     """
-    # pdb.set_trace()
     json_set = open(json_filepath, "r")
     json_data = json.load(json_set)
 
     code_files = json_data['code_list']
 
-    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
-    with (open(log_filepath, "a") as log_file):
-
-        for problem in code_files:
-            if "trial_id" not in problem:
-                log_file.write(f"Problem\n{problem}\ndoes not contain a trial_id key value, please fix this!\n")
-                return False
-            else:
-                continue
-        log_file.close()
-        return True
+    for problem in code_files:
+        if "trial_id" not in problem:
+            print(f"Problem\n{problem}\ndoes not contain a trial_id key value, please fix this!\n")
+            return False
+        else:
+            continue
 
 
-def is_submission_field_empty(submission_file_path, out_folder_fp, verbose):
+def is_filepath_and_submission_correct(problem_file_path, submission_file_path):
     """
-    Checks to see if a submission file does not have any empty fields - if yes will return false
+    Checks to see if a submission file and problem file match - if not will return false
     Args:
-        verbose: printing more information to the screen
-        out_folder_fp: a filepath where the output will be
         submission_file_path: a filepath where a JSON file is
+        problem_file_path: a filepath where a problem JSON file is
 
     Returns: boolean - True or False
 
     """
     value = True
+    counter_submission = 0
+    counter_problem = 0
+
     submission_set = open(submission_file_path, "r")
     submission_data = json.load(submission_set)
-
     submission_elements = submission_data['code_list']
 
-    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
-    with (open(log_filepath, "a") as log_file):
+    problem_set = open(problem_file_path, "r")
+    problem_data = json.load(problem_set)
+    problem_elements = problem_data['code_list']
 
-        for submission_field in submission_elements:
-            if "trial_id" not in submission_field or len(submission_field['trial_id']) == 0:
-                log_file.write(f"Problem\n{submission_field}\nis missing a trial_id and or the trial_id is empty.\n")
-                value = False
-                return value
-            elif "prompt_number" not in submission_field or len(submission_field['prompt_number']) == 0:
-                log_file.write(f"Problem or problems with the trial_id of \n{submission_field["trial_id"]}\nis or are"
-                               f"missing a prompt_number and or the prompt_number is empty.\n")
-                value = False
-                return value
+    for submission_field in submission_elements:
+        if (submission_field["prompt_number"] == "0"):
+            counter_submission = counter_submission + 1
 
-            elif "prompt" not in submission_field or len(submission_field['prompt']) == 0:
-                log_file.write(f"Problem\n{submission_field["trial_id"]}_{submission_field["prompt_number"]}\n"
-                               f"is missing a prompt and or the prompt is empty.\n")
-                value = False
-                continue
+    for problem_field in problem_elements:
+        counter_problem = counter_problem + 1
 
-            elif "test_output" not in submission_field or len(submission_field['test_output']) == 0:
-                log_file.write(f"Problem\n{submission_field["trial_id"]}_{submission_field["prompt_number"]}\n"
-                               f"is missing a test_output and or the test_output is empty.\n")
-                value = False
-                continue
+    if (counter_submission != counter_problem):
+        value = False
 
-            elif "primary_method_name" not in submission_field or len(submission_field['primary_method_name']) == 0:
-                log_file.write(f"Problem\n{submission_field["trial_id"]}_{submission_field["prompt_number"]}\n"
-                               f"is missing a primary_method_name and or the primary_method_name is empty.\n")
-                value = False
-                continue
-
-            elif "test_code" not in submission_field or len(submission_field['test_code']) == 0:
-                log_file.write(f"Problem\n{submission_field["trial_id"]}_{submission_field["prompt_number"]}\n"
-                               f"is missing a test_code and or the test_code is empty.\n")
-                value = False
-                continue
-        log_file.close()
-        return value
-
-
-def is_prompt_num_str(submission_file_path, out_folder_fp, verbose):
-    """
-    Checks to see if a submission file does not have any empty fields - if yes will return false
-    Args:
-        verbose: printing more information to the screen
-        out_folder_fp: a filepath of where the output will be
-        submission_file_path: a filepath where a JSON file is
-
-    Returns: boolean - True or False
-
-    """
-    value = True
-    submission_set = open(submission_file_path, "r")
-    submission_data = json.load(submission_set)
-
-    submission_elements = submission_data['code_list']
-
-    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
-    with (open(log_filepath, "a") as log_file):
-
-        for submission_field in submission_elements:
-            if not isinstance(submission_field['prompt_number'], str):
-                log_file.write(f"Problem or problems with the trial_id of\n{submission_field['trial_id']}\n"
-                               f"prompt number is not a string. Please recheck and try again!\n")
-
-                value = False
-            else:
-                value = True
-        log_file.close()
-        return value
-
-
-def control_submission_output(submission_file_path, out_folder_fp, verbose):
-    """
-    Checks to see if a submission file code is not more than 25000 character, if it is returns an error
-    Args:
-        verbose: printing more information to the screen
-        out_folder_fp: a filepath of where the output will be
-        submission_file_path: a filepath where a JSON file is
-
-    Returns: boolean - True or False
-
-    """
-    submission_set = open(submission_file_path, "r")
-    submission_data = json.load(submission_set)
-
-    submission_elements = submission_data['code_list']
-    value = True
-
-    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
-    with (open(log_filepath, "a") as log_file):
-
-        for submission_field in submission_elements:
-            if len(submission_field['test_code']) > 25000:
-                log_file.write("The test code for " + submission_field['trial_id']
-                               + "_" + submission_field[
-                                   'prompt_number'] + " is too long, please recheck and try again!\n")
-                value = False
-            else:
-                value = True
-    log_file.close()
     return value
 
 
-def is_prompt_correct(submission_file_path, problem_file_path, out_folder_fp, verbose):
+def is_submission_field_empty(submission_file_path):
+    """
+    Checks to see if a submission file does not have any empty fields - if yes will return false
+    Args:
+        submission_file_path: a filepath where a JSON file is
+
+    Returns: boolean - True or False
+
+    """
+    value = True
+    submission_set = open(submission_file_path, "r")
+    submission_data = json.load(submission_set)
+
+    submission_elements = submission_data['code_list']
+
+    for submission_field in submission_elements:
+        if ("trial_id" not in submission_field or "prompt_number" not in submission_field or "prompt" not
+                in submission_field or "test_output" not in submission_field or "primary_method_name" not in
+                submission_field or "test_code" not in submission_field):
+            print(f"Problem\n{submission_field}\nis missing either a trial_id and or prompt_number and or prompt "
+                  f"and or primary_method_name and or test_output and or test_code\n")
+            value = False
+
+        elif (len(submission_field['trial_id']) == 0 or len(submission_field['prompt_number']) == 0 or
+                len(submission_field['prompt']) == 0 or len(submission_field['test_output']) == 0 or
+                len(submission_field['primary_method_name']) == 0 or len(submission_field['test_code']) == 0):
+            print(f"Problem\n{submission_field}\nis missing either a value for trial_id and or prompt_number and or "
+                  f"prompt and or primary_method_name and or test_output and or test_code\n")
+            value = False
+        else:
+            value = True
+
+    return value
+
+
+def is_prompt_num_str(submission_file_path):
+    """
+    Checks to see if a submission file does not have any empty fields - if yes will return false
+    Args:
+        submission_file_path: a filepath where a JSON file is
+
+    Returns: boolean - True or False
+
+    """
+    value = True
+    submission_set = open(submission_file_path, "r")
+    submission_data = json.load(submission_set)
+
+    submission_elements = submission_data['code_list']
+
+    for submission_field in submission_elements:
+        if not isinstance(submission_field['prompt_number'], str):
+            print(f"Problem\n{submission_field}\nprompt number is not a string. Please recheck and try again!\n")
+            value = False
+        else:
+            value = True
+
+    return value
+
+
+def control_submission_output(submission_file_path):
+    """
+    Checks to see if a submission file code is not more than 25000 character, if it is returns an error
+    Args:
+        submission_file_path: a filepath where a JSON file is
+
+    Returns: boolean - True or False
+
+    """
+    submission_set = open(submission_file_path, "r")
+    submission_data = json.load(submission_set)
+
+    submission_elements = submission_data['code_list']
+    value = True
+
+    for submission_field in submission_elements:
+        if len(submission_field['test_code']) > 25000:
+            print("The test code for " + submission_field['trial_id']
+                  + "_" + submission_field['prompt_number'] + " is too long, please recheck and try again!\n")
+            value = False
+        else:
+            value = True
+
+    return value
+
+
+def is_prompt_correct(submission_file_path, problem_file_path):
     """
     Checks to see if a submission file has a valid prompt number. For prompt number 1, it is a fixed prompt. If
     fixed prompt, checks to see if the prompt is the same fixed prompt we have given, if this is true will return
@@ -302,8 +292,6 @@ def is_prompt_correct(submission_file_path, problem_file_path, out_folder_fp, ve
     custom prompt per problem. If all this matches returns true. If prompt number or prompt for fixed prompt is
     something else, returns false.
     Args:
-        verbose: printing more information to the screen
-        out_folder_fp: a filepath where the messages from this function will be stored.
         submission_file_path: a filepath where a submission JSON file is
         problem_file_path: a filepath where a problem JSON file is
 
@@ -319,78 +307,64 @@ def is_prompt_correct(submission_file_path, problem_file_path, out_folder_fp, ve
     problem_elements = problem_data['code_list']
     fixed_prompt = []
     custom_prompt = []
-    custom_prompt_1 = []
     problems = []
-    value = True
+    value = False
 
-    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
-    with (open(log_filepath, "a") as log_file):
-        for submission_field in submission_elements:
-            try:
-                code_data_list = [x for x in problem_elements if x["trial_id"] == submission_field["trial_id"]]
-                code_data = code_data_list[0]
-            except IndexError:
-                log_file.write("One or more problems in the submission does not exist in the problem file, "
-                               "just ignore this.\n")
-            if int(submission_field["prompt_number"]) == 0:
-                fixed_prompt.append(submission_field['trial_id'])
-                if code_data["prompt_fixed"] == submission_field["prompt"]:
-                    pass
-                else:
-                    log_file.write(f"This {submission_field['trial_id']} is not a fixed prompt, either the "
-                                   "prompt number is not 0 or the submission prompt does not match the prompt we "
-                                   "gave you, please recheck and try again!\n")
-                    value = False
+    for submission_field in submission_elements:
+        try:
+            code_data_list = [x for x in problem_elements if x["trial_id"] == submission_field["trial_id"]]
+            code_data = code_data_list[0]
+        except IndexError:
+            print("One or more problems in the submission does not exist in the problem file, just ignore "
+                  "this\n")
 
-            elif int(submission_field["prompt_number"]) == 1:
-                custom_prompt.append(submission_field['trial_id'])
-                custom_prompt_1.append(submission_field['trial_id'])
-                if (code_data["prompt_fixed"] == submission_field["prompt"] or code_data["prompt_fixed"] !=
-                        submission_field["prompt"]):
-                    log_file.write(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} "
-                                   f"is not a fixed prompt, it is a custom prompt.\n")
-
-            elif 1 < int(submission_field["prompt_number"]) < 10:
-                log_file.write(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} "
-                               f"is not a fixed prompt, it is a custom prompt.\n")
-
+        if int(submission_field["prompt_number"]) == 0:
+            fixed_prompt.append(submission_field['trial_id'])
+            if code_data["prompt_fixed"] == submission_field["prompt"]:
+                value = True
             else:
-                log_file.write(f"This {submission_field['trial_id']} does not have a valid prompt number.\n"
-                               f"Please make sure the fixed prompt_number is {"0"} and the custom prompt_number "
-                               f"is a number from {"1"} to {"9"}, please recheck and try again!\n")
-                value = False
+                print(f"This {submission_field['trial_id']} is not a fixed prompt, either the prompt number is not 0 "
+                      f"or the submission prompt does not match the prompt we gave you, please recheck and try "
+                      f"again!.\n")
+                return False
 
-        for problem in problem_elements:
-            problems.append(problem["trial_id"])
+        elif int(submission_field["prompt_number"]) == 1:
+            custom_prompt.append(submission_field['trial_id'])
+            if (code_data["prompt_fixed"] == submission_field["prompt"] or code_data["prompt_fixed"] !=
+                    submission_field["prompt"]):
+                print(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} is not a fixed prompt, "
+                      f"it is a custom prompt.\n")
+                value = True
 
-        length = len(problems)
+        elif 1 < int(submission_field["prompt_number"]) < 10:
+            print(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} is not a fixed prompt, "
+                  f"it is a custom prompt.\n")
+            value = True
 
-        if len(fixed_prompt) < length:
-            log_file.write("There is not a fixed prompt per problem "
-                           "look through the problems and make the fix and resubmit!\n")
+        else:
+            print(f"This {submission_field['trial_id']} does not have a valid prompt number.\nPlease make sure the "
+                  f"fixed prompt_number is {"0"} and the custom prompt_number is a number from {1} to {9}, "
+                  f"please recheck and try again!.\n")
             return False
 
-        elif len(fixed_prompt) > length:
-            log_file.write("There are too many fixed prompts per problem, "
-                           "look through the problems and make the fix and resubmit!\n")
-            return False
+    for problem in problem_elements:
+        problems.append(problem["trial_id"])
 
-        elif len(custom_prompt) < length:
-            log_file.write(f"There is not a custom prompt per problem. Please make sure the first custom prompt,\n"
-                           f"prompt_number is {"1"}, look through the problems, make the fix and resubmit!\n")
-            return False
-        elif len(custom_prompt_1) < length:
-            log_file.write(f"There is not a custom prompt per problem with prompt number of 1. "
-                           f"Please make sure the first custom prompt,\n"
-                           f"prompt_number is {"1"}, look through the problems, make the fix and resubmit!\n")
-            return False
-        elif len(custom_prompt) > (9 * length):
-            log_file.write("There are too many custom prompt per problem, look through the problems, make the fix "
-                           "and resubmit!\n")
+    length = len(problems)
 
-            return False
+    if len(fixed_prompt) != length:
+        print(f"There is not a fixed prompt per problem or too many fixed prompts per problem, look through the "
+              f"problems\n{fixed_prompt}\nmake the fix and resubmit!\n")
+        return False
+    elif len(custom_prompt) < length:
+        print(f"There is not a custom prompt per problem. Please make sure the first custom prompt,\nprompt_number is"
+              f" {1}, look through the problems, make the fix and resubmit!\n")
+        return False
+    elif len(custom_prompt) > (9 * length):
+        print("There are too many custom prompt per problem, look through the problems, make the fix "
+              "and resubmit!\n")
+        return False
 
-        log_file.close()
     return value
 
 
@@ -432,49 +406,32 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
         os.makedirs(out_folder_fp)
 
     log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
-    with (open(log_filepath, "a+") as log_file):
+    with (open(log_filepath, "w") as log_file):
 
         # Checking to see if the file exists and correctly formatted
-        if not is_json_correct(prob_json_filepath):
+        if is_json_correct(prob_json_filepath) != True or is_json_correct(submission_json_filepath) != True:
             is_submission_valid = False
             if not is_submission_valid:
-                log_file.write(f"ERROR: The problem file:{prob_json_filepath}\nis not a correctly formatted json, "
-                               f"please recheck and try again!")
-                print("============================================")
-                print(f"ERROR: The problem file:{prob_json_filepath}\nis not a correctly formatted json, "
-                      f"please recheck and try again!")
+                print(f"ERROR: Either the problem file:{prob_json_filepath}\nor submission file:"
+                      f"{submission_json_filepath}\n"
+                      f"is not a correctly formatted json, please recheck and try again!")
                 print("============================================")
                 print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
                       "errors.")
                 print("============================================")
-                if verbose:
-                    print("============================================")
-                    print("Below are the contents of your log file:\n")
-                    log_file.seek(0)
-                    print(log_file.read())
-                    print("============================================")
 
-            return is_submission_valid
-
-        if not is_json_correct(submission_json_filepath):
-            is_submission_valid = False
-            if not is_submission_valid:
-                log_file.write(
-                    f"ERROR: The submission file:{submission_json_filepath}\nis not a correctly formatted json, "
-                    f"please recheck and try again!")
-                print("============================================")
-                print(f"ERROR: The submission file:{submission_json_filepath}\nis not a correctly formatted json, "
-                      f"please recheck and try again!")
+            elif verbose:
+                print(f"ERROR: Either the problem file:{prob_json_filepath}\nor submission file:"
+                      f"{submission_json_filepath}\n is not a correctly formatted json, please recheck and try "
+                      f"again!")
                 print("============================================")
                 print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
                       "errors.")
                 print("============================================")
-                if verbose:
-                    print("============================================")
-                    print("Below are the contents of your log file:\n")
-                    log_file.seek(0)
-                    print(log_file.read())
-                    print("============================================")
+
+            log_file.write(f"ERROR: Either the problem file:{prob_json_filepath}\nor submission file:"
+                           f"{submission_json_filepath}\n is not a correctly formatted json, "
+                           f"please recheck and try again!\n")
 
             return is_submission_valid
 
@@ -510,139 +467,17 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
         problem_elements = problem_data['code_list']
 
         # Checking to see if the problem file and submission file have a trial_id field if not, will cause an error
-        if not is_file_valid(prob_json_filepath, out_folder_fp, verbose):
+        if is_file_valid(prob_json_filepath) == False or is_file_valid(submission_json_filepath) == False:
             is_submission_valid = False
-            log_file.write("ERROR: Missing or do not have a trial_id in one or more problems in input "
-                           "file, please recheck and try again!\n")
-            print("============================================")
-            print("ERROR: Missing or do not have a trial_id in one or more problems in input file, "
-                  "please recheck and try again!")
-            print("============================================")
-            print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
-                  "errors.")
-            print("============================================")
-            if verbose:
-                print("============================================")
-                print("Below are the contents of your log file:\n")
-                log_file.seek(0)
-                print(log_file.read())
-                print("============================================")
-
-            return is_submission_valid
-
-        if not is_file_valid(submission_json_filepath, out_folder_fp, verbose):
-            is_submission_valid = False
-            log_file.write("ERROR: Missing or do not have a trial_id in one or more problems in submission "
-                           "file, please recheck and try again!\n")
-            print("============================================")
             print("ERROR: Missing or do not have a trial_id in one or more problems in submission file, "
                   "please recheck and try again!")
             print("============================================")
             print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
                   "errors.")
             print("============================================")
-            if verbose:
-                print("============================================")
-                print("Below are the contents of your log file:\n")
-                log_file.seek(0)
-                print(log_file.read())
-                print("============================================")
 
-            return is_submission_valid
-
-        # Checking to see if the fixed prompt is correct
-        if not is_prompt_correct(submission_json_filepath, prob_json_filepath, out_folder_fp, verbose):
-            is_submission_valid = False
-            if not is_submission_valid:
-                log_file.write("ERROR: Please recheck the prompt and or prompt_number field in the submission file, "
-                               "one of these are incorrect, "
-                               "please fix and try again!\n")
-                print("============================================")
-                print("ERROR: Please recheck the prompt and or prompt_number field in the submission file, "
-                      "one of these are incorrect, "
-                      "please fix and try again!")
-                print("============================================")
-                print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
-                      "errors.")
-                print("============================================")
-                if verbose:
-                    print("============================================")
-                    print("Below are the contents of your log file:\n")
-                    log_file.seek(0)
-                    print(log_file.read())
-                    print("============================================")
-
-            return is_submission_valid
-
-        # Checking to see if the submission file prompt number is a string, if not will cause an error
-        if not is_prompt_num_str(submission_json_filepath, out_folder_fp, verbose):
-            is_submission_valid = False
-            if not is_submission_valid:
-                log_file.write(
-                    f"ERROR: The prompt number in the submission file\n{submission_json_filepath}\nis not a string "
-                    f"please recheck and try again!")
-                print("============================================")
-                print(
-                    f"ERROR: The prompt number in the submission file\n{submission_json_filepath}\nis not a string "
-                    f"please recheck and try again!")
-                print("============================================")
-                print(
-                    "Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
-                    "errors.")
-                print("============================================")
-                if verbose:
-                    print("============================================")
-                    print("Below are the contents of your log file:\n")
-                    log_file.seek(0)
-                    print(log_file.read())
-                    print("============================================")
-
-            return is_submission_valid
-
-        # Checking to see if the submission file have the correct fields if not, will cause an error
-        if not is_submission_field_empty(submission_json_filepath, out_folder_fp, verbose):
-            is_submission_valid = False
-            if not is_submission_valid:
-                log_file.write(
-                    f"ERROR: One or more fields in the submission file\n{submission_json_filepath}\nis or are "
-                    f"empty, please recheck and try again!\n")
-                print("============================================")
-                print(f"ERROR: One or more fields in the submission file\n{submission_json_filepath}\nis or are "
-                      f"empty, please recheck and try again!")
-                print("============================================")
-                print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
-                      "errors.")
-                print("============================================")
-                if verbose:
-                    print("============================================")
-                    print("Below are the contents of your log file:\n")
-                    log_file.seek(0)
-                    print(log_file.read())
-                    print("============================================")
-
-            return is_submission_valid
-
-        # Checking to see if the submission file test code has too many characters, if so will cause an error
-        if not control_submission_output(submission_json_filepath, out_folder_fp, verbose):
-            is_submission_valid = False
-            if not is_submission_valid:
-                log_file.write(
-                    f"ERROR: The test code for one or more problems in\n{submission_json_filepath}\nis or are "
-                    f"too long, please recheck and try again!\n")
-                print("============================================")
-                print(f"ERROR: The test code for one or more problems in\n{submission_json_filepath}\nis or are too "
-                      f"long, please recheck and try again!")
-                print("============================================")
-                print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
-                      "errors.")
-                print("============================================")
-                if verbose:
-                    print("============================================")
-                    print("Below are the contents of your log file:\n")
-                    log_file.seek(0)
-                    print(log_file.read())
-                    print("============================================")
-
+            log_file.write("ERROR: Missing or do not have a trial_id in one or more problems in submission "
+                           "file, please recheck and try again!\n")
             return is_submission_valid
 
         # Checking to see the problems in the submission file, if submission file has problem that are not in the
@@ -663,9 +498,6 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
             if not (problem_task in submission_df['trial_id'].to_list()):
                 is_submission_valid = False
                 if not is_submission_valid:
-                    log_file.write(f"ERROR: Task {problem_task} not in submission file "
-                                   f"{submission_json_filepath}, please recheck and try again!\n")
-                    print("============================================")
                     print(f"ERROR: Task {problem_task} not in submission file {submission_json_filepath}, "
                           f"please recheck and try again!")
                     print("============================================")
@@ -673,17 +505,99 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
                         "Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
                         "errors.")
                     print("============================================")
-                    if verbose:
-                        print("============================================")
-                        print("Below are the contents of your log file:\n")
-                        log_file.seek(0)
-                        print(log_file.read())
-                        print("============================================")
 
                 no_trial_id_list.append(problem_task)
 
+                log_file.write(f"ERROR: Task {problem_task} not in submission file "
+                               f"{submission_json_filepath}, please recheck and try again!\n")
+
         if len(no_trial_id_list) > 0:
             is_submission_valid = False
+            return is_submission_valid
+
+        # Checking to see if the submission file match the input problem file
+        if not is_filepath_and_submission_correct(prob_json_filepath, submission_json_filepath):
+            is_submission_valid = False
+            if not is_submission_valid:
+                print(f"ERROR: The submission problems: {submission_json_filepath}\ndo not match the problems in the "
+                      f"problem file: {prob_json_filepath}.\nEither they are different problems or there is more than "
+                      f"one fixed prompt per problem. Please recheck and try again!")
+                print("============================================")
+                print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
+                      "errors.")
+                print("============================================")
+
+            log_file.write(f"ERROR: The submission problems: {submission_json_filepath}\ndo not match the problems in "
+                           f"the problem file: {prob_json_filepath}.\nEither they are different problems or there is "
+                           f"more than one fixed prompt per problem. Please recheck and try again!")
+
+            return is_submission_valid
+
+        # Checking to see if the fixed prompt is correct
+        if not is_prompt_correct(submission_json_filepath, prob_json_filepath):
+            is_submission_valid = False
+            if not is_submission_valid:
+                print("ERROR: Please recheck the prompt and or prompt_number field, one of these are incorrect, "
+                      "please fix and try again!")
+                print("============================================")
+                print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
+                      "errors.")
+                print("============================================")
+
+            log_file.write("ERROR: Please recheck the prompt and or prompt_number field, one of these are incorrect, "
+                           "please fix and try again!\n")
+
+            return is_submission_valid
+
+        # Checking to see if the submission file prompt number is a string, if not will cause an error
+        if not is_prompt_num_str(submission_json_filepath):
+            is_submission_valid = False
+            if not is_submission_valid:
+                print(
+                    f"ERROR: The prompt number in the submission file\n{submission_json_filepath}\nis not a string "
+                    f"please recheck and try again!")
+                print("============================================")
+                print(
+                    "Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
+                    "errors.")
+                print("============================================")
+
+            log_file.write(
+                f"ERROR: The prompt number in the submission file\n{submission_json_filepath}\nis not a string "
+                f"please recheck and try again!")
+
+            return is_submission_valid
+
+        # Checking to see if the submission file have the correct fields if not, will cause an error
+        if not is_submission_field_empty(submission_json_filepath):
+            is_submission_valid = False
+            if not is_submission_valid:
+                print(f"ERROR: One or more fields in the submission file\n{submission_json_filepath}\nis or are "
+                      f"empty, please recheck and try again!")
+                print("============================================")
+                print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
+                      "errors.")
+                print("============================================")
+
+            log_file.write(f"ERROR: One or more fields in the submission file\n{submission_json_filepath}\nis or are "
+                           f"empty, please recheck and try again!\n")
+
+            return is_submission_valid
+
+        # Checking to see if the submission file test code has too many characters, if so will cause an error
+        if not control_submission_output(submission_json_filepath):
+            is_submission_valid = False
+            if not is_submission_valid:
+                print(f"ERROR: The test code for one or more problems in\n{submission_json_filepath}\nis or are too "
+                      f"long, please recheck and try again!")
+                print("============================================")
+                print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
+                      "errors.")
+                print("============================================")
+
+            log_file.write(f"ERROR: The test code for one or more problems in\n{submission_json_filepath}\nis or are "
+                           f"too long, please recheck and try again!\n")
+
             return is_submission_valid
 
         # If verbose, write the submitted output to a file
@@ -693,39 +607,21 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
             print("Results of Running Tests on Provided Code:")
             print(submission_df.loc[:, ["system", "trial_id"]])
 
-        if (is_submission_valid == True) and (verbose == True):
+        if is_submission_valid:
             log_file.write(f"Your submission\n{submission_json_filepath}\nis valid!")
             print()
             print("============================================")
             print("Final Result: SUCCESS - Submission Successfully Validated!")
             print("============================================")
-            print("Below are the contents of your log file:\n")
-            log_file.seek(0)
-            print(log_file.read())
-            print("============================================")
-
-        elif (is_submission_valid == True) and (verbose == False):
-            log_file.write(f"Your submission\n{submission_json_filepath}\nis valid!")
-            print()
-            print("============================================")
-            print("Final Result: SUCCESS - Submission Successfully Validated!")
-            print("============================================")
-
-        elif (is_submission_valid == False) and (verbose == True):
-            print()
-            print("============================================")
-            print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
-                  "errors.")
-            print("============================================")
-            print("Below are the contents of your log file:\n")
-            log_file.seek(0)
-            print(log_file.read())
+            print(f"If you want more information, look at the log created here:\n{log_filepath}")
             print("============================================")
 
         else:
+            print()
             print("============================================")
             print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
                   "errors.")
+            print(f"If you want more information, look at the log created here:\n{log_filepath}")
             print("============================================")
 
         log_file.close()

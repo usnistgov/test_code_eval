@@ -369,8 +369,7 @@ def test_adds_up_err(setup_and_teardown):
                                 "validation_log.txt")
     with open(log_filepath, 'r') as file:
         log_data = file.read()
-    assert ('ERROR: Please recheck the prompt and or prompt_number field in the submission file, one of these are '
-            'incorrect, please fix and try again!') in log_data
+    assert ('ERROR: Task 00007_add_regtestcorrect_missexc not in submission file') in log_data
 
     # test for combined fixed and partial custom submission
     temp_working_dir10 = temp_working_dir
@@ -388,8 +387,8 @@ def test_adds_up_err(setup_and_teardown):
                                 "validation_log.txt")
     with open(log_filepath, 'r') as file:
         log_data = file.read()
-    assert ('ERROR: Please recheck the prompt and or prompt_number field in the submission file, one of these are '
-            'incorrect, please fix and try again!') in log_data
+    assert ('Either they are different problems or there is more than one fixed prompt per problem. Please recheck '
+            'and try again!') in log_data
 
 
 def test_validate_smoke_submission(setup_and_teardown):

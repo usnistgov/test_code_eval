@@ -28,6 +28,8 @@ def mean_metrics_dataframe(dataframe, subm_system_name):
     for prompt_num, group_prompt_num in group_df:
         total_problems = len(group_prompt_num['trial_id'])
 
+        total_problems_for_mean_coverage = (group_prompt_num['correct_tests'] == 1).sum()
+
         # getting information
         for_perc_tc_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1)]
 
@@ -46,7 +48,9 @@ def mean_metrics_dataframe(dataframe, subm_system_name):
                                              (group_prompt_num['finds_error_in_incorrect_t'] == 1) &
                                              (group_prompt_num['code_coverage'] == 100)]
 
-        average_code_coverage = [value for value in group_prompt_num['code_coverage'] if pd.notnull(value)]
+        average_code_coverage = group_prompt_num.loc[(group_prompt_num['correct_tests'] == 1) &
+                                                     (group_prompt_num[
+                                                         'code_coverage'].notnull()), 'code_coverage'].tolist()
 
         # computing values
         perc_tc = (len(for_perc_tc_value) / total_problems) * 100
@@ -54,7 +58,8 @@ def mean_metrics_dataframe(dataframe, subm_system_name):
         perc_tc_fi1_fit = (len(for_perc_tc_fi1_fit_value) / total_problems) * 100
         perc_tc_fit = (len(for_perc_tc_fit_value) / total_problems) * 100
         perc_tc_fi1_fit_hcov = (len(code_coverage_100) / total_problems) * 100
-        mean_coverage = (sum(average_code_coverage) / total_problems)
+        mean_coverage = sum(average_code_coverage) / total_problems_for_mean_coverage if (
+            total_problems_for_mean_coverage > 0) else 0
 
         result = {
             "system": subm_system_name,
