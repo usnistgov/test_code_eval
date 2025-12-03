@@ -117,11 +117,13 @@ def run_pytest_and_coverage_on_code(curr_test_dir, output_dir, file_suffix, task
         htmlcov_dirpath = os.path.join(output_dir, file_suffix + "_htmlcov")
         if not os.path.isdir(htmlcov_dirpath):
             os.makedirs(htmlcov_dirpath)
-        command_str = (f"coverage run -m pytest {curr_test_dir} -x --capture sys -v --cache-clear; "
-                       f"coverage report; "
-                       f"coverage html --include -d {htmlcov_dirpath}")
-        coverage_out = subprocess.run(command_str, shell=True,
-                                      capture_output=True, text=True)
+        command_str = (
+            f"coverage run -m pytest {curr_test_dir} -x --capture sys -v --cache-clear && "
+            f"coverage report && "
+            f"coverage html -d {htmlcov_dirpath}"
+        )
+
+        coverage_out = subprocess.run(command_str, shell=True, cwd=curr_test_dir, capture_output=True, text=True)
         total_cov = 0.0
         for line in coverage_out.stdout.split("\n"):
             if "TOTAL" in line:
@@ -229,6 +231,7 @@ def evaluate_code_submission(
         # Check that this is a task in the problem set; skip it if not
         if not (task in key_df["trial_id"].to_list()):
             print("Task {} not in problem set {}. Skipping this task.".format(task, key_json_filepath))
+            subm_df.drop(subm_df[subm_df['trial_id'].isin([task])].index, inplace=True)
             continue
         correct_code = key_df.loc[key_df["trial_id"] == task, "code_correct"].iloc[0]
         # This line is a temporary fix so that the code works with this version of the key
