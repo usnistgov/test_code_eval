@@ -79,6 +79,67 @@ def mean_metrics_dataframe(dataframe, subm_system_name):
     return final_df
 
 
+def simple_extended_dataframe(sub_dataframe, key_dataframe, subm_system_name):
+    final = []
+
+    merged_df = pd.merge(sub_dataframe, key_dataframe, on='trial_id')
+    # print(merged_df)
+    group_df = merged_df.groupby(['prompt_number', 'category'])
+
+    for prompt_num, group_prompt_num in group_df:
+        total_problems = len(group_prompt_num['trial_id'])
+
+        total_problems_for_mean_coverage = (group_prompt_num['correct_tests'] == 1).sum()
+
+        # getting information
+        for_perc_tc_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1)]
+
+        for_perc_tc_fi1_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1) &
+                                                 (group_prompt_num['finds_error_in_incorrect_1'] == 1)]
+
+        for_perc_tc_fi1_fit_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1) &
+                                                     (group_prompt_num['finds_error_in_incorrect_1'] == 1) &
+                                                     (group_prompt_num['finds_error_in_incorrect_t'] == 1)]
+
+        for_perc_tc_fit_value = group_prompt_num[(group_prompt_num['correct_tests'] == 1) &
+                                                 (group_prompt_num['finds_error_in_incorrect_t'] == 1)]
+
+        code_coverage_100 = group_prompt_num[(group_prompt_num['correct_tests'] == 1) &
+                                             (group_prompt_num['finds_error_in_incorrect_1'] == 1) &
+                                             (group_prompt_num['finds_error_in_incorrect_t'] == 1) &
+                                             (group_prompt_num['code_coverage'] == 100)]
+
+        average_code_coverage = group_prompt_num.loc[(group_prompt_num['correct_tests'] == 1) &
+                                                     (group_prompt_num[
+                                                         'code_coverage'].notnull()), 'code_coverage'].tolist()
+
+        # computing values
+        perc_tc = (len(for_perc_tc_value) / total_problems) * 100
+        perc_tc_fi1 = (len(for_perc_tc_fi1_value) / total_problems) * 100
+        perc_tc_fi1_fit = (len(for_perc_tc_fi1_fit_value) / total_problems) * 100
+        perc_tc_fit = (len(for_perc_tc_fit_value) / total_problems) * 100
+        perc_tc_fi1_fit_hcov = (len(code_coverage_100) / total_problems) * 100
+        mean_coverage = sum(average_code_coverage) / total_problems_for_mean_coverage if (
+            total_problems_for_mean_coverage > 0) else 0
+
+        result = {
+            "system": subm_system_name,
+            "prompt_number": prompt_num[0],
+            "problem_type": prompt_num[1],
+            "correct_tests": perc_tc,
+            "finds_ci1_error": perc_tc_fi1,
+            "finds_ci1_and_cit_errors": perc_tc_fi1_fit,
+            "finds_cit_error": perc_tc_fit,
+            "full_coverage_and_finds_all_errors": perc_tc_fi1_fit_hcov,
+            "mean_coverage": mean_coverage,
+
+        }
+        final.append(result)
+
+    final_df = pd.DataFrame(final)
+    return final_df
+
+
 def run_pytest_and_coverage_on_code(curr_test_dir, output_dir, file_suffix, task, verbose):
     """
     Runs pytest and coverage on the code and tests using the code and tests as specified in curr_test_dir.  Coverage
@@ -428,11 +489,16 @@ def evaluate_code_submission(
     subm_score_mean = os.path.join(subm_dirpath, "{}_mean_metrics.csv".format(sys_name))
     metrics_df.to_csv(subm_score_mean, index=False)
 
+    simple_extended_df = simple_extended_dataframe(subm_df, key_df, sys_name)
+    subm_score_mean_se = os.path.join(subm_dirpath, "{}_simple_extended_metric.csv".format(sys_name))
+    simple_extended_df.to_csv(subm_score_mean_se, index=False)
+
     if verbose:
         print(subm_df[['trial_id', 'prompt_number', 'correct_tests', 'finds_error_in_incorrect_1',
                        'finds_error_in_incorrect_t', 'code_coverage']])
         print(" ")
-        print(f"If you want more information, look at the csvs created here:\n{subm_score_fp}\n{subm_score_mean}\n")
+        print(f"If you want more information, look at the csvs created here:\n{subm_score_fp}\n{subm_score_mean}\n"
+              f"{subm_score_mean_se}\n")
     # if os.path.exists(sys_test_dir) and os.path.isdir(sys_test_dir):
     #    shutil.rmtree(sys_test_dir)
     # Change Working directory back to previous directory

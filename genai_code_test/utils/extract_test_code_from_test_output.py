@@ -129,43 +129,52 @@ def convert_submission(ai_json_fp, output_fp):
     Returns:
 
     """
-    ai_jf = open(ai_json_fp, "r")
-    ai_data = json.load(ai_jf)
-    ai_elements = ai_data["code_list"]
-    code_dict = {
-        "name": ai_data["name"],
-        "version": ai_data["version"],
-        "system": ai_data["system"],
-        "code_list": [],
-    }
-    for e in ai_elements:
-        e_code_file = e.copy()
-        output_str = e_code_file["test_output"]
-        trial_id = e["trial_id"]
-        test_import_statement = "from genai_code_file import *"
-        if "testing_import_statement" in e:
-            test_import_statement = e['testing_import_statement']
-        output_code_str = extract_test_code_from_prompt_output_pri(output_str, trial_id)
-        if output_code_str == "":
-            output_code_str = extract_test_code_from_prompt_output_sec(output_str, trial_id)
-        # Now we augment it with our import line only if we don't see it
-        try:
-            output_str.index("from genai_code_file import")
-            test_code_str = output_code_str
-        except IndexError:
-            test_code_str = test_import_statement + "\n\n" + output_code_str
-        except ValueError:
-            test_code_str = test_import_statement + "\n\n" + output_code_str
-        # For our test code extraction, convert any integer prompt number to a string
-        # if isinstance(e_code_file["prompt_number"], int):
-        #     e_code_file["prompt_number"] = str(e_code_file["prompt_number"])
-        e_code_file["test_output"] = output_str
-        e_code_file["test_code"] = test_code_str
-        code_dict["code_list"].append(e_code_file)
-    if not os.path.isdir(os.path.dirname(output_fp)):
-        os.makedirs(os.path.dirname(output_fp))
-    with open(output_fp, "w") as fp:
-        json.dump(code_dict, fp, indent=2)
+    output_dir = os.path.dirname(output_fp) if not os.path.isdir(output_fp) else output_fp
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    if os.path.isdir(output_fp):
+        output_fp = os.path.join(output_fp, "converted_output.json")
+    elif not output_fp.lower().endswith(".json"):
+        output_fp = output_fp + ".json"
+
+    with open(ai_json_fp, "r") as ai_jf:
+        ai_data = json.load(ai_jf)
+        ai_elements = ai_data["code_list"]
+        code_dict = {
+            "name": ai_data["name"],
+            "version": ai_data["version"],
+            "system": ai_data["system"],
+            "code_list": [],
+        }
+        for e in ai_elements:
+            e_code_file = e.copy()
+            output_str = e_code_file["test_output"]
+            trial_id = e["trial_id"]
+            test_import_statement = "from genai_code_file import *"
+            if "testing_import_statement" in e:
+                test_import_statement = e['testing_import_statement']
+            output_code_str = extract_test_code_from_prompt_output_pri(output_str, trial_id)
+            if output_code_str == "":
+                output_code_str = extract_test_code_from_prompt_output_sec(output_str, trial_id)
+            # Now we augment it with our import line only if we don't see it
+            try:
+                output_str.index("from genai_code_file import")
+                test_code_str = output_code_str
+            except IndexError:
+                test_code_str = test_import_statement + "\n\n" + output_code_str
+            except ValueError:
+                test_code_str = test_import_statement + "\n\n" + output_code_str
+            # For our test code extraction, convert any integer prompt number to a string
+            # if isinstance(e_code_file["prompt_number"], int):
+            #     e_code_file["prompt_number"] = str(e_code_file["prompt_number"])
+            e_code_file["test_output"] = output_str
+            e_code_file["test_code"] = test_code_str
+            code_dict["code_list"].append(e_code_file)
+        if not os.path.isdir(os.path.dirname(output_fp)):
+            os.makedirs(os.path.dirname(output_fp))
+        with open(output_fp, "w") as fp:
+            json.dump(code_dict, fp, indent=2)
 
 
 def code_main(args):
