@@ -1,5 +1,14 @@
 # CHANGELOG.md
 
+## v2026.02.04
+
+Updated scorer to provide additional metrics and to work with Pilot Round-2 Submissions.
+
+Significant Changes:
+* Script evaluate_submission.py outputs an additional file <system_name>_simple_extended_metric.csv that gives
+submission scores on simple problems and on extended problems.
+* Various bugfixes.
+
 ## v2025.07.18
 
 Refined release to work with the NIST GenAI Code Pilot Evaluation.
