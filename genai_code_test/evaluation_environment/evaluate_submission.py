@@ -179,7 +179,8 @@ def run_pytest_and_coverage_on_code(curr_test_dir, output_dir, file_suffix, task
         if not os.path.isdir(htmlcov_dirpath):
             os.makedirs(htmlcov_dirpath)
         command_str = (
-            f"coverage run -m pytest {curr_test_dir} -x --capture sys -v --cache-clear && "
+            f"coverage run --omit='test_genai_code_*.py' -m pytest {curr_test_dir} "
+            f"-x --capture sys -v --cache-clear && "
             f"coverage report && "
             f"coverage html -d {htmlcov_dirpath}"
         )
