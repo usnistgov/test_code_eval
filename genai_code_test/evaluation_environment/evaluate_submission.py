@@ -370,18 +370,15 @@ def evaluate_code_submission(
         with open(correct_task_pytest_fp, "w") as text_file:
             text_file.write(correct_pytest_output)
         correct_test_result = determine_testing_result(correct_pytest_output)
-        subm_df.loc[subm_df["prompt_number"] == prompt_number, "prompt_number"] = prompt_number
+        # subm_df.loc[subm_df["prompt_number"] == prompt_number, "prompt_number"] = prompt_number
+        mask = (subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number)
         if correct_test_result == 1:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "correct_tests"] = 1
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "code_coverage"] = total_cov
+            subm_df.loc[mask, "correct_tests"] = 1
+            subm_df.loc[mask, "code_coverage"] = total_cov
         elif correct_test_result == 0:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "correct_tests"] = 0
+            subm_df.loc[mask, "correct_tests"] = 0
         else:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "correct_tests"] = -1
+            subm_df.loc[mask, "correct_tests"] = -1
             value = False
         # Remove files in temp_test_dir
         os.remove(correct_code_fp)
@@ -417,16 +414,16 @@ def evaluate_code_submission(
         mutated_test_result = determine_testing_result(mutated_pytest_output)
         # Give full score if the tests fail on incorrect program,
         # i.e. we want mutated_test_result to be 0
-        subm_df.loc[subm_df["prompt_number"] == prompt_number, "prompt_number"] = prompt_number
+        mask = (subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number)
         if mutated_test_result == 1:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "finds_error_in_incorrect_1"] = 0
+            subm_df.loc[mask, "finds_error_in_incorrect_1"] = 0
+
         elif mutated_test_result == 0:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "finds_error_in_incorrect_1"] = 1
+            subm_df.loc[mask, "finds_error_in_incorrect_1"] = 1
+
         else:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "finds_error_in_incorrect_1"] = -1
+            subm_df.loc[mask, "finds_error_in_incorrect_1"] = -1
+
             value = False
         # Remove files in temp_test_dir
         os.remove(mutated_code_fp)
@@ -463,17 +460,13 @@ def evaluate_code_submission(
         mutated_test_result_t = determine_testing_result(mutated_pytest_output_t)
         # Give full score if the tests fail on incorrect program,
         # i.e. we want mutated_test_result to be 0
-        subm_df.loc[(subm_df["prompt_number"] == prompt_number) & (subm_df["prompt_number"] == prompt_number),
-                    "prompt_number"] = prompt_number
+        mask = (subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number)
         if mutated_test_result_t == 1:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "finds_error_in_incorrect_t"] = 0
+            subm_df.loc[mask, "finds_error_in_incorrect_t"] = 0
         elif mutated_test_result_t == 0:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "finds_error_in_incorrect_t"] = 1
+            subm_df.loc[mask, "finds_error_in_incorrect_t"] = 1
         else:
-            subm_df.loc[(subm_df["trial_id"] == task) & (subm_df["prompt_number"] == prompt_number),
-                        "finds_error_in_incorrect_t"] = -1
+            subm_df.loc[mask, "finds_error_in_incorrect_t"] = -1
             value = False
 
         # Remove files in temp_test_dir
@@ -482,9 +475,12 @@ def evaluate_code_submission(
         # -- branch end
     # -- loop end
 
-    # Write final submission data frame to output file
     subm_score_fp = os.path.join(subm_dirpath, "{}_scores.csv".format(sys_name))
-    subm_df.to_csv(subm_score_fp, index=False)
+    subm_df_clean = subm_df.copy()
+    for col in subm_df_clean.select_dtypes(include=['object']):
+        subm_df_clean[col] = (subm_df_clean[col].astype(str).str.slice(0, 25000))
+
+    subm_df_clean.to_csv(subm_score_fp, index=False)
 
     metrics_df = mean_metrics_dataframe(subm_df, sys_name)
     subm_score_mean = os.path.join(subm_dirpath, "{}_mean_metrics.csv".format(sys_name))
