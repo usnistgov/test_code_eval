@@ -7,6 +7,6 @@ setuptools.setup(
         'gitpython',
         'numpy',
         'pandas',
-        'pytest==8.3.5',
+        'pytest==9.0.3',
     ]
 )
