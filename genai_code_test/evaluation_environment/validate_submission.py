@@ -15,57 +15,70 @@ import io
 
 def determine_testing_result(pytest_output):
     """
-    Automate reading the pytest output to determine if the tests passed, the tests failed, or if there was
-    a runtime error.
-    Args:
-        pytest_output: The output of pytest as a string.
-    Returns:
-        -1 if the test code has a runtime error,
-        0 if the tests ran but failed on the code or if it's a type of error listed below for a specific function.
-        and 1 if the tests ran and passed on the code
-        there are some expectations!
+        Automate reading the pytest output to determine if the tests passed, the tests failed, or if there was
+        a runtime error.
+        Args:
+            pytest_output: The output of pytest as a string.
+        Returns:
+            -1 if the test code has a runtime error,
+            0 if the tests ran but failed on the code or if it's a type of error listed below for a specific function.
+            and 1 if the tests ran and passed on the code
+            there are some expectations!
     """
-    # Check for other AssertionErrors
-    if "AssertionError" in pytest_output:
-        return 0
 
-    if "TypeError" in pytest_output:
-        if "not supported between instances of" in pytest_output:
-            return -1
-        return 0
-
-    if "ValueError" in pytest_output:
-        if "NameError: name 'pytest' is not defined" in pytest_output:
-            return -1
-        return 0
-
-    # List of specific error types for runtime errors
-    error_types = ["NameError", "ZeroDivisionError", "IndexError", "ImportError", "KeyError", "AttributeError"]
-
-    # Check for known runtime errors
-    for error in error_types:
-        if error in pytest_output:
-
-            if "pytest.raises" in pytest_output:
-                return 0
-
-            if f"raise {error}" in pytest_output:
-                return 0
-
-            return -1
-
-    # Handle xpass or xfail conditions as test failures
-    if "xpass" in pytest_output:
-        return 0
-
-    elif "failed" not in pytest_output and "passed" in pytest_output:
-        return 1
-
-    elif "xfail" in pytest_output and "passed" in pytest_output:
-        return 1
-
-    else:
+    lines = [line.strip() for line in pytest_output.splitlines() if line.strip()]
+    if not lines:
         return -1
+
+    summary = lines[-1].lower()
+    full_output_lowered = pytest_output.lower()
+
+    if "failed: did not raise" in full_output_lowered and "failed" in summary:
+        print("made it here")
+        return 0
+
+    if "not supported between instances of" in full_output_lowered:
+        return -1
+
+    runtime_errors = ["nameerror", "indentationerror", "attributeerror", "importerror"]
+
+    if "failed" in full_output_lowered:
+        failure_blocks = full_output_lowered.split("________________________________________________")
+
+        for block in failure_blocks:
+            if any(err in block for err in runtime_errors):
+                if "nameerror: name 'pytest' is not defined" in block:
+                    return -1
+                if "pytest.raises" in block:
+                    # return 0 here because for incorrect code incorrect t code in order to return a 1 need to
+                    # return 0 for this function
+                    return 0
+                else:
+                    return -1
+
+    for err in ["typeerror", "valueerror", "assertionerror"]:
+        if err in full_output_lowered:
+            if any(err in line.lower() and "passed" not in line.lower() for line in lines):
+                return 0
+            elif "failed" in summary and "passed" in summary:
+                return 0
+
+    if "xpass" in summary or "xpassed" in summary:
+        return 0
+
+    elif "failed" not in summary and "passed" in summary:
+        return 1
+
+    elif "xfail" in summary and "passed" in summary:
+        return 1
+
+    elif "failed" in summary and "passed" in summary:
+        return 0
+
+    elif "failed" in summary:
+        return 0
+
+    return -1
 
 
 def execute_pytest_without_printing(test_dir):
@@ -140,7 +153,7 @@ def is_json_correct(filepath):
         return False
 
 
-def is_file_valid(json_filepath):
+def is_file_valid(json_filepath, out_folder_fp):
     """
     Checks to see if a submission file path or problem filepath is a valid JSON, if yes returns true if not returns
     false
@@ -155,12 +168,16 @@ def is_file_valid(json_filepath):
 
     code_files = json_data['code_list']
 
-    for problem in code_files:
-        if "trial_id" not in problem:
-            print(f"Problem\n{problem}\ndoes not contain a trial_id key value, please fix this!\n")
-            return False
-        else:
-            continue
+    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
+    with (open(log_filepath, "a") as log_file):
+
+        for problem in code_files:
+            if "trial_id" not in problem:
+                print(f"Problem\n{problem}\ndoes not contain a trial_id key value, please fix this!\n")
+                log_file.write(f"Problem\n{problem}\ndoes not contain a trial_id key value, please fix this!\n")
+                return False
+            else:
+                continue
 
 
 def is_filepath_and_submission_correct(problem_file_path, submission_file_path):
@@ -198,7 +215,7 @@ def is_filepath_and_submission_correct(problem_file_path, submission_file_path):
     return value
 
 
-def is_submission_field_empty(submission_file_path):
+def is_submission_field_empty(submission_file_path, out_folder_fp):
     """
     Checks to see if a submission file does not have any empty fields - if yes will return false
     Args:
@@ -213,27 +230,37 @@ def is_submission_field_empty(submission_file_path):
 
     submission_elements = submission_data['code_list']
 
-    for submission_field in submission_elements:
-        if ("trial_id" not in submission_field or "prompt_number" not in submission_field or "prompt" not
-                in submission_field or "test_output" not in submission_field or "primary_method_name" not in
-                submission_field or "test_code" not in submission_field):
-            print(f"Problem\n{submission_field}\nis missing either a trial_id and or prompt_number and or prompt "
-                  f"and or primary_method_name and or test_output and or test_code\n")
-            value = False
+    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
+    with (open(log_filepath, "a") as log_file):
 
-        elif (len(submission_field['trial_id']) == 0 or len(submission_field['prompt_number']) == 0 or
-                len(submission_field['prompt']) == 0 or len(submission_field['test_output']) == 0 or
-                len(submission_field['primary_method_name']) == 0 or len(submission_field['test_code']) == 0):
-            print(f"Problem\n{submission_field}\nis missing either a value for trial_id and or prompt_number and or "
-                  f"prompt and or primary_method_name and or test_output and or test_code\n")
-            value = False
-        else:
-            value = True
+        for submission_field in submission_elements:
+            if ("trial_id" not in submission_field or "prompt_number" not in submission_field or "prompt" not
+                    in submission_field or "test_output" not in submission_field or "primary_method_name" not in
+                    submission_field or "test_code" not in submission_field):
+                print(f"Problem\n{submission_field}\nis missing either a trial_id and or prompt_number and or prompt "
+                      f"and or primary_method_name and or test_output and or test_code\n")
+                log_file.write(f"Problem\n{submission_field}\nis missing either a trial_id and or prompt_number and "
+                               f"or prompt and or primary_method_name and or test_output and or test_code\n")
+                value = False
+                return value
+
+            elif (len(submission_field['trial_id']) == 0 or len(submission_field['prompt_number']) == 0 or
+                    len(submission_field['prompt']) == 0 or len(submission_field['test_output']) == 0 or
+                    len(submission_field['primary_method_name']) == 0 or len(submission_field['test_code']) == 0):
+                print(f"Problem\n{submission_field}\nis missing either a value for trial_id and or prompt_number "
+                      f"and or prompt and or primary_method_name and or test_output and or test_code\n")
+                log_file.write(f"Problem\n{submission_field}\nis missing either a value for trial_id and or "
+                               f"prompt_number and or prompt and or primary_method_name and or test_output "
+                               f"and or test_code\n")
+                value = False
+                return value
+            else:
+                value = True
 
     return value
 
 
-def is_prompt_num_str(submission_file_path):
+def is_prompt_num_str(submission_file_path, out_folder_fp):
     """
     Checks to see if a submission file does not have any empty fields - if yes will return false
     Args:
@@ -247,18 +274,22 @@ def is_prompt_num_str(submission_file_path):
     submission_data = json.load(submission_set)
 
     submission_elements = submission_data['code_list']
+    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
+    with (open(log_filepath, "a") as log_file):
 
-    for submission_field in submission_elements:
-        if not isinstance(submission_field['prompt_number'], str):
-            print(f"Problem\n{submission_field}\nprompt number is not a string. Please recheck and try again!\n")
-            value = False
-        else:
-            value = True
+        for submission_field in submission_elements:
+            if not isinstance(submission_field['prompt_number'], str):
+                print(f"Problem\n{submission_field}\nprompt number is not a string. Please recheck and try again!\n")
+                log_file.write(f"Problem\n{submission_field}\nprompt number is not a string. "
+                               f"Please recheck and try again!\n")
+                value = False
+            else:
+                value = True
 
     return value
 
 
-def control_submission_output(submission_file_path):
+def control_submission_output(submission_file_path, out_folder_fp):
     """
     Checks to see if a submission file code is not more than 25000 character, if it is returns an error
     Args:
@@ -272,19 +303,24 @@ def control_submission_output(submission_file_path):
 
     submission_elements = submission_data['code_list']
     value = True
+    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
+    with (open(log_filepath, "a") as log_file):
 
-    for submission_field in submission_elements:
-        if len(submission_field['test_code']) > 25000:
-            print("The test code for " + submission_field['trial_id']
-                  + "_" + submission_field['prompt_number'] + " is too long, please recheck and try again!\n")
-            value = False
-        else:
-            value = True
+        for submission_field in submission_elements:
+            if len(submission_field['test_code']) > 25000:
+                print("The test code for " + submission_field['trial_id']
+                      + "_" + submission_field['prompt_number'] + " is too long, please recheck and try again!\n")
+                log_file.write("The test code for " + submission_field['trial_id']
+                               + "_" + submission_field['prompt_number'] +
+                               " is too long, please recheck and try again!\n")
+                value = False
+            else:
+                value = True
 
     return value
 
 
-def is_prompt_correct(submission_file_path, problem_file_path):
+def is_prompt_correct(submission_file_path, problem_file_path, out_folder_fp):
     """
     Checks to see if a submission file has a valid prompt number. For prompt number 1, it is a fixed prompt. If
     fixed prompt, checks to see if the prompt is the same fixed prompt we have given, if this is true will return
@@ -310,60 +346,80 @@ def is_prompt_correct(submission_file_path, problem_file_path):
     problems = []
     value = False
 
-    for submission_field in submission_elements:
-        try:
-            code_data_list = [x for x in problem_elements if x["trial_id"] == submission_field["trial_id"]]
-            code_data = code_data_list[0]
-        except IndexError:
-            print("One or more problems in the submission does not exist in the problem file, just ignore "
-                  "this\n")
+    log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
+    with (open(log_filepath, "a") as log_file):
 
-        if int(submission_field["prompt_number"]) == 0:
-            fixed_prompt.append(submission_field['trial_id'])
-            if code_data["prompt_fixed"] == submission_field["prompt"]:
+        for submission_field in submission_elements:
+            try:
+                code_data_list = [x for x in problem_elements if x["trial_id"] == submission_field["trial_id"]]
+                code_data = code_data_list[0]
+            except IndexError:
+                print("One or more problems in the submission does not exist in the problem file, just ignore this\n")
+                log_file.write("One or more problems in the submission does not exist in the problem file, "
+                               "just ignore this\n")
+
+            if int(submission_field["prompt_number"]) == 0:
+                fixed_prompt.append(submission_field['trial_id'])
+                if code_data["prompt_fixed"] == submission_field["prompt"]:
+                    value = True
+                else:
+                    print(f"This {submission_field['trial_id']} is not a fixed prompt, either the prompt number "
+                          f"is not 0 or the submission prompt does not match the prompt we gave you, please recheck "
+                          f"and try again!.\n")
+                    log_file.write(f"This {submission_field['trial_id']} is not a fixed prompt, either the "
+                                   f"prompt number is not 0 or the submission prompt does not match the prompt we "
+                                   f"gave you, please recheck and try again!.\n")
+                    return False
+
+            elif int(submission_field["prompt_number"]) == 1:
+                custom_prompt.append(submission_field['trial_id'])
+                if (code_data["prompt_fixed"] == submission_field["prompt"] or code_data["prompt_fixed"] !=
+                        submission_field["prompt"]):
+                    print(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} is not a "
+                          f"fixed prompt, it is a custom prompt.\n")
+                    log_file.write(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} "
+                                   f"is not a fixed prompt, it is a custom prompt.\n")
+                    value = True
+
+            elif 1 < int(submission_field["prompt_number"]) < 10:
+                print(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} is not a "
+                      f"fixed prompt, it is a custom prompt.\n")
+                log_file.write(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} "
+                               f"is not a fixed prompt, it is a custom prompt.\n")
                 value = True
+
             else:
-                print(f"This {submission_field['trial_id']} is not a fixed prompt, either the prompt number is not 0 "
-                      f"or the submission prompt does not match the prompt we gave you, please recheck and try "
-                      f"again!.\n")
+                print(f"This {submission_field['trial_id']} does not have a valid prompt number.\nPlease make sure the "
+                      f"fixed prompt_number is {"0"} and the custom prompt_number is a number from {1} to {9}, "
+                      f"please recheck and try again!.\n")
+                log_file.write(f"This {submission_field['trial_id']} does not have a valid prompt number."
+                               f"\nPlease make sure the fixed prompt_number is {"0"} and the custom prompt_number "
+                               f"is a number from {1} to {9}, please recheck and try again!.\n")
                 return False
 
-        elif int(submission_field["prompt_number"]) == 1:
-            custom_prompt.append(submission_field['trial_id'])
-            if (code_data["prompt_fixed"] == submission_field["prompt"] or code_data["prompt_fixed"] !=
-                    submission_field["prompt"]):
-                print(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} is not a fixed prompt, "
-                      f"it is a custom prompt.\n")
-                value = True
+        for problem in problem_elements:
+            problems.append(problem["trial_id"])
 
-        elif 1 < int(submission_field["prompt_number"]) < 10:
-            print(f"This {submission_field['trial_id']}_{submission_field['prompt_number']} is not a fixed prompt, "
-                  f"it is a custom prompt.\n")
-            value = True
+        length = len(problems)
 
-        else:
-            print(f"This {submission_field['trial_id']} does not have a valid prompt number.\nPlease make sure the "
-                  f"fixed prompt_number is {"0"} and the custom prompt_number is a number from {1} to {9}, "
-                  f"please recheck and try again!.\n")
+        if len(fixed_prompt) != length:
+            print(f"There is not a fixed prompt per problem or too many fixed prompts per problem, look through the "
+                  f"problems\n{fixed_prompt}\nmake the fix and resubmit!\n")
+            log_file.write(f"There is not a fixed prompt per problem or too many fixed prompts per problem, "
+                           f"look through the problems\n{fixed_prompt}\nmake the fix and resubmit!\n")
             return False
-
-    for problem in problem_elements:
-        problems.append(problem["trial_id"])
-
-    length = len(problems)
-
-    if len(fixed_prompt) != length:
-        print(f"There is not a fixed prompt per problem or too many fixed prompts per problem, look through the "
-              f"problems\n{fixed_prompt}\nmake the fix and resubmit!\n")
-        return False
-    elif len(custom_prompt) < length:
-        print(f"There is not a custom prompt per problem. Please make sure the first custom prompt,\nprompt_number is"
-              f" {1}, look through the problems, make the fix and resubmit!\n")
-        return False
-    elif len(custom_prompt) > (9 * length):
-        print("There are too many custom prompt per problem, look through the problems, make the fix "
-              "and resubmit!\n")
-        return False
+        elif len(custom_prompt) < length:
+            print(f"There is not a custom prompt per problem. Please make sure the first custom prompt,"
+                  f"\nprompt_number is {1}, look through the problems, make the fix and resubmit!\n")
+            log_file.write(f"There is not a custom prompt per problem. Please make sure the first custom prompt,"
+                           f"\nprompt_number is {1}, look through the problems, make the fix and resubmit!\n")
+            return False
+        elif len(custom_prompt) > (9 * length):
+            print("There are too many custom prompt per problem, look through the problems, make the fix "
+                  "and resubmit!\n")
+            log_file.write("There are too many custom prompt per problem, look through the problems, make the fix  "
+                           "and resubmit!\n")
+            return False
 
     return value
 
@@ -406,7 +462,7 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
         os.makedirs(out_folder_fp)
 
     log_filepath = os.path.join(out_folder_fp, "validation_log.txt")
-    with (open(log_filepath, "w") as log_file):
+    with (open(log_filepath, "a") as log_file):
 
         # Checking to see if the file exists and correctly formatted
         if is_json_correct(prob_json_filepath) != True or is_json_correct(submission_json_filepath) != True:
@@ -467,7 +523,8 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
         problem_elements = problem_data['code_list']
 
         # Checking to see if the problem file and submission file have a trial_id field if not, will cause an error
-        if is_file_valid(prob_json_filepath) == False or is_file_valid(submission_json_filepath) == False:
+        if is_file_valid(prob_json_filepath, out_folder_fp) == False or is_file_valid(submission_json_filepath,
+                                                                                      out_folder_fp) == False:
             is_submission_valid = False
             print("ERROR: Missing or do not have a trial_id in one or more problems in submission file, "
                   "please recheck and try again!")
@@ -485,10 +542,10 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
         for submission in submission_elements:
             submission_task = submission['trial_id']
             if not (submission_task in problem_df['trial_id'].to_list()):
-                print(f"WARNING: Task {submission_task} not in problem file\n{prob_json_filepath}.\n"
+                print(f"ERROR: Task {submission_task} not in problem file\n{prob_json_filepath}.\n"
                       f"Skipping the tests for this program.\n")
 
-                log_file.write(f"WARNING: Task {submission_task} not in problem file\n{prob_json_filepath}.\n"
+                log_file.write(f"ERROR: Task {submission_task} not in problem file\n{prob_json_filepath}.\n"
                                f"Skipping the tests for this program.\n")
 
         # Checking to see the problems in the submission file, if submission file is missing any problems that are
@@ -534,7 +591,7 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
             return is_submission_valid
 
         # Checking to see if the fixed prompt is correct
-        if not is_prompt_correct(submission_json_filepath, prob_json_filepath):
+        if not is_prompt_correct(submission_json_filepath, prob_json_filepath, out_folder_fp):
             is_submission_valid = False
             if not is_submission_valid:
                 print("ERROR: Please recheck the prompt and or prompt_number field, one of these are incorrect, "
@@ -543,14 +600,13 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
                 print("Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation "
                       "errors.")
                 print("============================================")
-
             log_file.write("ERROR: Please recheck the prompt and or prompt_number field, one of these are incorrect, "
                            "please fix and try again!\n")
 
             return is_submission_valid
 
         # Checking to see if the submission file prompt number is a string, if not will cause an error
-        if not is_prompt_num_str(submission_json_filepath):
+        if not is_prompt_num_str(submission_json_filepath, out_folder_fp):
             is_submission_valid = False
             if not is_submission_valid:
                 print(
@@ -569,7 +625,7 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
             return is_submission_valid
 
         # Checking to see if the submission file have the correct fields if not, will cause an error
-        if not is_submission_field_empty(submission_json_filepath):
+        if not is_submission_field_empty(submission_json_filepath, out_folder_fp):
             is_submission_valid = False
             if not is_submission_valid:
                 print(f"ERROR: One or more fields in the submission file\n{submission_json_filepath}\nis or are "
@@ -585,7 +641,7 @@ def validate_code_submission(str_current_datetime, prob_json_filepath,
             return is_submission_valid
 
         # Checking to see if the submission file test code has too many characters, if so will cause an error
-        if not control_submission_output(submission_json_filepath):
+        if not control_submission_output(submission_json_filepath, out_folder_fp):
             is_submission_valid = False
             if not is_submission_valid:
                 print(f"ERROR: The test code for one or more problems in\n{submission_json_filepath}\nis or are too "

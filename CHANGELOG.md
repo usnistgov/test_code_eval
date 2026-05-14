@@ -1,5 +1,12 @@
 # CHANGELOG.md
 
+## v2026.05.13
+Updated scorer to change determine_testing_result() in validate_submission.py to more precisely evaluate test results.
+
+Significant Changes:
+* Method determine_testing_result() is now more robust
+* Various bugfixes
+
 ## v2026.02.04
 
 Updated scorer to provide additional metrics and to work with Pilot Round-2 Submissions.

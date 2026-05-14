@@ -53,7 +53,10 @@ def func_create_json_file_from_code_files(input_dir, output_dir):
 
         name = text['name']
         version = text['version']
-        eval_version = text['Evaluation_Version']
+        if "Evaluation_Version" in text:
+            eval_version = text['Evaluation_Version']
+        else:
+            eval_version = ""
         problems = text['code_list']
 
         code_dict = {"name": name, "version": version, "Evaluation_Version": eval_version, "code_list": []}

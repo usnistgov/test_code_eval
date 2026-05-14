@@ -12,7 +12,7 @@ pd.set_option("display.max_colwidth", 200)
 
 sys.path.insert(0, "../genai_code_test")
 import genai_code_test.evaluation_environment.evaluate_submission
-
+from genai_code_test.evaluation_environment.validate_submission import determine_testing_result
 
 print("Paths start")
 for p in sys.path:
@@ -256,7 +256,7 @@ class TestAddsUp(object):
         return sys_scores
 
     def test_add_up(self, score_test_adds, setup_and_teardown):
-        expected_scores = [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1.0]
+        expected_scores = [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1]
         assert score_test_adds["correct_tests"].to_list() == expected_scores
 
 
@@ -306,7 +306,7 @@ class TestAddsUpErr(object):
         return sys_scores
 
     def test_add_up_err(self, score_test_adds_err, setup_and_teardown):
-        expected_scores = [1.0, 0.0, 1.0, 0.0, 0.0, 0.0, np.nan, np.nan, 1, 0, 0, 0, 0, -1.0]
+        expected_scores = [1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1, 0, 0, 0, 0, -1.0]
         np.testing.assert_equal(score_test_adds_err["correct_tests"].to_list(), expected_scores)
 
 
@@ -381,7 +381,8 @@ class TestSmokeExamples():
         )
         sys_scores = pd.read_csv(sys_scores_fp)
         sys_metrics = pd.read_csv(os.path.join(output_dir, "2025-06-11-T05-05-05-outputs/57/57_mean_metrics.csv"))
-        return sys_scores, sys_metrics
+        eval_outputs_dir = os.path.join(output_dir, "2025-06-11-T05-05-05-outputs", "57")
+        return sys_scores, sys_metrics, eval_outputs_dir
 
     def test_smoke_1_scorer(self, setup_and_teardown, score_test_smoke_1):
         # config = setup_and_teardown
@@ -415,7 +416,14 @@ class TestSmokeExamples():
 
     def test_smoke_1_scorer_v2(self, setup_and_teardown, score_test_smoke_1_v2):
         # config = setup_and_teardown
-        score, metric = score_test_smoke_1_v2
+        score, metric, eval_outputs_dir = score_test_smoke_1_v2
+        # Check determine_testing_results
+        add_0c_fpath = os.path.join(eval_outputs_dir, "00001_add", "pytest_output_00001_add_0_57_correct_fixed.txt")
+        with open(add_0c_fpath, 'r') as file:
+            add_0c_tstr = file.read()
+        expected_output = 0
+        obtained_output = determine_testing_result(add_0c_tstr)
+        assert obtained_output == expected_output
         # Complete this test
         assert (score.loc[(score.trial_id == "00001_add") & (score.prompt_number == 0), ["correct_tests",
                 "finds_error_in_incorrect_1", "finds_error_in_incorrect_t"]].iloc[0].tolist() == [0, 1, 1])
@@ -448,8 +456,8 @@ class TestSmokeExamples():
         assert pd.unique(metric['system']).tolist() == [57]
         assert (metric.loc[metric.prompt_number == 0, ["correct_tests", "finds_cit_error",
                                                        "finds_ci1_and_cit_errors", "finds_cit_error",
-                                                       "full_coverage_and_finds_all_errors"]].iloc[0].tolist() == [
-            0, 0, 0, 0, 0])
+                                                       "full_coverage_and_finds_all_errors"]].iloc[0].tolist() ==
+                [0.0, 0.0, 0.0, 0.0, 0.0])
         assert (metric.loc[metric.prompt_number == 1, ["correct_tests", "finds_ci1_error",
                                                        "finds_ci1_and_cit_errors", "finds_cit_error",
                                                        "full_coverage_and_finds_all_errors"]].iloc[0].tolist() == [

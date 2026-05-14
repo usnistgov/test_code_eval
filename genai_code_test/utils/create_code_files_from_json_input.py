@@ -52,7 +52,9 @@ def func_create_code_files_from_json(prob_data_dir, output_dir):
 
         name = input_data["name"]
         version = input_data["version"]
-        eval_version = input_data["Evaluation_Version"]
+        eval_version = ""
+        if "Evaluation_Version" in input_data:
+            eval_version = input_data["Evaluation_Version"]
 
         json_basename = os.path.splitext(os.path.basename(problem_directory))[0]
         json_output_dir = os.path.join(output_dir, json_basename)
