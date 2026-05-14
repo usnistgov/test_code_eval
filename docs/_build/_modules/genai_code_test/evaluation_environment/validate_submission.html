@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>genai_code_test.evaluation_environment.validate_submission &mdash; GenAI Code Test v2025.07.18 documentation</title>
+  <title>genai_code_test.evaluation_environment.validate_submission &mdash; GenAI Code Test v2026.05.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="../../../_static/documentation_options.js?v=5e9bfafb"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -34,7 +34,7 @@
             GenAI Code Test
           </a>
               <div class="version">
-                v2025.07.18
+                v2026.05.13
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -81,7 +81,6 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">configparser</span>
-<span class="c1"># import pdb</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
@@ -96,57 +95,70 @@
 <a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.validate_submission.html#genai_code_test.evaluation_environment.validate_submission.determine_testing_result">[docs]</a>
 <span class="k">def</span> <span class="nf">determine_testing_result</span><span class="p">(</span><span class="n">pytest_output</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Automate reading the pytest output to determine if the tests passed, the tests failed, or if there was</span>
-<span class="sd">    a runtime error.</span>
-<span class="sd">    Args:</span>
-<span class="sd">        pytest_output: The output of pytest as a string.</span>
-<span class="sd">    Returns:</span>
-<span class="sd">        -1 if the test code has a runtime error,</span>
-<span class="sd">        0 if the tests ran but failed on the code or if it&#39;s a type of error listed below for a specific function.</span>
-<span class="sd">        and 1 if the tests ran and passed on the code</span>
-<span class="sd">        there are some expectations!</span>
+<span class="sd">        Automate reading the pytest output to determine if the tests passed, the tests failed, or if there was</span>
+<span class="sd">        a runtime error.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            pytest_output: The output of pytest as a string.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            -1 if the test code has a runtime error,</span>
+<span class="sd">            0 if the tests ran but failed on the code or if it&#39;s a type of error listed below for a specific function.</span>
+<span class="sd">            and 1 if the tests ran and passed on the code</span>
+<span class="sd">            there are some expectations!</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Check for other AssertionErrors</span>
-    <span class="k">if</span> <span class="s2">&quot;AssertionError&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">full_output_lowered</span> <span class="o">=</span> <span class="n">pytest_output</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="s2">&quot;failed: did not raise&quot;</span> <span class="ow">in</span> <span class="n">full_output_lowered</span> <span class="ow">and</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;made it here&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">if</span> <span class="s2">&quot;TypeError&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;not supported between instances of&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
-            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="s2">&quot;not supported between instances of&quot;</span> <span class="ow">in</span> <span class="n">full_output_lowered</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="k">if</span> <span class="s2">&quot;ValueError&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;NameError: name &#39;pytest&#39; is not defined&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
-            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">return</span> <span class="mi">0</span>
+    <span class="n">runtime_errors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nameerror&quot;</span><span class="p">,</span> <span class="s2">&quot;indentationerror&quot;</span><span class="p">,</span> <span class="s2">&quot;attributeerror&quot;</span><span class="p">,</span> <span class="s2">&quot;importerror&quot;</span><span class="p">]</span>
 
-    <span class="c1"># List of specific error types for runtime errors</span>
-    <span class="n">error_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NameError&quot;</span><span class="p">,</span> <span class="s2">&quot;ZeroDivisionError&quot;</span><span class="p">,</span> <span class="s2">&quot;IndexError&quot;</span><span class="p">,</span> <span class="s2">&quot;ImportError&quot;</span><span class="p">,</span> <span class="s2">&quot;KeyError&quot;</span><span class="p">,</span> <span class="s2">&quot;AttributeError&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">in</span> <span class="n">full_output_lowered</span><span class="p">:</span>
+        <span class="n">failure_blocks</span> <span class="o">=</span> <span class="n">full_output_lowered</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;________________________________________________&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Check for known runtime errors</span>
-    <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">error_types</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">failure_blocks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">err</span> <span class="ow">in</span> <span class="n">block</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">runtime_errors</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s2">&quot;nameerror: name &#39;pytest&#39; is not defined&quot;</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="s2">&quot;pytest.raises&quot;</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
+                    <span class="c1"># return 0 here because for incorrect code incorrect t code in order to return a 1 need to</span>
+                    <span class="c1"># return 0 for this function</span>
+                    <span class="k">return</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
-            <span class="k">if</span> <span class="s2">&quot;pytest.raises&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;typeerror&quot;</span><span class="p">,</span> <span class="s2">&quot;valueerror&quot;</span><span class="p">,</span> <span class="s2">&quot;assertionerror&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">full_output_lowered</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">err</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;passed&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">in</span> <span class="n">summary</span> <span class="ow">and</span> <span class="s2">&quot;passed&quot;</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
                 <span class="k">return</span> <span class="mi">0</span>
 
-            <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;raise </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
-                <span class="k">return</span> <span class="mi">0</span>
-
-            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-
-    <span class="c1"># Handle xpass or xfail conditions as test failures</span>
-    <span class="k">if</span> <span class="s2">&quot;xpass&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;xpass&quot;</span> <span class="ow">in</span> <span class="n">summary</span> <span class="ow">or</span> <span class="s2">&quot;xpassed&quot;</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">elif</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pytest_output</span> <span class="ow">and</span> <span class="s2">&quot;passed&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">summary</span> <span class="ow">and</span> <span class="s2">&quot;passed&quot;</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">1</span>
 
-    <span class="k">elif</span> <span class="s2">&quot;xfail&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span> <span class="ow">and</span> <span class="s2">&quot;passed&quot;</span> <span class="ow">in</span> <span class="n">pytest_output</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="s2">&quot;xfail&quot;</span> <span class="ow">in</span> <span class="n">summary</span> <span class="ow">and</span> <span class="s2">&quot;passed&quot;</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">1</span>
 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+    <span class="k">elif</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">in</span> <span class="n">summary</span> <span class="ow">and</span> <span class="s2">&quot;passed&quot;</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">elif</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
 
 
@@ -218,7 +230,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        filepath: a filepath</span>
 
-<span class="sd">    Returns: boolean - True or False</span>
+<span class="sd">    Returns: boolean - Trye or False</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -233,19 +245,16 @@
 
 <div class="viewcode-block" id="is_file_valid">
 <a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.validate_submission.html#genai_code_test.evaluation_environment.validate_submission.is_file_valid">[docs]</a>
-<span class="k">def</span> <span class="nf">is_file_valid</span><span class="p">(</span><span class="n">json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">is_file_valid</span><span class="p">(</span><span class="n">json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if a submission file path or problem filepath is a valid JSON, if yes returns true if not returns</span>
 <span class="sd">    false</span>
 <span class="sd">    Args:</span>
-<span class="sd">        verbose: printing more information to the screen</span>
-<span class="sd">        out_folder_fp: a filepath of where the output is</span>
 <span class="sd">        json_filepath: a filepath where a JSON file is</span>
 
 <span class="sd">    Returns: boolean - True or False</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># pdb.set_trace()</span>
     <span class="n">json_set</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
     <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_set</span><span class="p">)</span>
 
@@ -256,23 +265,58 @@
 
         <span class="k">for</span> <span class="n">problem</span> <span class="ow">in</span> <span class="n">code_files</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;trial_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">problem</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">problem</span><span class="si">}</span><span class="se">\n</span><span class="s2">does not contain a trial_id key value, please fix this!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">problem</span><span class="si">}</span><span class="se">\n</span><span class="s2">does not contain a trial_id key value, please fix this!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">continue</span>
-        <span class="n">log_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+                <span class="k">continue</span></div>
+
+
+
+<div class="viewcode-block" id="is_filepath_and_submission_correct">
+<a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.validate_submission.html#genai_code_test.evaluation_environment.validate_submission.is_filepath_and_submission_correct">[docs]</a>
+<span class="k">def</span> <span class="nf">is_filepath_and_submission_correct</span><span class="p">(</span><span class="n">problem_file_path</span><span class="p">,</span> <span class="n">submission_file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks to see if a submission file and problem file match - if not will return false</span>
+<span class="sd">    Args:</span>
+<span class="sd">        submission_file_path: a filepath where a JSON file is</span>
+<span class="sd">        problem_file_path: a filepath where a problem JSON file is</span>
+
+<span class="sd">    Returns: boolean - True or False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">counter_submission</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">counter_problem</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">submission_set</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">submission_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">submission_set</span><span class="p">)</span>
+    <span class="n">submission_elements</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s1">&#39;code_list&#39;</span><span class="p">]</span>
+
+    <span class="n">problem_set</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">problem_file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">problem_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">problem_set</span><span class="p">)</span>
+    <span class="n">problem_elements</span> <span class="o">=</span> <span class="n">problem_data</span><span class="p">[</span><span class="s1">&#39;code_list&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">submission_field</span> <span class="ow">in</span> <span class="n">submission_elements</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">):</span>
+            <span class="n">counter_submission</span> <span class="o">=</span> <span class="n">counter_submission</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">problem_field</span> <span class="ow">in</span> <span class="n">problem_elements</span><span class="p">:</span>
+        <span class="n">counter_problem</span> <span class="o">=</span> <span class="n">counter_problem</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">counter_submission</span> <span class="o">!=</span> <span class="n">counter_problem</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">value</span></div>
 
 
 
 <div class="viewcode-block" id="is_submission_field_empty">
 <a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.validate_submission.html#genai_code_test.evaluation_environment.validate_submission.is_submission_field_empty">[docs]</a>
-<span class="k">def</span> <span class="nf">is_submission_field_empty</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">is_submission_field_empty</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if a submission file does not have any empty fields - if yes will return false</span>
 <span class="sd">    Args:</span>
-<span class="sd">        verbose: printing more information to the screen</span>
-<span class="sd">        out_folder_fp: a filepath where the output will be</span>
 <span class="sd">        submission_file_path: a filepath where a JSON file is</span>
 
 <span class="sd">    Returns: boolean - True or False</span>
@@ -288,52 +332,39 @@
     <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">log_filepath</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_file</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">submission_field</span> <span class="ow">in</span> <span class="n">submission_elements</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;trial_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="si">}</span><span class="se">\n</span><span class="s2">is missing a trial_id and or the trial_id is empty.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;trial_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="s2">&quot;prompt_number&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="s2">&quot;prompt&quot;</span> <span class="ow">not</span>
+                    <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="s2">&quot;test_output&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="s2">&quot;primary_method_name&quot;</span> <span class="ow">not</span> <span class="ow">in</span>
+                    <span class="n">submission_field</span> <span class="ow">or</span> <span class="s2">&quot;test_code&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="si">}</span><span class="se">\n</span><span class="s2">is missing either a trial_id and or prompt_number and or prompt &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;and or primary_method_name and or test_output and or test_code</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="si">}</span><span class="se">\n</span><span class="s2">is missing either a trial_id and or prompt_number and &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;or prompt and or primary_method_name and or test_output and or test_code</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">return</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="s2">&quot;prompt_number&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem or problems with the trial_id of </span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are&quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;missing a prompt_number and or the prompt_number is empty.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;test_output&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;primary_method_name&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;test_code&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="si">}</span><span class="se">\n</span><span class="s2">is missing either a value for trial_id and or prompt_number &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;and or prompt and or primary_method_name and or test_output and or test_code</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="si">}</span><span class="se">\n</span><span class="s2">is missing either a value for trial_id and or &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;prompt_number and or prompt and or primary_method_name and or test_output &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;and or test_code</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">return</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
 
-            <span class="k">elif</span> <span class="s2">&quot;prompt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;is missing a prompt and or the prompt is empty.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">continue</span>
-
-            <span class="k">elif</span> <span class="s2">&quot;test_output&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;test_output&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;is missing a test_output and or the test_output is empty.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">continue</span>
-
-            <span class="k">elif</span> <span class="s2">&quot;primary_method_name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;primary_method_name&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;is missing a primary_method_name and or the primary_method_name is empty.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">continue</span>
-
-            <span class="k">elif</span> <span class="s2">&quot;test_code&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">submission_field</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;test_code&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;is missing a test_code and or the test_code is empty.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">continue</span>
-        <span class="n">log_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">value</span></div>
+    <span class="k">return</span> <span class="n">value</span></div>
 
 
 
 <div class="viewcode-block" id="is_prompt_num_str">
 <a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.validate_submission.html#genai_code_test.evaluation_environment.validate_submission.is_prompt_num_str">[docs]</a>
-<span class="k">def</span> <span class="nf">is_prompt_num_str</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">is_prompt_num_str</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if a submission file does not have any empty fields - if yes will return false</span>
 <span class="sd">    Args:</span>
-<span class="sd">        verbose: printing more information to the screen</span>
-<span class="sd">        out_folder_fp: a filepath of where the output will be</span>
 <span class="sd">        submission_file_path: a filepath where a JSON file is</span>
 
 <span class="sd">    Returns: boolean - True or False</span>
@@ -344,31 +375,28 @@
     <span class="n">submission_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">submission_set</span><span class="p">)</span>
 
     <span class="n">submission_elements</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s1">&#39;code_list&#39;</span><span class="p">]</span>
-
     <span class="n">log_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_folder_fp</span><span class="p">,</span> <span class="s2">&quot;validation_log.txt&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">log_filepath</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_file</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">submission_field</span> <span class="ow">in</span> <span class="n">submission_elements</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem or problems with the trial_id of</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;prompt number is not a string. Please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="si">}</span><span class="se">\n</span><span class="s2">prompt number is not a string. Please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_field</span><span class="si">}</span><span class="se">\n</span><span class="s2">prompt number is not a string. &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;Please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">log_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">value</span></div>
+
+    <span class="k">return</span> <span class="n">value</span></div>
 
 
 
 <div class="viewcode-block" id="control_submission_output">
 <a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.validate_submission.html#genai_code_test.evaluation_environment.validate_submission.control_submission_output">[docs]</a>
-<span class="k">def</span> <span class="nf">control_submission_output</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">control_submission_output</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if a submission file code is not more than 25000 character, if it is returns an error</span>
 <span class="sd">    Args:</span>
-<span class="sd">        verbose: printing more information to the screen</span>
-<span class="sd">        out_folder_fp: a filepath of where the output will be</span>
 <span class="sd">        submission_file_path: a filepath where a JSON file is</span>
 
 <span class="sd">    Returns: boolean - True or False</span>
@@ -379,26 +407,27 @@
 
     <span class="n">submission_elements</span> <span class="o">=</span> <span class="n">submission_data</span><span class="p">[</span><span class="s1">&#39;code_list&#39;</span><span class="p">]</span>
     <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
-
     <span class="n">log_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_folder_fp</span><span class="p">,</span> <span class="s2">&quot;validation_log.txt&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">log_filepath</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_file</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">submission_field</span> <span class="ow">in</span> <span class="n">submission_elements</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;test_code&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">25000</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The test code for &quot;</span> <span class="o">+</span> <span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span>
+                      <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; is too long, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;The test code for &quot;</span> <span class="o">+</span> <span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span>
-                               <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">submission_field</span><span class="p">[</span>
-                                   <span class="s1">&#39;prompt_number&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; is too long, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                               <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">]</span> <span class="o">+</span>
+                               <span class="s2">&quot; is too long, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">log_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
     <span class="k">return</span> <span class="n">value</span></div>
 
 
 
 <div class="viewcode-block" id="is_prompt_correct">
 <a class="viewcode-back" href="../../../api/genai_code_test.evaluation_environment.validate_submission.html#genai_code_test.evaluation_environment.validate_submission.is_prompt_correct">[docs]</a>
-<span class="k">def</span> <span class="nf">is_prompt_correct</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="n">problem_file_path</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">is_prompt_correct</span><span class="p">(</span><span class="n">submission_file_path</span><span class="p">,</span> <span class="n">problem_file_path</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if a submission file has a valid prompt number. For prompt number 1, it is a fixed prompt. If</span>
 <span class="sd">    fixed prompt, checks to see if the prompt is the same fixed prompt we have given, if this is true will return</span>
@@ -406,8 +435,6 @@
 <span class="sd">    custom prompt per problem. If all this matches returns true. If prompt number or prompt for fixed prompt is</span>
 <span class="sd">    something else, returns false.</span>
 <span class="sd">    Args:</span>
-<span class="sd">        verbose: printing more information to the screen</span>
-<span class="sd">        out_folder_fp: a filepath where the messages from this function will be stored.</span>
 <span class="sd">        submission_file_path: a filepath where a submission JSON file is</span>
 <span class="sd">        problem_file_path: a filepath where a problem JSON file is</span>
 
@@ -423,78 +450,84 @@
     <span class="n">problem_elements</span> <span class="o">=</span> <span class="n">problem_data</span><span class="p">[</span><span class="s1">&#39;code_list&#39;</span><span class="p">]</span>
     <span class="n">fixed_prompt</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">custom_prompt</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">custom_prompt_1</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">problems</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="n">log_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_folder_fp</span><span class="p">,</span> <span class="s2">&quot;validation_log.txt&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">log_filepath</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_file</span><span class="p">):</span>
+
         <span class="k">for</span> <span class="n">submission_field</span> <span class="ow">in</span> <span class="n">submission_elements</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">code_data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">problem_elements</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]]</span>
                 <span class="n">code_data</span> <span class="o">=</span> <span class="n">code_data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One or more problems in the submission does not exist in the problem file, just ignore this</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;One or more problems in the submission does not exist in the problem file, &quot;</span>
-                               <span class="s2">&quot;just ignore this.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                               <span class="s2">&quot;just ignore this</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">fixed_prompt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">code_data</span><span class="p">[</span><span class="s2">&quot;prompt_fixed&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]:</span>
-                    <span class="k">pass</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a fixed prompt, either the prompt number &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;is not 0 or the submission prompt does not match the prompt we gave you, please recheck &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;and try again!.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a fixed prompt, either the &quot;</span>
-                                   <span class="s2">&quot;prompt number is not 0 or the submission prompt does not match the prompt we &quot;</span>
-                                   <span class="s2">&quot;gave you, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
+                                   <span class="sa">f</span><span class="s2">&quot;prompt number is not 0 or the submission prompt does not match the prompt we &quot;</span>
+                                   <span class="sa">f</span><span class="s2">&quot;gave you, please recheck and try again!.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
 
             <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">custom_prompt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">])</span>
-                <span class="n">custom_prompt_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">])</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">code_data</span><span class="p">[</span><span class="s2">&quot;prompt_fixed&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">code_data</span><span class="p">[</span><span class="s2">&quot;prompt_fixed&quot;</span><span class="p">]</span> <span class="o">!=</span>
                         <span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;fixed prompt, it is a custom prompt.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
                                    <span class="sa">f</span><span class="s2">&quot;is not a fixed prompt, it is a custom prompt.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">elif</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">submission_field</span><span class="p">[</span><span class="s2">&quot;prompt_number&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;fixed prompt, it is a custom prompt.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;prompt_number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
                                <span class="sa">f</span><span class="s2">&quot;is not a fixed prompt, it is a custom prompt.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> does not have a valid prompt number.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;Please make sure the fixed prompt_number is </span><span class="si">{</span><span class="s2">&quot;0&quot;</span><span class="si">}</span><span class="s2"> and the custom prompt_number &quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;is a number from </span><span class="si">{</span><span class="s2">&quot;1&quot;</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="s2">&quot;9&quot;</span><span class="si">}</span><span class="s2">, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> does not have a valid prompt number.</span><span class="se">\n</span><span class="s2">Please make sure the &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;fixed prompt_number is </span><span class="si">{</span><span class="s2">&quot;0&quot;</span><span class="si">}</span><span class="s2"> and the custom prompt_number is a number from </span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="mi">9</span><span class="si">}</span><span class="s2">, &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;please recheck and try again!.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">submission_field</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> does not have a valid prompt number.&quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Please make sure the fixed prompt_number is </span><span class="si">{</span><span class="s2">&quot;0&quot;</span><span class="si">}</span><span class="s2"> and the custom prompt_number &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;is a number from </span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="mi">9</span><span class="si">}</span><span class="s2">, please recheck and try again!.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">problem</span> <span class="ow">in</span> <span class="n">problem_elements</span><span class="p">:</span>
             <span class="n">problems</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">problem</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">])</span>
 
         <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">problems</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fixed_prompt</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;There is not a fixed prompt per problem &quot;</span>
-                           <span class="s2">&quot;look through the problems and make the fix and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fixed_prompt</span><span class="p">)</span> <span class="o">!=</span> <span class="n">length</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is not a fixed prompt per problem or too many fixed prompts per problem, look through the &quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot;problems</span><span class="se">\n</span><span class="si">{</span><span class="n">fixed_prompt</span><span class="si">}</span><span class="se">\n</span><span class="s2">make the fix and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is not a fixed prompt per problem or too many fixed prompts per problem, &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;look through the problems</span><span class="se">\n</span><span class="si">{</span><span class="n">fixed_prompt</span><span class="si">}</span><span class="se">\n</span><span class="s2">make the fix and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
-
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">fixed_prompt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">:</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;There are too many fixed prompts per problem, &quot;</span>
-                           <span class="s2">&quot;look through the problems and make the fix and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">custom_prompt</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is not a custom prompt per problem. Please make sure the first custom prompt,</span><span class="se">\n</span><span class="s2">&quot;</span>
-                           <span class="sa">f</span><span class="s2">&quot;prompt_number is </span><span class="si">{</span><span class="s2">&quot;1&quot;</span><span class="si">}</span><span class="s2">, look through the problems, make the fix and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">custom_prompt_1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is not a custom prompt per problem with prompt number of 1. &quot;</span>
-                           <span class="sa">f</span><span class="s2">&quot;Please make sure the first custom prompt,</span><span class="se">\n</span><span class="s2">&quot;</span>
-                           <span class="sa">f</span><span class="s2">&quot;prompt_number is </span><span class="si">{</span><span class="s2">&quot;1&quot;</span><span class="si">}</span><span class="s2">, look through the problems, make the fix and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is not a custom prompt per problem. Please make sure the first custom prompt,&quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">prompt_number is </span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2">, look through the problems, make the fix and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is not a custom prompt per problem. Please make sure the first custom prompt,&quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">prompt_number is </span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2">, look through the problems, make the fix and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">custom_prompt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">9</span> <span class="o">*</span> <span class="n">length</span><span class="p">):</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;There are too many custom prompt per problem, look through the problems, make the fix &quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are too many custom prompt per problem, look through the problems, make the fix &quot;</span>
+                  <span class="s2">&quot;and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;There are too many custom prompt per problem, look through the problems, make the fix  &quot;</span>
                            <span class="s2">&quot;and resubmit!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">log_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">value</span></div>
 
 
@@ -539,49 +572,32 @@
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_folder_fp</span><span class="p">)</span>
 
     <span class="n">log_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_folder_fp</span><span class="p">,</span> <span class="s2">&quot;validation_log.txt&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">log_filepath</span><span class="p">,</span> <span class="s2">&quot;a+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_file</span><span class="p">):</span>
+    <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">log_filepath</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_file</span><span class="p">):</span>
 
         <span class="c1"># Checking to see if the file exists and correctly formatted</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_json_correct</span><span class="p">(</span><span class="n">prob_json_filepath</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_json_correct</span><span class="p">(</span><span class="n">prob_json_filepath</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">is_json_correct</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: The problem file:</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is not a correctly formatted json, &quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: The problem file:</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is not a correctly formatted json, &quot;</span>
-                      <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Either the problem file:</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">or submission file:&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;is not a correctly formatted json, please recheck and try again!&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
                       <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">is_submission_valid</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_json_correct</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">):</span>
-            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;ERROR: The submission file:</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is not a correctly formatted json, &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: The submission file:</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is not a correctly formatted json, &quot;</span>
-                      <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Either the problem file:</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">or submission file:&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2"> is not a correctly formatted json, please recheck and try &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;again!&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
                       <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Either the problem file:</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">or submission file:&quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2"> is not a correctly formatted json, &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">is_submission_valid</span>
 
@@ -617,139 +633,18 @@
         <span class="n">problem_elements</span> <span class="o">=</span> <span class="n">problem_data</span><span class="p">[</span><span class="s1">&#39;code_list&#39;</span><span class="p">]</span>
 
         <span class="c1"># Checking to see if the problem file and submission file have a trial_id field if not, will cause an error</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_file_valid</span><span class="p">(</span><span class="n">prob_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_file_valid</span><span class="p">(</span><span class="n">prob_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">is_file_valid</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span>
+                                                                                      <span class="n">out_folder_fp</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
             <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR: Missing or do not have a trial_id in one or more problems in input &quot;</span>
-                           <span class="s2">&quot;file, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Missing or do not have a trial_id in one or more problems in input file, &quot;</span>
-                  <span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
-                  <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">is_submission_valid</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_file_valid</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
-            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR: Missing or do not have a trial_id in one or more problems in submission &quot;</span>
-                           <span class="s2">&quot;file, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Missing or do not have a trial_id in one or more problems in submission file, &quot;</span>
                   <span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
                   <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">is_submission_valid</span>
-
-        <span class="c1"># Checking to see if the fixed prompt is correct</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_prompt_correct</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">prob_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
-            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR: Please recheck the prompt and or prompt_number field in the submission file, &quot;</span>
-                               <span class="s2">&quot;one of these are incorrect, &quot;</span>
-                               <span class="s2">&quot;please fix and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Please recheck the prompt and or prompt_number field in the submission file, &quot;</span>
-                      <span class="s2">&quot;one of these are incorrect, &quot;</span>
-                      <span class="s2">&quot;please fix and try again!&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
-                      <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">is_submission_valid</span>
-
-        <span class="c1"># Checking to see if the submission file prompt number is a string, if not will cause an error</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_prompt_num_str</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
-            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;ERROR: The prompt number in the submission file</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is not a string &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;ERROR: The prompt number in the submission file</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is not a string &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
-                    <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">is_submission_valid</span>
-
-        <span class="c1"># Checking to see if the submission file have the correct fields if not, will cause an error</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_field_empty</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
-            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;ERROR: One or more fields in the submission file</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;empty, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: One or more fields in the submission file</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are &quot;</span>
-                      <span class="sa">f</span><span class="s2">&quot;empty, please recheck and try again!&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
-                      <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">is_submission_valid</span>
-
-        <span class="c1"># Checking to see if the submission file test code has too many characters, if so will cause an error</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">control_submission_output</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
-            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;ERROR: The test code for one or more problems in</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;too long, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: The test code for one or more problems in</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are too &quot;</span>
-                      <span class="sa">f</span><span class="s2">&quot;long, please recheck and try again!&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
-                      <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR: Missing or do not have a trial_id in one or more problems in submission &quot;</span>
+                           <span class="s2">&quot;file, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">is_submission_valid</span>
 
         <span class="c1"># Checking to see the problems in the submission file, if submission file has problem that are not in the</span>
@@ -757,10 +652,10 @@
         <span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">submission_elements</span><span class="p">:</span>
             <span class="n">submission_task</span> <span class="o">=</span> <span class="n">submission</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">submission_task</span> <span class="ow">in</span> <span class="n">problem_df</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING: Task </span><span class="si">{</span><span class="n">submission_task</span><span class="si">}</span><span class="s2"> not in problem file</span><span class="se">\n</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Task </span><span class="si">{</span><span class="n">submission_task</span><span class="si">}</span><span class="s2"> not in problem file</span><span class="se">\n</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
                       <span class="sa">f</span><span class="s2">&quot;Skipping the tests for this program.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING: Task </span><span class="si">{</span><span class="n">submission_task</span><span class="si">}</span><span class="s2"> not in problem file</span><span class="se">\n</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Task </span><span class="si">{</span><span class="n">submission_task</span><span class="si">}</span><span class="s2"> not in problem file</span><span class="se">\n</span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
                                <span class="sa">f</span><span class="s2">&quot;Skipping the tests for this program.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Checking to see the problems in the submission file, if submission file is missing any problems that are</span>
@@ -770,9 +665,6 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">problem_task</span> <span class="ow">in</span> <span class="n">submission_df</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()):</span>
                 <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
-                    <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Task </span><span class="si">{</span><span class="n">problem_task</span><span class="si">}</span><span class="s2"> not in submission file &quot;</span>
-                                   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="s2">, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Task </span><span class="si">{</span><span class="n">problem_task</span><span class="si">}</span><span class="s2"> not in submission file </span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="s2">, &quot;</span>
                           <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
@@ -780,17 +672,98 @@
                         <span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
                         <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
 
                 <span class="n">no_trial_id_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">problem_task</span><span class="p">)</span>
 
+                <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Task </span><span class="si">{</span><span class="n">problem_task</span><span class="si">}</span><span class="s2"> not in submission file &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="s2">, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">no_trial_id_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="n">is_submission_valid</span>
+
+        <span class="c1"># Checking to see if the submission file match the input problem file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_filepath_and_submission_correct</span><span class="p">(</span><span class="n">prob_json_filepath</span><span class="p">,</span> <span class="n">submission_json_filepath</span><span class="p">):</span>
+            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: The submission problems: </span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">do not match the problems in the &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;problem file: </span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Either they are different problems or there is more than &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;one fixed prompt per problem. Please recheck and try again!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
+                      <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: The submission problems: </span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">do not match the problems in &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;the problem file: </span><span class="si">{</span><span class="n">prob_json_filepath</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Either they are different problems or there is &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;more than one fixed prompt per problem. Please recheck and try again!&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">is_submission_valid</span>
+
+        <span class="c1"># Checking to see if the fixed prompt is correct</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_prompt_correct</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">prob_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
+            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Please recheck the prompt and or prompt_number field, one of these are incorrect, &quot;</span>
+                      <span class="s2">&quot;please fix and try again!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
+                      <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR: Please recheck the prompt and or prompt_number field, one of these are incorrect, &quot;</span>
+                           <span class="s2">&quot;please fix and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">is_submission_valid</span>
+
+        <span class="c1"># Checking to see if the submission file prompt number is a string, if not will cause an error</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_prompt_num_str</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
+            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;ERROR: The prompt number in the submission file</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is not a string &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
+                    <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;ERROR: The prompt number in the submission file</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is not a string &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;please recheck and try again!&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">is_submission_valid</span>
+
+        <span class="c1"># Checking to see if the submission file have the correct fields if not, will cause an error</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_field_empty</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
+            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: One or more fields in the submission file</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;empty, please recheck and try again!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
+                      <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: One or more fields in the submission file</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;empty, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">is_submission_valid</span>
+
+        <span class="c1"># Checking to see if the submission file test code has too many characters, if so will cause an error</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">control_submission_output</span><span class="p">(</span><span class="n">submission_json_filepath</span><span class="p">,</span> <span class="n">out_folder_fp</span><span class="p">):</span>
+            <span class="n">is_submission_valid</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_valid</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: The test code for one or more problems in</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are too &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;long, please recheck and try again!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
+                      <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
+
+            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: The test code for one or more problems in</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is or are &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;too long, please recheck and try again!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
             <span class="k">return</span> <span class="n">is_submission_valid</span>
 
         <span class="c1"># If verbose, write the submitted output to a file</span>
@@ -800,39 +773,21 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Results of Running Tests on Provided Code:&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">submission_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;trial_id&quot;</span><span class="p">]])</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">is_submission_valid</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">verbose</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_submission_valid</span><span class="p">:</span>
             <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Your submission</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is valid!&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">()</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: SUCCESS - Submission Successfully Validated!&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="p">(</span><span class="n">is_submission_valid</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">verbose</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Your submission</span><span class="se">\n</span><span class="si">{</span><span class="n">submission_json_filepath</span><span class="si">}</span><span class="se">\n</span><span class="s2">is valid!&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: SUCCESS - Submission Successfully Validated!&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="p">(</span><span class="n">is_submission_valid</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">verbose</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
-                  <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Below are the contents of your log file:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">log_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">log_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;If you want more information, look at the log created here:</span><span class="se">\n</span><span class="si">{</span><span class="n">log_filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">()</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Result: ERROR - Submission Failed Validation! Please see output and fix all validation &quot;</span>
                   <span class="s2">&quot;errors.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;If you want more information, look at the log created here:</span><span class="se">\n</span><span class="si">{</span><span class="n">log_filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============================================&quot;</span><span class="p">)</span>
 
         <span class="n">log_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>

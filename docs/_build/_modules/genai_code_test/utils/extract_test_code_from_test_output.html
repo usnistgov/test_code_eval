@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>genai_code_test.utils.extract_test_code_from_test_output &mdash; GenAI Code Test v2025.07.18 documentation</title>
+  <title>genai_code_test.utils.extract_test_code_from_test_output &mdash; GenAI Code Test v2026.05.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="../../../_static/documentation_options.js?v=5e9bfafb"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -34,7 +34,7 @@
             GenAI Code Test
           </a>
               <div class="version">
-                v2025.07.18
+                v2026.05.13
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -215,43 +215,52 @@
 <span class="sd">    Returns:</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ai_jf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ai_json_fp</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-    <span class="n">ai_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ai_jf</span><span class="p">)</span>
-    <span class="n">ai_elements</span> <span class="o">=</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span>
-    <span class="n">code_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;code_list&quot;</span><span class="p">:</span> <span class="p">[],</span>
-    <span class="p">}</span>
-    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ai_elements</span><span class="p">:</span>
-        <span class="n">e_code_file</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">output_str</span> <span class="o">=</span> <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_output&quot;</span><span class="p">]</span>
-        <span class="n">trial_id</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span>
-        <span class="n">test_import_statement</span> <span class="o">=</span> <span class="s2">&quot;from genai_code_file import *&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;testing_import_statement&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">test_import_statement</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;testing_import_statement&#39;</span><span class="p">]</span>
-        <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">extract_test_code_from_prompt_output_pri</span><span class="p">(</span><span class="n">output_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">output_code_str</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-            <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">extract_test_code_from_prompt_output_sec</span><span class="p">(</span><span class="n">output_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">)</span>
-        <span class="c1"># Now we augment it with our import line only if we don&#39;t see it</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">output_str</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;from genai_code_file import&quot;</span><span class="p">)</span>
-            <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">output_code_str</span>
-        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">test_import_statement</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">output_code_str</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">test_import_statement</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">output_code_str</span>
-        <span class="c1"># For our test code extraction, convert any integer prompt number to a string</span>
-        <span class="c1"># if isinstance(e_code_file[&quot;prompt_number&quot;], int):</span>
-        <span class="c1">#     e_code_file[&quot;prompt_number&quot;] = str(e_code_file[&quot;prompt_number&quot;])</span>
-        <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_str</span>
-        <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_code_str</span>
-        <span class="n">code_dict</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e_code_file</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_fp</span><span class="p">)):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_fp</span><span class="p">))</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">code_dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_fp</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_fp</span><span class="p">)</span> <span class="k">else</span> <span class="n">output_fp</span>
+    <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_fp</span><span class="p">):</span>
+        <span class="n">output_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_fp</span><span class="p">,</span> <span class="s2">&quot;converted_output.json&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">output_fp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+        <span class="n">output_fp</span> <span class="o">=</span> <span class="n">output_fp</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ai_json_fp</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ai_jf</span><span class="p">:</span>
+        <span class="n">ai_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ai_jf</span><span class="p">)</span>
+        <span class="n">ai_elements</span> <span class="o">=</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span>
+        <span class="n">code_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">ai_data</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;code_list&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ai_elements</span><span class="p">:</span>
+            <span class="n">e_code_file</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">output_str</span> <span class="o">=</span> <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_output&quot;</span><span class="p">]</span>
+            <span class="n">trial_id</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span>
+            <span class="n">test_import_statement</span> <span class="o">=</span> <span class="s2">&quot;from genai_code_file import *&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;testing_import_statement&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">test_import_statement</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;testing_import_statement&#39;</span><span class="p">]</span>
+            <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">extract_test_code_from_prompt_output_pri</span><span class="p">(</span><span class="n">output_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">output_code_str</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">output_code_str</span> <span class="o">=</span> <span class="n">extract_test_code_from_prompt_output_sec</span><span class="p">(</span><span class="n">output_str</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">)</span>
+            <span class="c1"># Now we augment it with our import line only if we don&#39;t see it</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">output_str</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;from genai_code_file import&quot;</span><span class="p">)</span>
+                <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">output_code_str</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">test_import_statement</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">output_code_str</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">test_code_str</span> <span class="o">=</span> <span class="n">test_import_statement</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">output_code_str</span>
+            <span class="c1"># For our test code extraction, convert any integer prompt number to a string</span>
+            <span class="c1"># if isinstance(e_code_file[&quot;prompt_number&quot;], int):</span>
+            <span class="c1">#     e_code_file[&quot;prompt_number&quot;] = str(e_code_file[&quot;prompt_number&quot;])</span>
+            <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_str</span>
+            <span class="n">e_code_file</span><span class="p">[</span><span class="s2">&quot;test_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_code_str</span>
+            <span class="n">code_dict</span><span class="p">[</span><span class="s2">&quot;code_list&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e_code_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_fp</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_fp</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">code_dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
 
 

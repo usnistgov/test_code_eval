@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CHANGELOG.md &mdash; GenAI Code Test v2025.07.18 documentation</title>
+  <title>CHANGELOG.md &mdash; GenAI Code Test v2026.05.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5fb372f8"></script>
+        <script src="_static/documentation_options.js?v=5e9bfafb"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             GenAI Code Test
           </a>
               <div class="version">
-                v2025.07.18
+                v2026.05.13
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -51,6 +51,8 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="readme.html">README.md</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">CHANGELOG.md</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2026-05-13">v2026.05.13</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2026-02-04">v2026.02.04</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2025-07-18">v2025.07.18</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2025-06-05">v2025.06.05</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2024-10-14-dev">v2024.10.14_dev</a></li>
@@ -86,6 +88,25 @@
              
   <section id="changelog-md">
 <h1>CHANGELOG.md<a class="headerlink" href="#changelog-md" title="Link to this heading"></a></h1>
+<section id="v2026-05-13">
+<h2>v2026.05.13<a class="headerlink" href="#v2026-05-13" title="Link to this heading"></a></h2>
+<p>Updated scorer to change determine_testing_result() in validate_submission.py to more precisely evaluate test results.</p>
+<p>Significant Changes:</p>
+<ul class="simple">
+<li><p>Method determine_testing_result() is now more robust</p></li>
+<li><p>Various bugfixes</p></li>
+</ul>
+</section>
+<section id="v2026-02-04">
+<h2>v2026.02.04<a class="headerlink" href="#v2026-02-04" title="Link to this heading"></a></h2>
+<p>Updated scorer to provide additional metrics and to work with Pilot Round-2 Submissions.</p>
+<p>Significant Changes:</p>
+<ul class="simple">
+<li><p>Script evaluate_submission.py outputs an additional file <span class="raw-html-m2r"><system_name></span>_simple_extended_metric.csv that gives
+submission scores on simple problems and on extended problems.</p></li>
+<li><p>Various bugfixes.</p></li>
+</ul>
+</section>
 <section id="v2025-07-18">
 <h2>v2025.07.18<a class="headerlink" href="#v2025-07-18" title="Link to this heading"></a></h2>
 <p>Refined release to work with the NIST GenAI Code Pilot Evaluation.</p>
